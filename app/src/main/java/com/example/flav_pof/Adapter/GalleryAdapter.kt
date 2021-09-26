@@ -31,14 +31,13 @@ class GalleryAdapter(var activity: Activity, private val myDataset: ArrayList<St
 
     //레트로핏
     var retrofit = Retrofit.Builder()
-        .baseUrl("http://192.168.0.103:3000/")
+        .baseUrl("http://192.168.0.105:3000/")
         .addConverterFactory(GsonConverterFactory.create())
         .build()
     var server = retrofit.create(retrofit_service::class.java)  //서버와 만들어둔 인터페이스를 연결시켜줌.
     var name_list:ArrayList<String> = ArrayList()  //식당이름들 리스트
     var resultIntent = Intent()  //writepostactivity로 데이터 실어서 보내줄 인텐트
     lateinit var file:MultipartBody.Part  //이미지파일 담을 곳
-
 
     class GalleryViewHolder(val cardView: CardView) : RecyclerView.ViewHolder(cardView)   //뷰홀더에 텍스트뷰말고 카드뷰를 넣음
 

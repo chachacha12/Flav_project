@@ -6,6 +6,7 @@ package com.example.flav_pof.activity
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.text.InputType
 import android.util.Log
@@ -261,7 +262,7 @@ class WritePostActivity : BasicActivity() {
                 editText.inputType =
                     InputType.TYPE_TEXT_FLAG_MULTI_LINE  //editText의 인풋속성(사용자가 editText에 글쓸때의 속성)을 추가해줌
                 editText.inputType = InputType.TYPE_CLASS_TEXT
-                editText.setHint("내용")
+                editText.setHint("식당명")   //사용자가 선택한 식당이름을 여기에 넣어줄거임
                 editText.onFocusChangeListener =
                     onFocusChangedListener   //포커스가 있는지 판별함. 포커스 있으면 이 뷰가 selectedEditText가 됨
                 linearLayout.addView(editText)
@@ -277,11 +278,12 @@ class WritePostActivity : BasicActivity() {
                     textView.setText(list_restaurant.get(i))
                     linearLayout.addView(textView)
                     i++
-                    textView.setOnClickListener {
+                    textView.setOnClickListener {  //특정 음식점이름 선택했을때 이벤트
                         Toast.makeText(this, textView.text.toString() +"를 선택하셨습니다.",Toast.LENGTH_SHORT).show()
+                        textView.setTextColor(Color.GREEN)
+                        editText.setText(textView.text.toString())   //이미지 아래에 생성되는 editText에 식당명 삽입해줌
                     }
                 }
-
 
             }
             1 -> if (resultCode == Activity.RESULT_OK) {    //이미지를 수정하려고 새 이미지를 선택했을때
@@ -342,7 +344,6 @@ class WritePostActivity : BasicActivity() {
             repeat(contentsLayout.childCount) {
                 //반복문임.  contentsLayout안에 있는 자식뷰의 갯수만큼 반복
 
-
                 var linearLayout =
                     contentsLayout.getChildAt(i) as LinearLayout  //순서대로 자식뷰를 하나씩 가져옴. 자식뷰들은 다 LinearLayout이었음
 
@@ -356,7 +357,7 @@ class WritePostActivity : BasicActivity() {
                         if (text.length > 0) {
                             contentsList.add(text)
                         }
-                    } else if (!Patterns.WEB_URL.matcher(pathList[pathCount]).matches()) {   //자식뷰가 url이 아닐경우에만 스토리지, db에 저장해줄거임
+                    } else if (view is ImageView && !Patterns.WEB_URL.matcher(pathList[pathCount]).matches()) {   //자식뷰가 url이 아닐경우에만 스토리지, db에 저장해줄거임
                         var path = pathList[pathCount]
                         successCount++
                         contentsList.add(path)  //contentsList에 사진경로를 넣어줌. pathList라는 리스트안엔 아까 게시글 써줄때 넣은 사진들의 경로가 순서대로 들어있음
@@ -415,7 +416,10 @@ class WritePostActivity : BasicActivity() {
                             }
                         }
                         pathCount++
-                    }  //자식뷰가 이미지뷰일때
+                    }  //위 까지가 자식뷰가 이미지뷰일때
+                    else{          //자식뷰가 textView 일 때
+                        contentsLayout.removeView(view)       //식당이름 텍스트뷰들은 제거해줌
+                    }
                     index++
                 }  //작은 repeat문
                 i++
