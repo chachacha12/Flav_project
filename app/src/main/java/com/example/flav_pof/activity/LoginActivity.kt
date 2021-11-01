@@ -4,6 +4,8 @@ package com.example.flav_pof.activity
 
 //신규회원 가입 화면임. 여기서 사용자가 친 이메일, 비밀번호를 받아서 가입 가능한지 판별?
 
+
+
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -25,6 +27,15 @@ class LoginActivity : BasicActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
+
+        /*
+        // Add this line, to include the Auth plugin.
+        Amplify.addPlugin(AWSCognitoAuthPlugin())
+        Amplify.configure(applicationContext)
+
+         */
+
+
         init()
     }
 

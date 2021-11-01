@@ -14,7 +14,6 @@ import kotlinx.android.synthetic.main.activity_sign_up.*
 import kotlinx.android.synthetic.main.view_loader.*
 
 
-
 class SignUpActivity : BasicActivity() {
 
     private lateinit var auth: FirebaseAuth                //
@@ -23,6 +22,49 @@ class SignUpActivity : BasicActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sign_up)
         init()
+
+        /*
+        //aws amplify문서 -  aws cognito의 sing in부분
+        val options = AuthSignUpOptions.builder()
+            .userAttribute(AuthUserAttributeKey.email(), "my@email.com")
+            .build()
+        Amplify.Auth.signUp("username", "Password123", options,
+            { Log.i("AuthQuickStart", "Sign up succeeded: $it") },
+            { Log.e ("AuthQuickStart", "Sign up failed", it) }
+        )
+
+        //sign in 중..  이메일로 확인코드 전송..
+        Amplify.Auth.confirmSignUp(
+            "username", "the code you received via email",
+            { result ->
+                if (result.isSignUpComplete) {
+                    Log.i("AuthQuickstart", "Confirm signUp succeeded")
+                } else {
+                    Log.i("AuthQuickstart","Confirm sign up not complete")
+                }
+            },
+            { Log.e("AuthQuickstart", "Failed to confirm sign up", it) }
+        )
+
+        //UI에서 사용자가 친 사용자이름과 암호를 가져오는..
+        Amplify.Auth.signIn("username", "password",
+            { result ->
+                if (result.isSignInComplete) {
+                    Log.i("AuthQuickstart", "Sign in succeeded")
+                } else {
+                    Log.i("AuthQuickstart", "Sign in not complete")
+                }
+            },
+            { Log.e("AuthQuickstart", "Failed to sign in", it) }
+        )
+
+        //sign in 마지막 코드
+        Amplify.Auth.confirmSignIn("code received via SMS",
+            { Log.i("AuthQuickstart", "Confirmed signin: $it") },
+            { Log.e("AuthQuickstart", "Failed to confirm signin", it) }
+        )
+
+         */
     }
 
     fun init()
@@ -84,6 +126,8 @@ class SignUpActivity : BasicActivity() {
             Toast.makeText(this, "이메일 또는 비밀번호를 입력해주세요.", Toast.LENGTH_SHORT).show()
         }
     }  //signup 함수
+
+
 
 
 

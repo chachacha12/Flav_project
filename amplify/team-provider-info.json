@@ -1,0 +1,20 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-flavpof-dev-160128-authRole",
+      "UnauthRoleArn": "arn:aws:iam::183583680485:role/amplify-flavpof-dev-160128-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::183583680485:role/amplify-flavpof-dev-160128-authRole",
+      "Region": "ap-northeast-2",
+      "DeploymentBucketName": "amplify-flavpof-dev-160128-deployment",
+      "UnauthRoleName": "amplify-flavpof-dev-160128-unauthRole",
+      "StackName": "amplify-flavpof-dev-160128",
+      "StackId": "arn:aws:cloudformation:ap-northeast-2:183583680485:stack/amplify-flavpof-dev-160128/652566c0-2bf3-11ec-8ab3-068c1bf07400",
+      "AmplifyAppId": "d3han3g3ntzjsp"
+    },
+    "categories": {
+      "auth": {
+        "flavpofff8a80d8": {}
+      }
+    }
+  }
+}

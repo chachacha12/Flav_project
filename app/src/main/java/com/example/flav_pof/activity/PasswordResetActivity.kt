@@ -35,7 +35,6 @@ class PasswordResetActivity : BasicActivity() {
     fun send() {
         var email = emaileditText.text.toString()
 
-
         if (email.length > 0) {   //이메일 칸에 뭐 하나라도 적은경우
             loaderLayout.visibility = View.VISIBLE    //로딩화면 보여줌.
             Firebase.auth.sendPasswordResetEmail(email)

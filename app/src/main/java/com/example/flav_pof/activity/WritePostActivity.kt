@@ -27,6 +27,7 @@ import com.google.firebase.storage.ktx.storage
 import com.google.firebase.storage.ktx.storageMetadata
 import kotlinx.android.synthetic.main.activity_write_post.*
 import kotlinx.android.synthetic.main.view_loader.*
+import org.json.JSONArray
 import java.io.File
 import java.io.FileInputStream
 import java.util.*
@@ -57,7 +58,7 @@ class WritePostActivity : BasicActivity() {
         storageRef = storage.reference   //게시글 삭제할때, 스토리지에서 지워주기위해 필요함
 
         postInfo = (intent.getSerializableExtra("postInfo") as? PostInfo)  //MainActivity에서 게시글 수정버튼을 눌러서 보낸 인텐트에 실린 값(수정하고자하는 게시물 객체)를 받음. 인텐트를 받을땐 getIntent() 또는 Intent 이용.
-        //getSerializable은 보내는 데이터가 내가 만든 클래스의 객체일때 사용함.
+        //getSerializable은 보내는, 받는 데이터가 내가 만든 클래스의 객체일때 사용함.
 
         if (postInfo != null) {   //null이라면 수정하기버튼 누른게 아니라 +버튼눌러서 새로운 게시글 만드려는거임. 즉, postinit()을 안거쳐도됨
             titleEditText.setText(postInfo!!.title)
@@ -270,12 +271,16 @@ class WritePostActivity : BasicActivity() {
 
                 Log.e("태그", "식당이름 텍스트뷰 생성")
                 // 주변 음식점 이름을 텍스트뷰로 각각 생성해줌
-                var list_restaurant = data!!.getStringArrayListExtra("restaurant_name_list")
+
+                //intent에  jsonarray를 string값으로 바꿔서 날렸고, 그 string값을 받아서 다시 jsonarray객체로 만들어줌
+                var jsonArray = JSONArray( data!!.getStringExtra("restaurant_name_list") )
+
                 var i=0;
-                repeat(list_restaurant.size){
+                repeat(jsonArray.length()){
+                    val Object = jsonArray.getJSONObject(i) //jsonarray안의 object에 하나하나 접근
                     val textView = TextView(this)   //새로운 텍스트뷰를 하나를 이 액티비티xml에 생성함
                     textView.layoutParams = layoutParams
-                    textView.setText(list_restaurant.get(i))
+                    textView.text = Object.getString("name") //식당명 추출
                     linearLayout.addView(textView)
                     i++
                     textView.setOnClickListener {  //특정 음식점이름 선택했을때 이벤트
@@ -284,7 +289,6 @@ class WritePostActivity : BasicActivity() {
                         editText.setText(textView.text.toString())   //이미지 아래에 생성되는 editText에 식당명 삽입해줌
                     }
                 }
-
             }
             1 -> if (resultCode == Activity.RESULT_OK) {    //이미지를 수정하려고 새 이미지를 선택했을때
                 var selectedView =

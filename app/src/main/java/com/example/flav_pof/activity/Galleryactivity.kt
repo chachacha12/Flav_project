@@ -1,7 +1,6 @@
 package com.example.flav_pof.activity         //내폰 갤러리의 모든 사진들 가져오는 코드있음-스택오버플로우 사이트-(Get all photos from Android device android programming)라는 제목으로있음
                                                 //이 액티비티는 리사이클러뷰로 만들어짐. 그래서 어댑터도 있음.
-                                                //이 액티비티를 통해선 갤러리의 사진들만 리사이클러뷰에 띄워주고, 사진선택했을때 사진이 프로필사진으로
-                                                //선택되어지는 로직은 어댑터클래스에 있음
+                                                //이 액티비티를 통해선 갤러리의 사진들만 리사이클러뷰에 띄워주고, 사진선택했을때 사진이 프로필사진, 게시글 삽입 이미지로 선택되어지는 로직은 어댑터클래스에 있음
                                                 //처음 이 앱을 사용하는 사용자가 Galleryactivity에 왔을때 권한요청을 함
 import android.Manifest
 import android.app.Activity
@@ -91,7 +90,6 @@ class Galleryactivity : BasicActivity() {
         recyclerView.layoutManager =
             GridLayoutManager(this, numberOfColumns)  //리사이클러뷰의 레이아웃매니저에 그리드레이아웃매니저 붙힘
     }
-
 
 
     //내폰 갤러리의 사진들 가져와서 어뎁터에 이미지들 경로를 arrayList로 넘겨주기 위한 함수.  스택오버플로우 사이트에서 가져옴

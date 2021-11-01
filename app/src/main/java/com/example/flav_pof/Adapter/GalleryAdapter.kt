@@ -18,6 +18,7 @@ import kotlinx.android.synthetic.main.item_gallery.view.*
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import org.json.JSONArray
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -31,11 +32,13 @@ class GalleryAdapter(var activity: Activity, private val myDataset: ArrayList<St
 
     //레트로핏
     var retrofit = Retrofit.Builder()
-        .baseUrl("http://192.168.0.105:3000/")
+        .baseUrl("https://www.flavorus.shop/")
         .addConverterFactory(GsonConverterFactory.create())
         .build()
     var server = retrofit.create(retrofit_service::class.java)  //서버와 만들어둔 인터페이스를 연결시켜줌.
-    var name_list:ArrayList<String> = ArrayList()  //식당이름들 리스트
+
+    lateinit var name_list:JSONArray  //주변식당이름을 서버로부터 받아와서 저장해줄 전역변수. 이 변수를 writepostAct에 보낼거임
+
     var resultIntent = Intent()  //writepostactivity로 데이터 실어서 보내줄 인텐트
     lateinit var file:MultipartBody.Part  //이미지파일 담을 곳
 
@@ -67,14 +70,6 @@ class GalleryAdapter(var activity: Activity, private val myDataset: ArrayList<St
             resultIntent.putExtra("profilePath", myDataset!![galleryViewHolder.adapterPosition])  //돌려보낼 인텐트에 값 넣어줌. 여기선 이미지가 저장된 경로를 보냄
             thread_start()
 
-            /*
-            //WritePost 또는 memberinit 액티비티에 데이터(이미지)결과값을 전달해줘야함. profilePath라는 보내는 곳의 name값을 통해 알아서 찾아감
-            val resultIntent = Intent()
-            resultIntent.putExtra("profilePath", myDataset!![galleryViewHolder.adapterPosition])  //돌려보낼 인텐트에 값 넣어줌. 여기선 이미지가 저장된 경로를 보냄
-            resultIntent.putExtra("restaurant_name_list",name_list)  //주변식당이름 정보도 보내줌
-            activity.setResult(Activity.RESULT_OK, resultIntent)   //onActivityResult함수로 인텐트 보냄.
-            activity.finish()  //갤러리액티비티 닫아줌
-             */
         }
         return galleryViewHolder
     }
@@ -92,25 +87,25 @@ class GalleryAdapter(var activity: Activity, private val myDataset: ArrayList<St
     }
 
     fun RESTAURANT_NAME_API_REPUEST(){
-        server.postpictures(file).enqueue(object : Callback<Name> {
+        server.getAllrestaurant_Request(file).enqueue(object : Callback<Name> {
             override fun onFailure(call: Call<Name>, t: Throwable) {
                 Log.e("태그", "서버 통신 아예 실패" + t.message)
             }
-
             override fun onResponse(call: Call<Name>, response: Response<Name>) {
                 if (response.isSuccessful) {
-                    Log.e("태그", "통신성공" + response.body()!!.name)
+                    Log.e("태그", "통신성공" + response.body()?.name)
                     handler()  //서버통해 데이터 가져오는 거 성공하면 핸들러함수 통해서 식당이름리스트 데이터 담아서 writepostactivity이동
                 } else {
                     Log.e(
                         "태그",
-                        "서버접근 성공했지만 올바르지 않은 response값" + response.body()
-                            .toString() + "에러: " + response.errorBody().toString()
+                        "서버접근 성공했지만 올바르지 않은 response값" + response.body()?.name + "에러: " + response.errorBody().toString()
                     )
                 }
-                //response값을 writepost액티비티에 전달
-                name_list = response.body()!!.name as ArrayList //주변 음식점 LIST를 arrayList로 저장
-                Log.e("태그", "서버통해서 name_list에 값 들어옴")
+
+                //response값(주변 식당들 이름)을 writepost액티비티에 전달을 위해
+                 var jsonArray = JSONArray(response.body()?.name)  //서버로부터 주변음식점이름을 List<Any>타입으로 받아옴. 그걸 jsonarray로 만듬
+                 name_list = jsonArray//주변 음식점정보 jsonarray를 name_list변수에 저장
+                Log.e("태그", "(jsonarray상태인) name_list: "+ name_list)
             }
         })
     }
@@ -138,7 +133,7 @@ class GalleryAdapter(var activity: Activity, private val myDataset: ArrayList<St
     private fun handler(){
         var handler = object: Handler(Looper.getMainLooper()){
             override fun handleMessage(msg: Message) {
-               resultIntent.putExtra("restaurant_name_list",name_list)  //주변식당이름 정보도 보내줌
+               resultIntent.putExtra("restaurant_name_list",name_list.toString() )  //주변식당이름 정보도 보내줌
                 activity.setResult(Activity.RESULT_OK, resultIntent)   //onActivityResult함수로 인텐트 보냄.
                 activity.finish()  //갤러리액티비티 닫아줌
             }
