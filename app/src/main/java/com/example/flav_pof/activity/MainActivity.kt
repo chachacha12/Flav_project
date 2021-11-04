@@ -146,19 +146,21 @@ class MainActivity : BasicActivity() {
         override fun onDelete(position: Int) {        //postList상에서의 게시글 위치값을 받아서 지워줄거임
             var id = postList.get(position).id!!  //postList의 특정위치의 게시글의 id값 가져옴. 밑에서 splite한거 찾을때 쓰임
 
-            //이미지,영상등을 스토리지에 저장된 이름을 알아내서 스토리지에서 삭제하는 로직  // 파이어베이스의 스토리지는 여러 사진들 모아두는 폴더가 따로 없어서 사진 하나하나 지워줘야한다고 함.
+            //이미지,영상등을 스토리지에 저장된 이름을 알아내서 스토리지에서 삭제하는 로직  // 파이어베이스의 스토리지는 여러 사진들 모아두는 폴더가 따로 없어서 사진 하나하나 지워줘야함
             //이제 postList안의 특정 게시물의 contents를 돌면서, 그게 이미지면 삭제할거임.
             //indices는 배열의 인덱스번호를 하나하나 알려줌. 즉 for문은 i가 0부터 contentsList의 크기만큼 반복. // 메인어댑터에서 가져온 코드
             var contentsList = postList?.get(position).contents   //\
             for (i in contentsList.indices) {      //스토리지 안에있는 이미지들 지우기 위한 반복문
                 var contents = contentsList.get(i)
-                if (Patterns.WEB_URL.matcher(contents).matches() && contents.contains("https://firebasestorage.googleapis.com/v0/b/sns-project-d0fb7.appspot.com/o/post")) {        //올바른 url형식인지 판별, 즉 이미지or영상인지 // Patterns.WEB_URL.matcher().matches() 이 구문은 matcher안의 문자열이 올바른 url형식인지 판단해서 true나 false반환함
+                if (Patterns.WEB_URL.matcher(contents).matches() && contents.contains("https://firebasestorage.googleapis.com/v0/b/flavmvp-9fe0d.appspot.com/o/posts")) {        //올바른 url형식인지 판별, 즉 이미지or영상인지 // Patterns.WEB_URL.matcher().matches() 이 구문은 matcher안의 문자열이 올바른 url형식인지 판단해서 true나 false반환함
                     //editText가 url주소면 밑의 작업을 수행하므로, 혹시나 사용자가 url을 텍스트로 입력해도 이미지뷰가 나오므로 그 경우 차단을 위해, 우리가 인정한 url경로만 이미지뷰로 출력할 수 있도록 하기위해 && 뒤의 조건을 추가함. db에 있는 모든 저장된 사진들의 주소의 앞부분은 저게 포함되있는걸 이용함
                     successCount++ //전역변수임. 이걸 증가시켜주고 밑에서 --해줌으로써
                     var list: List<String> =
                         contents.split("?")  //이미지경로안를 split해서 이미지의 이름을 가져옴. 이미지의 이름을 알기위해
                     var list2: List<String> = list[0].split("%2F")
                     var name = list2[list2.size - 1] //스토리지에 저장된 이미지의 이름(ex. 0.jpg)을 알아냄
+                    Log.e("태그","메인엑티비티에서 저장된 이미지 이름인 name값: "+name)
+
 
                     //파이어베이스 문서-스토리지-안드로이드-파일삭제  (스토리지 안의 내용 삭제)
                     val desertRef =

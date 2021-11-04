@@ -77,7 +77,7 @@ class MainAdapter(var activity: Activity, private var myDataset: ArrayList<PostI
 
 
         //이미지, 동영상, 글 등 contents내용들을 담는 뷰들(이미지뷰, 텍스트뷰)만들고 데이터들 그 안에 넣을거임
-        if (contentsLayout.getTag() == null || !contentsLayout.getTag().equals(contentsList)) {     //데이터가 같을수도 있는데 계속 뷰들 다 지웠다 만들고 하는건 낭비라서 이 로직 추가함.(null일땐 처음 앱 실행할때를 위해) 이 로직 없다면 스크롤 내릴때마다 뷰들 삭제되고 생성되고했을거임!!
+        if (contentsLayout.getTag() == null || !contentsLayout.getTag().equals(contentsList)) {     //데이터가 같을수도 있는데 계속 뷰들 다 지웠다 만들고 하는건 낭비라서 이 로직 추가함.(null일땐 처음 앱 실행할때를 위해) 이 로직 없다면 스크롤 내릴때마다 뷰들 삭제되고 생성되고했을거임
             contentsLayout.setTag(contentsList)
             contentsLayout.removeAllViews()   //액티비티 onResume()의 notifyDataSetChanged()를 통해 게시글 업데이트 해줄때마다 뷰 다 지우고 새롭게 만들어줄거임
             val MORE_INDEX = 2   //메인화면상에서 한 게시글마다 몇개의 뷰까지 보여주고 더보기 나오게 할지를 정할 숫자. 2개로 함
