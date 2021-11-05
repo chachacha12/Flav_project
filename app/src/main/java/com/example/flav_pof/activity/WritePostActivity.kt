@@ -26,6 +26,7 @@ import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
 import com.google.firebase.storage.ktx.storageMetadata
 import kotlinx.android.synthetic.main.activity_write_post.*
+import kotlinx.android.synthetic.main.view_contents_edit_text.*
 import kotlinx.android.synthetic.main.view_loader.*
 import org.json.JSONArray
 import java.io.File

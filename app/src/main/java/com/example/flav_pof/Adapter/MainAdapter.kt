@@ -3,6 +3,7 @@ package com.example.flav_pof.Adapter
 //GalleryAdapter클래스를 복사해서 좀 바꿔서 써준 어댑터임
 
 import android.app.Activity
+import android.content.Intent
 import android.graphics.Color
 import android.util.Patterns
 import android.view.LayoutInflater
@@ -17,13 +18,19 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.flav_pof.PostInfo
 import com.example.flav_pof.R
+import com.example.flav_pof.activity.PostActivity
 import com.example.flav_pof.listener.OnPostListener
-import kotlinx.android.synthetic.main.activity_login.view.titletextView
-import kotlinx.android.synthetic.main.item_post.view.*
+import kotlinx.android.synthetic.main.view_post.view.*
 import java.text.SimpleDateFormat
 import java.util.*
-                                    //괄호안은 어댑터클래스의 인자들
-class MainAdapter(var activity: Activity, private var myDataset: ArrayList<PostInfo>, var onPostListener: OnPostListener)    //인자로 onPostListener라는 인터페이스 객체를 준 이유는 어댑터안에서도 인터페이스의 onDelete, onModify 함수를 쓰기위해.
+
+
+//괄호안은 어댑터클래스의 인자들
+class MainAdapter(
+    var activity: Activity,
+    private var myDataset: ArrayList<PostInfo>,
+    var onPostListener: OnPostListener
+)    //인자로 onPostListener라는 인터페이스 객체를 준 이유는 어댑터안에서도 인터페이스의 onDelete, onModify 함수를 쓰기위해.
                                         : RecyclerView.Adapter<MainAdapter.MainViewHolder>() {
 
     //뷰홀더에 텍스트뷰말고 카드뷰를 넣음
@@ -37,12 +44,19 @@ class MainAdapter(var activity: Activity, private var myDataset: ArrayList<PostI
         parent: ViewGroup,
         viewType: Int
     ): MainViewHolder {
-        val cardView: CardView = LayoutInflater.from(parent.context).inflate(R.layout.item_post, parent, false) as CardView   //item_post에 있는 뷰들에 접근가능하게 해줌.  inflate에 들어간 레이아웃은 row파일과 같은거임.
+        val cardView: CardView = LayoutInflater.from(parent.context).inflate(
+            R.layout.item_post,
+            parent,
+            false
+        ) as CardView   //item_post에 있는 뷰들에 접근가능하게 해줌.  inflate에 들어간 레이아웃은 row파일과 같은거임.
 
         val mainViewHolder = MainViewHolder(cardView)  //밑의 setOnClickListener에서 사용자가 선택한 특정뷰의 위치값 알아야해서 여기서 뷰홀더객체생성
 
         //특정 게시글을 눌렀을때 효과
         cardView.setOnClickListener {
+            val intent = Intent(activity, PostActivity::class.java)
+            intent.putExtra("postInfo", myDataset.get(mainViewHolder.adapterPosition))
+            activity.startActivity(intent)
         }
 
 
@@ -59,10 +73,10 @@ class MainAdapter(var activity: Activity, private var myDataset: ArrayList<PostI
      //액티비티에서 게시글 업데이트 해주려고 mainAdapter.notifyDataSetChanged() 하면 이 함수만 작동함.
     override fun onBindViewHolder(holder: MainViewHolder, position: Int) {
         var cardView = holder.cardView
-        var titletextView = cardView.titletextView
+        var titletextView = cardView.titleTextView
         titletextView.text = myDataset?.get(position).title        //게시글의 제목을 가져옴
 
-        var createdAt = cardView.createdAttextView  //게시글의 생성일을 가져옴
+        var createdAt = cardView.createAtTextView  //게시글의 생성일을 가져옴
         createdAt.text = SimpleDateFormat(
             "yyyy-MM-dd",
             Locale.getDefault()
@@ -127,7 +141,7 @@ class MainAdapter(var activity: Activity, private var myDataset: ArrayList<PostI
             return@setOnMenuItemClickListener when (it.itemId) {
                 R.id.modify -> {                    //수정하기 눌렀을때
                     onPostListener.onModify(position)      //게시글의 postList상에서의 위치를 인자를 통해 액티비티에 전달함. 그 후 액티비티에서 삭제로직을 통해 게시글 db, 스토리지에서 삭제.->어댑터에서 삭제로직 안하는 이유는 여기선 db접근해서 삭제는 할수있어도 실시간으로 업데이트는 못해줘서임. OnResume()함수 등이 액티비티에 존재.
-                     true
+                    true
                 }
                 R.id.delete -> {                  //삭제하기 눌렀을때
                     onPostListener.onDelete(position)

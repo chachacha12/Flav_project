@@ -47,7 +47,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
-import com.example.flav_pof.AutoFitTextureView
+import com.example.flav_pof.view.AutoFitTextureView
 import com.example.flav_pof.R
 import java.io.File
 import java.io.FileOutputStream

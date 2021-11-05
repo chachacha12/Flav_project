@@ -39,14 +39,11 @@
                     android:layout_height="match_parent"
                     android:orientation="vertical">
 
-                    <EditText
-                        android:id="@+id/contentsEditText"
+                    <include
+                        layout="@layout/view_contents_edit_text"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:ems="10"
-                        android:gravity="start|top"
-                        android:hint="태그를 선택하여 해당 맛집을 표현하세요!"
-                        android:inputType="textMultiLine" />
+                        android:layout_height="wrap_content" />
+
                 </LinearLayout>
 
             </LinearLayout>
