@@ -8,7 +8,6 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
-import android.text.InputType
 import android.util.Log
 import android.util.Patterns
 import android.view.View
@@ -17,6 +16,7 @@ import android.widget.*
 import com.bumptech.glide.Glide
 import com.example.flav_pof.PostInfo
 import com.example.flav_pof.R
+import com.example.flav_pof.view.ContentsItemView
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.DocumentReference
@@ -35,7 +35,6 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 
-
 class WritePostActivity : BasicActivity() {
     private val TAG = "WritePostActivity"
     private lateinit var user: FirebaseUser         //현재 로그인된 회원객체를 전역으로 둘거임. 초기화는 안하고 선언만.
@@ -50,6 +49,8 @@ class WritePostActivity : BasicActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_write_post)
+
+
         postinit()
         init()
     }
@@ -72,54 +73,28 @@ class WritePostActivity : BasicActivity() {
                 var contents = contentsList.get(i)
                 if (Patterns.WEB_URL.matcher(contents).matches() && contents.contains("https://firebasestorage.googleapis.com/v0/b/flavmvp-9fe0d.appspot.com/o/posts")) {        //올바른 url형식인지 판별, 즉 이미지or영상인지 // Patterns.WEB_URL.matcher().matches() 이 구문은 matcher안의 문자열이 올바른 url형식인지 판단해서 true나 false반환함
                     pathList.add(contents)
-                    val layoutParams = ViewGroup.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT
-                    ) //가로는 matchparent하고 위아래 길이는 wrapcontent인듯?
 
-                    var linearLayout = LinearLayout(this)   //이미지뷰와 editText뷰를 묶어서 관리하기 쉽게 레이아웃 하나 만듬
-                    linearLayout.layoutParams = layoutParams
-                    linearLayout.orientation =
-                        LinearLayout.VERTICAL   //이렇게 갑작스럽게 만들어지는 레이아웃 또는 뷰들은 속성을 이렇게 코딩해주기
+                    val contentsItemView = ContentsItemView(this)
+                    contentsLayout.addView(contentsItemView)
 
-                    contentsLayout.addView(linearLayout)
-
-
-                    val imageView = ImageView(this)   //새로운 이미지뷰를 하나를 이 액티비티xml에 생성함
-                    imageView.layoutParams = layoutParams  //위에서 만든 layoutParams를 이미지뷰에 붙힘
-
-                    //아래의 두줄을 통해 게시글 만드는 화면에서 이미지 추가할때, 그 이미지가 화면에 꽉차보이게 나옴.
-                    imageView.adjustViewBounds = true
-                    imageView.scaleType = ImageView.ScaleType.FIT_XY
-
-                    imageView.setOnClickListener {
+                    contentsItemView.setImage(contents)
+                    contentsItemView.setOnClickListener {
                         buttonsBackgroundlayout.visibility =
                             View.VISIBLE       //이미지를 삭제or수정하려고 눌렀을때
                         selectedImageView = it as ImageView
                     }
 
-                    Glide.with(this).load(contents).override(1000)
-                        .into(imageView)  //사진 경로이용해서 이미지뷰에 띄워줌
-                    linearLayout.addView(imageView)  //이렇게 해주면 contentsLayout안에, 만든 이미지뷰가 생성될거임
+                    contentsItemView.onFocusChangeListener = onFocusChangedListener
 
-                    val editText = EditText(this)  ////새로운 editText뷰 하나를 이 액티비티xml에 생성함
-                    editText.layoutParams = layoutParams
-                    editText.inputType =
-                        InputType.TYPE_TEXT_FLAG_MULTI_LINE  //editText의 인풋속성(사용자가 editText에 글쓸때의 속성)을 추가해줌
-                    editText.inputType = InputType.TYPE_CLASS_TEXT
-                    editText.setHint("내용")
                     if (i < contentsList.size - 1) {   //처음에 이 게시글 만들때 이미지 붙여놓고 밑에 같이 생성되었던 editText안에 글을 써두었다면.
                         var nextContents = contentsList.get(i + 1)
                         if (!Patterns.WEB_URL.matcher(nextContents).matches() ||!nextContents.contains(
                                 "https://firebasestorage.googleapis.com/v0/b/flavmvp-9fe0d.appspot.com/o/posts"
                             )
                         ) { //다음 contents가 이미지나 영상이 아닐경우에만
-                            editText.setText(nextContents)  //editTEXT에다가 수정전에 작성했던 내용을 넣어줌
+                            contentsItemView.setText(nextContents)  //editTEXT에다가 수정전에 작성했던 내용을 넣어줌
                         }
                     }
-
-                    editText.onFocusChangeListener = onFocusChangedListener   //포커스가 있는지 판별함. 포커스 있으면 이 뷰가 selectedEditText가 됨
-                    linearLayout.addView(editText)
                 } else if (i == 0) {  //i가 0인데 url형식이 아니라면 첫번째 editTEXT가 있다는 것임.
                     contentsEditText.setText(contents)   //첫 editText에다가 수정전, 기존에 있던 내용을 넣어줌
                 }
@@ -194,15 +169,27 @@ class WritePostActivity : BasicActivity() {
                 //파이어베이스 문서-스토리지-안드로이드-파일삭제  (스토리지 안의 내용 삭제)
                 val desertRef =
                     storageRef.child("posts/" + postInfo!!.id + "/" + name) //스토리지에서 지울 이미지의 경로를 줌
-                Log.e("WritePostAct 태그","postInfo!!.id + /name값: "+postInfo!!.id + "/" + name )
+                Log.e("WritePostAct 태그", "postInfo!!.id + /name값: " + postInfo!!.id + "/" + name)
                 desertRef.delete().addOnSuccessListener {
                     Toast.makeText(this, "파일을 삭제하였습니다.", Toast.LENGTH_SHORT).show()
                 }.addOnFailureListener {
                     Toast.makeText(this, "파일을 삭제하지 못하였습니다.", Toast.LENGTH_SHORT).show()
-                    Log.e("태그","")
+                    Log.e("태그", "")
                 }
             }
-            //********************************************8
+            //*********************
+            //밑에 식당명 텍스트뷰들도 떳었다면 그것들도 마저 삭제해줌
+            /*
+            var i=0
+            repeat(contentsLayout.chldCount){
+                var view =   contentsLayout.getChildAt(i)
+                if(view is TextView){
+                    contentsLayout.removeView(view)
+                }
+                i++
+            }
+             */
+            //********************************************
             //스토리지에서도 삭제됐으니(저장되어 있는 상태였다면)  이제 pathList에서 해당 이미지를 삭제함  // indexOfChild를 써서 contentsLayout의 몇번째 뷰인지 알아냄  //첫번째 editText가 무조건 있으니까 마이너스 1 해줌
             pathList.removeAt(contentsLayout.indexOfChild(selectedView) - 1)
             contentsLayout.removeView(selectedView)
@@ -230,103 +217,169 @@ class WritePostActivity : BasicActivity() {
             0 -> if (resultCode == Activity.RESULT_OK) {          //requestCode가 0일땐 갤러리에서 선택한 사진을 게시글에 붙여줌
                 var profilePath = data!!.getStringExtra("profilePath")  //데이터(파일)을 받아서 저장
                 pathList.add(profilePath)     //ArrayList에 사진경로들을 저장함
-                Log.e("태그", "이미지 경로: "+profilePath)
-
+                Log.e("태그", "이미지 경로: " + profilePath)
 
                 val layoutParams = ViewGroup.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT
                 ) //가로는 matchparent하고 위아래 길이는 wrapcontent인듯?
 
-                var linearLayout = LinearLayout(this)   //이미지뷰와 editText뷰를 묶어서 관리하기 쉽게 레이아웃 하나 만듬
-                linearLayout.layoutParams = layoutParams
-                linearLayout.orientation =
-                    LinearLayout.VERTICAL   //이렇게 갑작스럽게 만들어지는 레이아웃 또는 뷰들은 속성을 이렇게 코딩해주기
+                val contentsItemView =
+                    ContentsItemView(this)  //이미지와 editText, 식당명TextView담는 객체 하나 만듬
 
                 if (selectedEditText == null) {
-                    contentsLayout.addView(linearLayout)
+                    contentsLayout.addView(contentsItemView)
+                    //contents_LinearLayout.addView(contentsItemView)
                 } else {            //내가 포커스 준 editText가 있을때
                     var i = 0
                     repeat(contentsLayout.childCount) {
                         if (contentsLayout.getChildAt(i) == selectedEditText?.parent) {   //이미 onFocusChangeListener가 selectedEditText를 내가 포커스 준 녀석으로 바꿔뒀을거임
                             contentsLayout.addView(
-                                linearLayout,
+                                contentsItemView,
                                 i + 1
-                            )    //내가 선택해서 포커스 가있는 editText 바로 다음에 새로운 이미지를 추가해준다.
+                            )    //내가 선택해서 포커스 가있는 editText 바로 다음에 새로운 객체(이미지, editText, LinearLayout을 멤버로 가진 linearLayout객체임..)를 추가해준다.
                         }
                         i++
                     }
                 }
-                val imageView = ImageView(this)   //새로운 이미지뷰를 하나를 이 액티비티xml에 생성함
-                imageView.layoutParams = layoutParams  //위에서 만든 layoutParams를 이미지뷰에 붙힘
 
-                //아래의 두줄을 통해 게시글 만드는 화면에서 이미지 추가할때, 그 이미지가 화면에 꽉차보이게 나옴.
-                imageView.adjustViewBounds = true
-                imageView.scaleType = ImageView.ScaleType.FIT_XY
-
-                imageView.setOnClickListener {
+                contentsItemView.setImage(profilePath)
+                contentsItemView.setOnClickListener {
                     buttonsBackgroundlayout.visibility = View.VISIBLE       //이미지를 삭제or수정하려고 눌렀을때
                     selectedImageView = it as ImageView
                 }
 
-                Glide.with(this).load(profilePath).override(1000)
-                    .into(imageView)  //사진 경로이용해서 이미지뷰에 띄워줌
-                linearLayout.addView(imageView)  //이렇게 해주면 contentsLayout안에 만든 이미지뷰가 생성될거임
-                Log.e("태그","writepostact에서 이미지뷰 하나 생성")
-
-                val editText = EditText(this)  ////새로운 editText뷰 하나를 이 액티비티xml에 생성함
-                editText.layoutParams = layoutParams
-                editText.inputType =
-                    InputType.TYPE_TEXT_FLAG_MULTI_LINE  //editText의 인풋속성(사용자가 editText에 글쓸때의 속성)을 추가해줌
-                editText.inputType = InputType.TYPE_CLASS_TEXT
-                editText.setHint("식당명")   //사용자가 선택한 식당이름을 여기에 넣어줄거임
-                editText.onFocusChangeListener =
-                    onFocusChangedListener   //포커스가 있는지 판별함. 포커스 있으면 이 뷰가 selectedEditText가 됨
-                linearLayout.addView(editText)
-
+                contentsItemView.onFocusChangeListener = onFocusChangedListener
 
                 Log.e("태그", "식당이름 텍스트뷰 생성")
                 // 주변 음식점 이름을 텍스트뷰로 각각 생성해줌
 
                 //intent에  jsonarray를 string값으로 바꿔서 날렸고, 그 string값을 받아서 다시 jsonarray객체로 만들어줌
-                var jsonArray = JSONArray( data!!.getStringExtra("restaurant_name_list") )
+                var namelist_string = data!!.getStringExtra("restaurant_name_list")!!  //주변식당명리스트(string으로 되어있는)가 인텐트에 실려서 날아옴
 
-                var i=0;
-                repeat(jsonArray.length()){
-                    val Object = jsonArray.getJSONObject(i) //jsonarray안의 object에 하나하나 접근
-                    val textView = TextView(this)   //새로운 텍스트뷰를 하나를 이 액티비티xml에 생성함
-                    textView.layoutParams = layoutParams
-                    textView.text = Object.getString("name") //식당명 추출
-                    linearLayout.addView(textView)
-                    i++
-                    textView.setOnClickListener {  //특정 음식점이름 선택했을때 이벤트
-                        Toast.makeText(this, textView.text.toString() +"를 선택하셨습니다.",Toast.LENGTH_SHORT).show()
-                        textView.setTextColor(Color.GREEN)
-                        editText.setText(textView.text.toString())   //이미지 아래에 생성되는 editText에 식당명 삽입해줌
+                if(namelist_string=="정보없음"){  //exif정보 없는 사진 등이 들어왔을때
+                    Toast.makeText(
+                        this,
+                        "위치데이터가 사진에 없습니다.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }else{  //주변 식당명 정보가 제대로 들어왔을때
+                    var jsonArray = JSONArray(namelist_string)
+                    var i = 0;
+                    repeat(jsonArray.length()) {
+                        val Object = jsonArray.getJSONObject(i) //jsonarray안의 object에 하나하나 접근
+                        val textView = TextView(this)   //새로운 텍스트뷰를 하나를 이 액티비티xml에 생성함
+                        textView.layoutParams = layoutParams
+                        textView.text = Object.getString("name") //식당명 추출
+
+                        contentsItemView.addtextView(textView)  //식당명 텍스트뷰를 하나씩 contentsItemView객체의 text_LinearLayout멤버안에 addview해줌
+                        i++
+                        textView.setOnClickListener {  //특정 음식점이름 선택했을때 이벤트
+                            Toast.makeText(
+                                this,
+                                textView.text.toString() + "를 선택하셨습니다.",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            textView.setTextColor(Color.GREEN)
+                            contentsItemView.setText(textView.text.toString())   //이미지 아래에 생성되는 editText에 식당명 삽입해줌
+                            Log.e(
+                                "태그",
+                                "contentsItemView의 editText에 setText" + textView.text.toString()
+                            )
+                        }
                     }
                 }
             }
             1 -> if (resultCode == Activity.RESULT_OK) {    //이미지를 수정하려고 새 이미지를 선택했을때
                 var selectedView =
-                    selectedImageView.parent as View   // .parent 또는 getParent()를 하면 그 뷰의 부모 뷰(linearLayout 등)가 선택되어진다.  //removeView()안에는 뷰가 와야하는데 레이아웃이 와버려서 에러뜸. 그러므로 as를 통해 뷰로 형변환 해줌
+                    selectedImageView.parent as View   // .parent 또는 getParent()를 하면 그 뷰의 부모 뷰(contentsitemVIew객체, 즉 linearLayout..?)가 선택되어진다.  //removeView()안에는 뷰가 와야하는데 레이아웃이 와버려서 에러뜸. 그러므로 as를 통해 뷰로 형변환 해줌
                 var profilePath = data!!.getStringExtra("profilePath")
                 pathList.set(
                     contentsLayout.indexOfChild(selectedView) - 1,
                     profilePath
                 ) // pathList안에 이미지를 넣어줌. / 첫 인자: 넣을 인덱스 위치/ 두번째 인자: 들어갈 element  / 즉 기존 이미지는 없어지고 새로운 이미지가 넣어지는듯?
-                Glide.with(this).load(profilePath).override(1000).into(selectedImageView)   //이미지를 수정해줌
+                Glide.with(this).load(profilePath).override(1000)
+                    .into(selectedImageView)   //이미지를 수정해줌
             }
         }
     }
+
+    var onClickListener =
+        View.OnClickListener { v ->
+            when (v.id) {
+                R.id.checkButton -> storageUpload()
+                R.id.image -> myStartActivity(Galleryactivity::class.java, "image", 0)
+                R.id.video -> myStartActivity(Galleryactivity::class.java, "video", 0)
+                R.id.buttonsBackgroundLayout -> if (buttonsBackgroundLayout.visibility === View.VISIBLE) {
+                    buttonsBackgroundLayout.visibility = View.GONE
+                }
+                R.id.imageModify -> {
+                    myStartActivity(Galleryactivity::class.java, "image", 1)
+                    buttonsBackgroundLayout.visibility = View.GONE
+                }
+                R.id.videoModify -> {
+                    myStartActivity(Galleryactivity::class.java, "video", 1)
+                    buttonsBackgroundLayout.visibility = View.GONE
+                }
+                R.id.delete -> {
+
+                    val selectedView = selectedImageView.getParent() as View
+                    val list =
+                        pathList[contentsLayout.indexOfChild(selectedView) - 1].split("\\?")
+                            .toTypedArray()
+                    val list2 = list[0].split("%2F").toTypedArray()
+                    val name = list2[list2.size - 1]
+                    Log.e("로그: ", "이름: $name")
+
+                    val desertRef = storageRef.child(
+                        "posts/" + postInfo!!.id + "/" + name
+                    )
+
+                    desertRef.delete().addOnSuccessListener {
+                        Toast.makeText(
+                            this@WritePostActivity,
+                            "파일을 삭제하였습니다.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        pathList.removeAt(contentsLayout.indexOfChild(selectedView) - 1)
+                        contentsLayout.removeView(selectedView)
+
+                        /*
+                        //밑에 나온 식당명 텍스트뷰들도 지워주는 로직
+                        var i = 0
+                        repeat(contentsLayout.childCount) {
+                            var view = contentsLayout.getChildAt(i)
+                            if (view is TextView) {
+                                contentsLayout.removeView(view)       //식당이름 텍스트뷰들은 제거해줌
+                            }
+                            i++
+                        }
+                         */
+                        buttonsBackgroundLayout.visibility = View.GONE
+                    }.addOnFailureListener {
+                        Toast.makeText(
+                            this@WritePostActivity,
+                            "파일을 삭제하는데 실패하였습니다.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            }
+        }
+
+
+
 
     //onFocusChangedListener는 뷰가 포커스를 가지고 있는지 판별해주고, 가지고 있다면(hasFocus) 그때의 이벤트를 처리해줌
     // 여기선 뷰가 이 리스너를 달고 있고 포커스를 가지고 있다면 그 뷰가 전역변수인 selectedEditText가 된다. 즉 이 리스너는 selectedEditText를 정해주는 기능
     private var onFocusChangedListener =
         View.OnFocusChangeListener { v, hasFocus -> selectedEditText = v as EditText }
 
+
     //전역변수
     var pathCount = 0     //게시글에 첨부된 사진이 몇개인지 알기위해서
     var successCount = 0    //게시글에 첨부한 사진이 여러개일수 있으니, 언제 끝나는지 확인해주기 위한 변수
+
 
     //memberinit액티비티에서 가져온 함수 2개 -> profileUpdate와 uploader함수를 변형해준거임
     private fun storageUpload()   //사용자가 확인버튼 눌르면 실행시킬 함수 -게시글 작성한걸 파이어베이스에 등록(업데이트)해줌   (이미지 삭제, 수정 했을땐, 그 이미지를 db,스토리지에서 지우는 작업을 지우는 즉시 했음. 메인액티비티에서. 그래서 여기선 db, 스토리지에 등록만 해줌됨 )
@@ -361,87 +414,93 @@ class WritePostActivity : BasicActivity() {
 
             //contentsLayout안에 들어있는 자식뷰의 유형(이미지뷰, 에디트텍스트뷰)에 따라 나눠서 파이어베이스에 저장
             var i = 0
-            repeat(contentsLayout.childCount) {
+            repeat(contentsLayout.childCount) {   //linearLayout이 몇개인지 셈. 일단 editText만 있는 linearLayout하나(제목아래의 내용적는 editTEXT)는 무조건 옵션으로 존재함.
                 //반복문임.  contentsLayout안에 있는 자식뷰의 갯수만큼 반복
+                Log.e("태그", "Writepost의 storageuploader중 contentsLayout.childCount: " + contentsLayout.childCount)
 
-                var linearLayout =
-                    contentsLayout.getChildAt(i) as LinearLayout  //순서대로 자식뷰를 하나씩 가져옴. 자식뷰들은 다 LinearLayout이었음
-
-                var index = 0
-                //linearLayout안에는 이미지뷰와 editText뷰 2개의 자식뷰가 있음
-                repeat(linearLayout.childCount) {
-                    var view = linearLayout.getChildAt(index)
-
+                val linearLayout = contentsLayout.getChildAt(i) as LinearLayout    //즉 이건 contentsItemView객체 하나임
+                var j=0
+                repeat(linearLayout.childCount) {  //이제 하나의 contentsItemView객체의 안을 돌면서 이미지인지 editText인지 LinearLayout인지 판별. 멤버가 3개라 최소3번은 돈다?
+                    Log.e("태그","linearLayout.childCount: "+linearLayout.childCount) 
+                    val view = linearLayout.getChildAt(j)
                     if (view is EditText) {               //코틀린에선 자료형이 일치하는지 판별을 is 연산자씀. 자바에선 instanceof 였음.
                         var text = view.text.toString()   //인덱스 0이 첫번째이므로 이미지뷰이고 1은 editText뷰임
-                        if (text.length > 0) {
-                            contentsList.add(text)
-                        }
-                    } else if (view is ImageView && !Patterns.WEB_URL.matcher(pathList[pathCount]).matches()) {   //자식뷰가 url이 아닐경우에만 스토리지, db에 저장해줄거임
-                        var path = pathList[pathCount]
-                        Log.e("태그", "path값: "+path)
-                        successCount++
-                        contentsList.add(path)  //contentsList에 사진경로를 넣어줌. pathList라는 리스트안엔 아까 게시글 써줄때 넣은 사진들의 경로가 순서대로 들어있음
+                        Log.e("태그","EditText: "+view)
+                       // if (text.length >0) {
+                            contentsList.add(text)  //contentsList에 모아서 store업로드시에 유용하게 이걸 올려주려고
+                            Log.e("태그","contentsList에 editText추가: "+contentsList.toString())
+                        //}
+                    } else if (view is ImageView) {   //자식뷰가 url이 아닐경우에만 스토리지, db에 저장해줄거임  //
+                        Log.e("태그","ImageView: "+view)
+                        if(pathList.size > pathCount){  //이거 안해주면 indexoutofbounds에러남
+                            var path = pathList[pathCount]
+                            successCount++
+                            contentsList.add(path)  //contentsList에 사진경로를 넣어줌. pathList라는 리스트안엔 아까 게시글 써줄때 넣은 사진들의 경로가 순서대로 들어있음
+                            Log.e("태그","contentsList에 이미지뷰 추가: "+contentsList.toString())
 
-                        var pathArray =
-                            path.split(".")       // .을 기준으로 나눠서 사진경로문자열을 pathArray배열안에 저장
+                            var pathArray =
+                                path.split(".")       // .을 기준으로 나눠서 사진경로문자열을 pathArray배열안에 저장
 
-                        //*****************파이어베이스 스토리지에 사진경로로 사진 저장하기 위한 코드***************** memberinit에서 가져옴
-                        val mountainImagesRef =
-                            storageRef.child("posts/" + documentReference.id + "/" + pathCount + "." + pathArray[pathArray.size - 1])  //첨부한 사진을 순서대로 번호붙여서 저장할거임.   "."+pathArray[pathArray.size-1 이걸 씀으로 .jpg나 .png등으로 저장될거임
+                            //*****************파이어베이스 스토리지에 사진경로로 사진 저장하기 위한 코드***************** memberinit에서 가져옴
+                            val mountainImagesRef =
+                                storageRef.child("posts/" + documentReference.id + "/" + pathCount + "." + pathArray[pathArray.size - 1])  //첨부한 사진을 순서대로 번호붙여서 저장할거임.   "."+pathArray[pathArray.size-1 이걸 씀으로 .jpg나 .png등으로 저장될거임
 
-                        //**여긴 파이어베이스-문서-가이드-개발-스토리지-파일업로드-(스트림에서업로드) 에서 가져온 코드임. 파일(사진)경로를 받아서 스토리지에 데이터 저장할때 사용함
-                        val stream = FileInputStream(File(pathList[pathCount]))
+                            //**여긴 파이어베이스-문서-가이드-개발-스토리지-파일업로드-(스트림에서업로드) 에서 가져온 코드임. 파일(사진)경로를 받아서 스토리지에 데이터 저장할때 사용함
+                            val stream = FileInputStream(File(pathList[pathCount]))
 
-                        var metadata = storageMetadata {
-                            //(문서-스토리지-파일 메타데이터사용-커스텀메타데이터)   //메타데이터를 통해 각 데이터(사진 등)의 인덱스 위치를 알 수 있음
-                            setCustomMetadata(
-                                "index",
-                                "" + (contentsList.size - 1)
-                            )     //게시글 사진 스토리지 저장때 쓸 메타데이터 하나 만듬. index가 키값. contentsList의 마지막 인덱스값 넣어줌
-                        }                                                                //키값다음에 오는 거에는 현재위치?를 넣어줘야함
+                            var metadata = storageMetadata {
+                                //(문서-스토리지-파일 메타데이터사용-커스텀메타데이터)   //메타데이터를 통해 각 데이터(사진 등)의 인덱스 위치를 알 수 있음
+                                setCustomMetadata(
+                                    "index",
+                                    "" + (contentsList.size - 1)
+                                )     //게시글 사진 스토리지 저장때 쓸 메타데이터 하나 만듬. index가 키값. contentsList의 마지막 인덱스값 넣어줌
+                            }                                                                //키값다음에 오는 거에는 현재위치?를 넣어줘야함
 
-                        var uploadTask = mountainImagesRef.putStream(
-                            stream,
-                            metadata
-                        )  //사진경로와 메타데이터를 인자로 실어서 스토리지주소에 업로드
-                        uploadTask.addOnFailureListener {
+                            var uploadTask = mountainImagesRef.putStream(
+                                stream,
+                                metadata
+                            )  //사진경로와 메타데이터를 인자로 실어서 스토리지주소에 업로드
+                            uploadTask.addOnFailureListener {
 
-                        }.addOnSuccessListener { taskSnapshot ->
-                            //위에서 만든 메타데이터를 통해 정보(데이터?)의 인덱스값 받음
-                            var index =
-                                Integer.parseInt(taskSnapshot.metadata?.getCustomMetadata("index")!!)  //인덱스값을 얻음
+                            }.addOnSuccessListener { taskSnapshot ->
+                                //위에서 만든 메타데이터를 통해 정보(데이터?)의 인덱스값 받음
+                                var index =
+                                    Integer.parseInt(taskSnapshot.metadata?.getCustomMetadata("index")!!)  //인덱스값을 얻음
 
-                            //스토리지에 사진경로 올렸고, 다시 스토리지주소를 통해 사진경로(uri)값을 가져오는 작업.
-                            //가져와서 메타데이터 통해 만든 index값에 맞춰서 리스트에 이미지 uri를 저장하면, editText안의 내용과 uri가 순서대로 contentsList에 잘 들어갈거임!!
-                            mountainImagesRef.downloadUrl.addOnSuccessListener {
-                                successCount--
-                                contentsList.set(
-                                    index,
-                                    it.toString()
-                                )         //여기서 it이 uri값임.  contentsList의 index에 맞는 인덱스안에 uri넣음
-                                if (successCount == 0) {    //게시글에 내가 첨부했던 모든 사진들(pathList)이 스토리지에 업로드되었고, 다시 스토리지에서 uri값 가져와서 contentsList에 모두 추가되었을때
-                                    //완료 로직
-                                    var WriteInfo = PostInfo(
-                                        tilte,
-                                        contentsList,
-                                        user.uid,
-                                        date
-                                    )  //게시글 객체 하나 생성
-                                    storeupload(
-                                        documentReference,
-                                        WriteInfo
-                                    )  //밑에 만들어둔 함수임. 게시글 객체를 인자로 받아서 게시글을 db에 등록시켜줌. documentReference를 인자로 보내는 이유는
-                                    // db에 있는 게시글들의 uid값이랑 스토리지에 있는 이미지들 uid값이랑 같게 해주는게 찾을때 편해서 그리 해주려고.
+                                //스토리지에 사진경로 올렸고, 다시 스토리지주소를 통해 사진경로(uri)값을 가져오는 작업.
+                                //가져와서 메타데이터 통해 만든 index값에 맞춰서 리스트에 이미지 uri를 저장하면, editText안의 내용과 uri가 순서대로 contentsList에 잘 들어갈거임!!
+                                mountainImagesRef.downloadUrl.addOnSuccessListener {
+                                    successCount--
+                                    contentsList.set(
+                                        index,
+                                        it.toString()
+                                    )         //여기서 it이 uri값임.  contentsList의 index에 맞는 인덱스안에 uri넣음
+                                    if (successCount == 0) {    //게시글에 내가 첨부했던 모든 사진들(pathList)이 스토리지에 업로드되었고, 다시 스토리지에서 uri값 가져와서 contentsList에 모두 추가되었을때
+                                        //완료 로직
+                                        var WriteInfo = PostInfo(
+                                            tilte,
+                                            contentsList,
+                                            user.uid,
+                                            date
+                                        )  //게시글 객체 하나 생성
+                                        storeupload(
+                                            documentReference,
+                                            WriteInfo
+                                        )  //밑에 만들어둔 함수임. 게시글 객체를 인자로 받아서 게시글을 db에 등록시켜줌. documentReference를 인자로 보내는 이유는
+                                        // db에 있는 게시글들의 uid값이랑 스토리지에 있는 이미지들 uid값이랑 같게 해주는게 찾을때 편해서 그리 해주려고.
+
+                                        Log.e("태그","storeupload햇을때 contentsList: "+contentsList)
+                                    }
                                 }
                             }
+                            pathCount++
                         }
-                        pathCount++
-                    }  //위 까지가 자식뷰가 이미지뷰일때
-                    else{          //자식뷰가 textView 일 때
-                        contentsLayout.removeView(view)       //식당이름 텍스트뷰들은 제거해줌
+                    }  //여기까지가 자식뷰가 이미지뷰일때
+                    else {        //뷰가 LinearLayout일 때
+                        linearLayout.removeView(view)       //식당이름 텍스트뷰 모여있는 linearLayout 뷰는 제거해줌
+                        Log.e("태그","removeView로 제거한 뷰: "+view)
                     }
-                    index++
+                    j++
                 }  //작은 repeat문
                 i++
             }  //큰 repeat문
@@ -457,19 +516,29 @@ class WritePostActivity : BasicActivity() {
 
     //회원이 확인버튼 눌렀을때 회원이 쓴 게시글을 db(클라우드firestore)에 올려주는 코드가진 함수
     private fun storeupload(documentReference: DocumentReference, writeinfo: PostInfo) {
-        documentReference.set(writeinfo)                //add함수는 자동으로 데이터의 documents에 uid를 암거나 만들어서 넣어줌. 섞이지 않게. 그리고 set은 내가 uid만든거에 넣어주는함수. documentReference변수가 내가 따로 가져온 uid값임
-            .addOnSuccessListener {
-                loaderLayout.visibility = View.GONE
-                Log.d(TAG, "DocumentSnapshot successfully written!")
-                Toast.makeText(this, "게시물을 등록하였습니다.", Toast.LENGTH_SHORT).show()
-                finish()
-            }
-            .addOnFailureListener { e ->
-                Log.w(TAG, "Error writing document", e)
-                Toast.makeText(this, "게시물을 등록 실패.", Toast.LENGTH_SHORT).show()
-                loaderLayout.visibility = View.GONE
-            }
+        writeinfo.getPostInfo()?.let {
+            documentReference.set(it)                //add함수는 자동으로 데이터의 documents에 uid를 암거나 만들어서 넣어줌. 섞이지 않게. 그리고 set은 내가 uid만든거에 넣어주는함수. documentReference변수가 내가 따로 가져온 uid값임
+                .addOnSuccessListener {
+                    loaderLayout.visibility = View.GONE
+                    Log.d(TAG, "DocumentSnapshot successfully written!")
+                    Toast.makeText(this, "게시물을 등록하였습니다.", Toast.LENGTH_SHORT).show()
+                    finish()
+                }
+                .addOnFailureListener { e ->
+                    Log.w(TAG, "Error writing document", e)
+                    Toast.makeText(this, "게시물을 등록 실패.", Toast.LENGTH_SHORT).show()
+                    loaderLayout.visibility = View.GONE
+                }
+        }
     }
+
+    //다른 액티비티로 데이터가지고 이동시켜주는 함수
+    private fun myStartActivity(c: Class<*>, media: String, requestCode: Int) {
+        val intent = Intent(this, c)
+        intent.putExtra("media", media)
+        startActivityForResult(intent, requestCode)
+    }
+
 }
 
 

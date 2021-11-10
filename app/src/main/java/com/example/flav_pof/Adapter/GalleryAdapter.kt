@@ -100,8 +100,8 @@ class GalleryAdapter(var activity: Activity, private val myDataset: ArrayList<St
                         "태그",
                         "서버접근 성공했지만 올바르지 않은 response값" + response.body()?.name + "에러: " + response.errorBody().toString()
                     )
+                    handler()
                 }
-
                 //response값(주변 식당들 이름)을 writepost액티비티에 전달을 위해
                  var jsonArray = JSONArray(response.body()?.name)  //서버로부터 주변음식점이름을 List<Any>타입으로 받아옴. 그걸 jsonarray로 만듬
                  name_list = jsonArray//주변 음식점정보 jsonarray를 name_list변수에 저장
@@ -133,7 +133,12 @@ class GalleryAdapter(var activity: Activity, private val myDataset: ArrayList<St
     private fun handler(){
         var handler = object: Handler(Looper.getMainLooper()){
             override fun handleMessage(msg: Message) {
-               resultIntent.putExtra("restaurant_name_list",name_list.toString() )  //주변식당이름 정보도 보내줌
+
+                if(name_list.length()==0){  //exif정보 없는 사진이거나.. 서버에 데이터 없는 사진일경우 등등
+                    resultIntent.putExtra("restaurant_name_list","정보없음")  //주변식당이름 정보도 보내줌
+                }else{
+                    resultIntent.putExtra("restaurant_name_list",name_list.toString() )  //주변식당이름 정보도 보내줌
+                }
                 activity.setResult(Activity.RESULT_OK, resultIntent)   //onActivityResult함수로 인텐트 보냄.
                 activity.finish()  //갤러리액티비티 닫아줌
             }

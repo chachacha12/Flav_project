@@ -30,6 +30,8 @@ import java.util.*
 
 class MainActivity : BasicActivity() {
 
+
+
     //전역으로 해둔 이유는 여러함수 안에서 불러와서 쓰고 싶기에. 등등
     private val TAG = "MainActivity"
     var firebaseUser: FirebaseUser? = null
