@@ -28,12 +28,12 @@ class Galleryactivity : BasicActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_gallery)
-
+        setToolbarTitle("갤러리")
 
         //이 앱이 사용자의 폰 갤러리에 접근해도 괜찮은지 런타임권한요청을 보내도록 할거임. 한번허용하면 그 폰에선 계속 허용되어서 권한요청창 다신 안뜸
         // -(안드로이드 developer사이트 - 가이드-문서-앱권한요청)에 있는 코드
         when {
-            ContextCompat.checkSelfPermission(                                //권한 승인일때
+            ContextCompat.checkSelfPermission(                             //권한 승인일때
                 this,
                 Manifest.permission.READ_EXTERNAL_STORAGE
             ) == PackageManager.PERMISSION_GRANTED -> {
@@ -52,7 +52,7 @@ class Galleryactivity : BasicActivity() {
                     arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
                     1
                 )  //권한요청창 띄움
-                Toast.makeText(this, "권한을 허용해 주세요", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this,  resources.getString(R.string.please_grant_permission), Toast.LENGTH_SHORT).show()
             }
         } //when
     }
@@ -70,7 +70,7 @@ class Galleryactivity : BasicActivity() {
                     recyclerInit()
                 } else {                          //권한허용 안했을때
                     finish()
-                    Toast.makeText(this, "권한을 허용해 주세요", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this,  resources.getString(R.string.please_grant_permission), Toast.LENGTH_SHORT).show()
                 }
             }
         }

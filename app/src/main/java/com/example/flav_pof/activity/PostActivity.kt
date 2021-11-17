@@ -1,71 +1,102 @@
 package com.example.flav_pof.activity
 
-import android.graphics.Color
+import android.content.Intent
 import android.os.Bundle
-import android.util.Patterns
-import android.view.ViewGroup
-import android.widget.ImageView
+import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.LinearLayout
-import android.widget.TextView
-import com.bumptech.glide.Glide
+import com.example.flav_pof.FirebaseHelper
 import com.example.flav_pof.PostInfo
 import com.example.flav_pof.R
-import java.text.SimpleDateFormat
-import java.util.*
+import com.example.flav_pof.listener.OnPostListener
+import com.example.flav_pof.view.ReadContentsVIew
 
 
 class PostActivity : BasicActivity() {
+
+    private var postInfo: PostInfo? = null
+    private var firebaseHelper: FirebaseHelper? = null
+    private var readContentsVIew: ReadContentsVIew? = null
+    private var contentsLayout: LinearLayout? = null
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_post)
 
-        var postInfo: PostInfo = intent.getSerializableExtra("postInfo") as PostInfo  //형변환 꼭 해주기
-        var titletextView2: TextView =
-            findViewById(R.id.titleTextView) //이부분 오류뜰수도
-        titletextView2.text = postInfo.title
+        postInfo = intent.getSerializableExtra("postInfo") as PostInfo
+
+        contentsLayout = findViewById(R.id.contentsLayout)
+        readContentsVIew = findViewById(R.id.readContentsView)
+
+        firebaseHelper = FirebaseHelper(this)
+        firebaseHelper!!.setOnPostListener(onPostListener)
+        uiUpdate()
+    }
 
 
-        val createdAtTextView = findViewById<TextView>(R.id.createAtTextView)
-        createdAtTextView.setText(
-            SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(
-                postInfo.createdAt
-            )
-        )
-
-        val contentsLayout = findViewById<LinearLayout>(R.id.contentsLayout)
-        val layoutParams = ViewGroup.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT
-        )
-
-        var contentsList = postInfo.contents
-
-
-        if (contentsLayout.tag == null || contentsLayout.tag != contentsList) {
-            contentsLayout.tag = contentsList
-            contentsLayout.removeAllViews()
-            for (i in 0 until contentsList.size) {
-                val contents = contentsList[i]
-                if (Patterns.WEB_URL.matcher(contents)
-                        .matches() && contents.contains("https://firebasestorage.googleapis.com/v0/b/flavmvp-9fe0d.appspot.com/o/posts")
-                ) {
-                    val imageView = ImageView(this)
-                    imageView.setLayoutParams(layoutParams)
-                    imageView.setAdjustViewBounds(true)
-                    imageView.setScaleType(ImageView.ScaleType.FIT_XY)
-                    contentsLayout.addView(imageView)
-                    Glide.with(this).load(contents).override(1000).thumbnail(0.1f).into(imageView)
-                } else {
-                    val textView = TextView(this)
-                    textView.layoutParams = layoutParams
-                    textView.text = contents
-                    textView.setTextColor(Color.rgb(0, 0, 0))
-                    contentsLayout.addView(textView)
-                }
+    override fun onActivityResult(
+        requestCode: Int,
+        resultCode: Int,
+        data: Intent?
+    ) {
+        super.onActivityResult(requestCode, resultCode, data)
+        when (requestCode) {
+            0 -> if (resultCode == RESULT_OK) {
+                postInfo = data!!.getSerializableExtra("postinfo") as PostInfo
+                contentsLayout!!.removeAllViews()
+                uiUpdate()
             }
         }
-
-
     }
+
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.post, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.getItemId()) {
+            R.id.delete -> {
+                firebaseHelper!!.storageDelete(postInfo!!)
+                true
+            }
+            R.id.modify -> {
+                myStartActivity(WritePostActivity::class.java, postInfo!!)
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    var onPostListener: OnPostListener = object : OnPostListener {
+        override fun onDelete() {
+            Log.e("로그 ", "삭제 성공")
+        }
+
+        override fun onModify() {
+            Log.e("로그 ", "수정 성공")
+        }
+    }
+
+    private fun uiUpdate() {
+        setToolbarTitle(postInfo!!.title)
+        readContentsVIew?.setPostInfo(postInfo!!)
+    }
+
+    private fun myStartActivity(c: Class<*>, postInfo: PostInfo) {
+        val intent = Intent(this, c)
+        intent.putExtra("postInfo", postInfo)
+        startActivityForResult(intent, 0)
+    }
+
 }
+
+
+
+
+
+

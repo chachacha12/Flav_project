@@ -4,6 +4,8 @@ package com.example.flav_pof.activity    //부모클래스(액티비티)임
 
 import android.content.pm.ActivityInfo
 import android.os.Bundle
+import androidx.annotation.LayoutRes
+import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 
 
@@ -13,6 +15,21 @@ open class BasicActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED //화면의 가로세로 관련 문제 해결을 위해..
 
+    }
+
+    //모든 액티비티에 툴바를 달아주기 위해 basicact에서 달아줌
+    override fun setContentView(@LayoutRes layoutResID: Int) {
+        super.setContentView(layoutResID)
+
+        val myToolbar = findViewById<androidx.appcompat.widget.Toolbar>(com.example.flav_pof.R.id.toolbar) as androidx.appcompat.widget.Toolbar
+        setSupportActionBar(myToolbar)
+    }
+
+    open fun setToolbarTitle(title: String?) {
+        val actionBar: ActionBar? = supportActionBar
+        if (actionBar != null) {
+            actionBar.setTitle(title)
+        }
     }
 
 }

@@ -19,6 +19,7 @@ class PasswordResetActivity : BasicActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_password_reset)
+        setToolbarTitle("비밀번호 재설정")
         init()
     }
 

@@ -6,12 +6,23 @@
     android:layout_height="match_parent"
     android:background="#FFFFFF">
 
+
+
+    <include
+        layout="@layout/view_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+
+
+
+
     <ScrollView
         android:id="@+id/ScrollView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="10dp">
+        android:layout_below="@+id/toolbar">
 
         <LinearLayout
             android:layout_width="match_parent"

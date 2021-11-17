@@ -11,11 +11,20 @@
         android:layout_height="279dp"
         app:srcCompat="@drawable/logo_transparent" />
 
+
+    <include
+        layout="@layout/view_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="130dp"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:layout_below="@+id/toolbar">
 
         <TextView
             android:id="@+id/titletextView"

@@ -27,6 +27,7 @@ class LoginActivity : BasicActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
+        setToolbarTitle("로그인")
 
         /*
         // Add this line, to include the Auth plugin.

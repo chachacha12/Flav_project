@@ -75,10 +75,12 @@ class CameraActivity : BasicActivity(){
                     }
                 }
             }
+
             //일처리 끝냈으니 memberinit 액티비티에 데이터(이미지)결과값을 전달해줘야함. 따로 memberinit액티비티로 보내라는 코드 작성없이 profilePath라는 name값으로 알아서 찾아감
-            var resultIntent = Intent()
-            resultIntent.putExtra("profilePath",mFile.toString())  //돌려보낼 인텐트에 값 넣어줌. 여기선 이미지가 저장된 파일을 보냄
-            setResult(Activity.RESULT_OK, resultIntent)   //onActivityResult함수로 인텐트 보냄.
+            var intent  = Intent()
+            intent .putExtra("profilePath",mFile.toString())  //돌려보낼 인텐트에 값 넣어줌. 여기선 이미지가 저장된 파일을 보냄
+            setResult(Activity.RESULT_OK, intent )   //onActivityResult함수로 인텐트 보냄.
+
             camera2BasicFragment.closeCamera()  //프래그먼트의 카메라 꺼줌
             finish()   // 액티비티 꺼버리면 됨
         }
@@ -87,6 +89,7 @@ class CameraActivity : BasicActivity(){
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_camera)
+        setToolbarTitle(resources.getString(R.string.app_name));
         if (null == savedInstanceState) {
             camera2BasicFragment = Camera2BasicFragment.newInstance()   //카메라2 프래그먼트객체 하나 만듬
             camera2BasicFragment.setOnImageAvailableListener(mOnImageAvailableListener) //프래그먼트에 리스너를 달아줌

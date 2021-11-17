@@ -4,34 +4,34 @@ package com.example.flav_pof.Adapter
 
 import android.app.Activity
 import android.content.Intent
-import android.graphics.Color
-import android.util.Patterns
 import android.view.LayoutInflater
 import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.PopupMenu
-import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
+import com.example.flav_pof.FirebaseHelper
 import com.example.flav_pof.PostInfo
 import com.example.flav_pof.R
 import com.example.flav_pof.activity.PostActivity
+import com.example.flav_pof.activity.WritePostActivity
 import com.example.flav_pof.listener.OnPostListener
+import com.example.flav_pof.view.ReadContentsVIew
+import kotlinx.android.synthetic.main.item_post.view.*
 import kotlinx.android.synthetic.main.view_post.view.*
-import java.text.SimpleDateFormat
 import java.util.*
 
 
 //괄호안은 어댑터클래스의 인자들
 class MainAdapter(
     var activity: Activity,
-    private var myDataset: ArrayList<PostInfo>,
-    var onPostListener: OnPostListener
-)    //인자로 onPostListener라는 인터페이스 객체를 준 이유는 어댑터안에서도 인터페이스의 onDelete, onModify 함수를 쓰기위해.
-                                        : RecyclerView.Adapter<MainAdapter.MainViewHolder>() {
+    private var myDataset: ArrayList<PostInfo>
+)  : RecyclerView.Adapter<MainAdapter.MainViewHolder>() {
+
+    //전역
+    private var MORE_INDEX = 2
+    private var firebaseHelper = FirebaseHelper(activity)  //firebaseHelper 객체생성
 
     //뷰홀더에 텍스트뷰말고 카드뷰를 넣음
     class MainViewHolder(val cardView: CardView) : RecyclerView.ViewHolder(cardView)
@@ -68,64 +68,36 @@ class MainAdapter(
         return mainViewHolder
     }
 
+    fun setOnPostListener(onPostListener: OnPostListener){
+        firebaseHelper.setOnPostListener(onPostListener)
+    }
+
+
 
     // 여기서 리사이클러뷰의 리스트 하나하나 가리키는 뷰홀더와 내가 주는 데이터(게시글)가 연결되어짐. 즉 리사이클러뷰 화면에 띄워짐
      //액티비티에서 게시글 업데이트 해주려고 mainAdapter.notifyDataSetChanged() 하면 이 함수만 작동함.
     override fun onBindViewHolder(holder: MainViewHolder, position: Int) {
         var cardView = holder.cardView
         var titletextView = cardView.titleTextView
-        titletextView.text = myDataset?.get(position).title        //게시글의 제목을 가져옴
 
-        var createdAt = cardView.createAtTextView  //게시글의 생성일을 가져옴
-        createdAt.text = SimpleDateFormat(
-            "yyyy-MM-dd",
-            Locale.getDefault()
-        ).format(myDataset?.get(position).createdAt)
+        var postInfo= myDataset.get(position)
+        titletextView.setText(postInfo.title)
 
-        var contentsList = myDataset?.get(position).contents   //게시글 내용인 데이터들
-        val layoutParams = ViewGroup.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT
-        )
+        val readContentsVIew: ReadContentsVIew = cardView.findViewById(R.id.readContentsView)
+
+
         var contentsLayout = cardView.contentsLayout  //여기안에 contentsList의 내용들(사진,영상,글) 등을 넣을거임
 
 
         //이미지, 동영상, 글 등 contents내용들을 담는 뷰들(이미지뷰, 텍스트뷰)만들고 데이터들 그 안에 넣을거임
-        if (contentsLayout.getTag() == null || !contentsLayout.getTag().equals(contentsList)) {     //데이터가 같을수도 있는데 계속 뷰들 다 지웠다 만들고 하는건 낭비라서 이 로직 추가함.(null일땐 처음 앱 실행할때를 위해) 이 로직 없다면 스크롤 내릴때마다 뷰들 삭제되고 생성되고했을거임
-            contentsLayout.setTag(contentsList)
+        if (contentsLayout.getTag() == null || !contentsLayout.getTag().equals(postInfo)) {     //데이터가 같을수도 있는데 계속 뷰들 다 지웠다 만들고 하는건 낭비라서 이 로직 추가함.(null일땐 처음 앱 실행할때를 위해) 이 로직 없다면 스크롤 내릴때마다 뷰들 삭제되고 생성되고했을거임
+            contentsLayout.setTag(postInfo)
             contentsLayout.removeAllViews()   //액티비티 onResume()의 notifyDataSetChanged()를 통해 게시글 업데이트 해줄때마다 뷰 다 지우고 새롭게 만들어줄거임
             val MORE_INDEX = 2   //메인화면상에서 한 게시글마다 몇개의 뷰까지 보여주고 더보기 나오게 할지를 정할 숫자. 2개로 함
 
-            //indices는 배열의 인덱스번호를 하나하나 알려줌. 즉 for문은 i가 0부터 contentsList의 크기만큼 반복.
-            for (i in contentsList.indices) {       //리스트안의 데이터 개수에 맞춰서 뷰를 생성해줌.
-                if (i == MORE_INDEX) {         //메인화면상에서 한 게시글의 모든 내용이 보이면 좀 그러니까 2개정도 보여주고 <더보기> 기능 만들기위함
-                    var textView = TextView(activity)
-                    textView.layoutParams = layoutParams
-                    textView.text = "더보기.."
-                    contentsLayout.addView(textView)
-                    break   //더이상 뷰 안 만들고 게시글 만드는거 끝.
-                }
 
-                var contents = contentsList.get(i)
-                if (Patterns.WEB_URL.matcher(contents).matches() && contents.contains("https://firebasestorage.googleapis.com/v0/b/flavmvp-9fe0d.appspot.com/o/posts")) {        //올바른 url형식인지 판별, 즉 이미지or영상인지 // Patterns.WEB_URL.matcher().matches() 이 구문은 matcher안의 문자열이 올바른 url형식인지 판단해서 true나 false반환함
-                    //editText가 url주소면 밑의 작업을 수행하므로, 혹시나 사용자가 url을 텍스트로 입력해도 이미지뷰가 나오므로 그 경우 차단을 위해, 우리가 인정한 url경로만 이미지뷰로 출력할 수 있도록 하기위해 && 뒤의 조건을 추가함. db에 있는 모든 저장된 사진들의 주소의 앞부분은 저게 포함되있는걸 이용함
-
-                    var imageView = ImageView(activity)
-                    imageView.layoutParams = layoutParams
-                    imageView.adjustViewBounds = true
-                    imageView.scaleType = ImageView.ScaleType.FIT_XY  // 이미지가 꽉 차서 나올거임
-                    contentsLayout.addView(imageView)
-                    Glide.with(activity).load(contents).override(1000).thumbnail(0.1F)
-                        .into(imageView)  //이 작업은 밑에 onbindViewholder함수에서 할거임
-                } else {
-                    var textView = TextView(activity)
-                    textView.layoutParams = layoutParams
-                    textView.text = contents
-                    textView.setTextColor(Color.rgb(0, 0, 0))   //글씨를 진한 검은색으로 해줌줌
-                    contentsLayout.addView(textView)
-                }
-            } //for
-
+            readContentsVIew.setMoreIndex(MORE_INDEX)
+            readContentsVIew.setPostInfo(postInfo)
         }
     }
 
@@ -140,11 +112,11 @@ class MainAdapter(
 
             return@setOnMenuItemClickListener when (it.itemId) {
                 R.id.modify -> {                    //수정하기 눌렀을때
-                    onPostListener.onModify(position)      //게시글의 postList상에서의 위치를 인자를 통해 액티비티에 전달함. 그 후 액티비티에서 삭제로직을 통해 게시글 db, 스토리지에서 삭제.->어댑터에서 삭제로직 안하는 이유는 여기선 db접근해서 삭제는 할수있어도 실시간으로 업데이트는 못해줘서임. OnResume()함수 등이 액티비티에 존재.
+                    myStartActivity(WritePostActivity::class.java, myDataset[position])
                     true
                 }
                 R.id.delete -> {                  //삭제하기 눌렀을때
-                    onPostListener.onDelete(position)
+                    firebaseHelper.storageDelete(myDataset.get(position))
                     true
                 }
                 else -> false
@@ -153,6 +125,13 @@ class MainAdapter(
         val inflater: MenuInflater = popup.menuInflater
         inflater.inflate(R.menu.post, popup.menu)
         popup.show()
+    }
+
+
+    private fun myStartActivity(c: Class<*>, postInfo: PostInfo) {
+        val intent = Intent(activity, c)
+        intent.putExtra("postInfo", postInfo)
+        activity.startActivity(intent)
     }
 
 

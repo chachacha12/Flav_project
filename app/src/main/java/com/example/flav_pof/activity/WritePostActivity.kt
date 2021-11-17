@@ -49,7 +49,12 @@ class WritePostActivity : BasicActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_write_post)
+        setToolbarTitle("게시글 작성")
 
+        var storage = Firebase.storage   //파이어베이스 저장소(스토리지)의 객체를 가져옴
+        storageRef = storage.reference   //게시글 삭제할때, 스토리지에서 지워주기위해 필요함
+        postInfo = (intent.getSerializableExtra("postInfo") as? PostInfo)  //MainActivity에서 게시글 수정버튼을 눌러서 보낸 인텐트에 실린 값(수정하고자하는 게시물 객체)를 받음. 인텐트를 받을땐 getIntent() 또는 Intent 이용.
+        //getSerializable은 보내는, 받는 데이터가 내가 만든 클래스의 객체일때 사용함.
 
         postinit()
         init()
@@ -57,12 +62,6 @@ class WritePostActivity : BasicActivity() {
 
     //수정하기버튼눌러서 이 액티비티 온 경우 등엔 게시글의 editText가 원래 수정전 내용으로 차있도록 하게할거임.
     private fun postinit() {
-        var storage = Firebase.storage   //파이어베이스 저장소(스토리지)의 객체를 가져옴
-        storageRef = storage.reference   //게시글 삭제할때, 스토리지에서 지워주기위해 필요함
-
-        postInfo = (intent.getSerializableExtra("postInfo") as? PostInfo)  //MainActivity에서 게시글 수정버튼을 눌러서 보낸 인텐트에 실린 값(수정하고자하는 게시물 객체)를 받음. 인텐트를 받을땐 getIntent() 또는 Intent 이용.
-        //getSerializable은 보내는, 받는 데이터가 내가 만든 클래스의 객체일때 사용함.
-
 
         //여기 구문이 +눌러서 게시글 새로 만드는 것 x이고, 수정or삭제하려고 다시 writepostact에 온 경우에 쓰이는 구문임. 기존 내용들 다시 띄워줌
         if (postInfo != null) {   //null이라면 수정하기버튼 누른게 아니라 +버튼눌러서 새로운 게시글 만드려는거임. 즉, postinit()을 안거쳐도됨
@@ -215,9 +214,9 @@ class WritePostActivity : BasicActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
             0 -> if (resultCode == Activity.RESULT_OK) {          //requestCode가 0일땐 갤러리에서 선택한 사진을 게시글에 붙여줌
-                var profilePath = data!!.getStringExtra("profilePath")  //데이터(파일)을 받아서 저장
-                pathList.add(profilePath)     //ArrayList에 사진경로들을 저장함
-                Log.e("태그", "이미지 경로: " + profilePath)
+                var path  = data!!.getStringExtra("profilePath")  //데이터(파일)을 받아서 저장
+                pathList.add(path )     //ArrayList에 사진경로들을 저장함
+                Log.e("태그", "이미지 경로: " + path)
 
                 val layoutParams = ViewGroup.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
@@ -243,7 +242,7 @@ class WritePostActivity : BasicActivity() {
                     }
                 }
 
-                contentsItemView.setImage(profilePath)
+                contentsItemView.setImage(path)
                 contentsItemView.setOnClickListener {
                     buttonsBackgroundlayout.visibility = View.VISIBLE       //이미지를 삭제or수정하려고 눌렀을때
                     selectedImageView = it as ImageView
@@ -255,15 +254,16 @@ class WritePostActivity : BasicActivity() {
                 // 주변 음식점 이름을 텍스트뷰로 각각 생성해줌
 
                 //intent에  jsonarray를 string값으로 바꿔서 날렸고, 그 string값을 받아서 다시 jsonarray객체로 만들어줌
-                var namelist_string = data!!.getStringExtra("restaurant_name_list")!!  //주변식당명리스트(string으로 되어있는)가 인텐트에 실려서 날아옴
+                var namelist_string =
+                    data!!.getStringExtra("restaurant_name_list")!!  //주변식당명리스트(string으로 되어있는)가 인텐트에 실려서 날아옴
 
-                if(namelist_string=="정보없음"){  //exif정보 없는 사진 등이 들어왔을때
+                if (namelist_string == "정보없음") {  //exif정보 없는 사진 등이 들어왔을때
                     Toast.makeText(
                         this,
                         "위치데이터가 사진에 없습니다.",
                         Toast.LENGTH_SHORT
                     ).show()
-                }else{  //주변 식당명 정보가 제대로 들어왔을때
+                } else {  //주변 식당명 정보가 제대로 들어왔을때
                     var jsonArray = JSONArray(namelist_string)
                     var i = 0;
                     repeat(jsonArray.length()) {
@@ -291,18 +291,20 @@ class WritePostActivity : BasicActivity() {
                 }
             }
             1 -> if (resultCode == Activity.RESULT_OK) {    //이미지를 수정하려고 새 이미지를 선택했을때
-                var selectedView =
-                    selectedImageView.parent as View   // .parent 또는 getParent()를 하면 그 뷰의 부모 뷰(contentsitemVIew객체, 즉 linearLayout..?)가 선택되어진다.  //removeView()안에는 뷰가 와야하는데 레이아웃이 와버려서 에러뜸. 그러므로 as를 통해 뷰로 형변환 해줌
-                var profilePath = data!!.getStringExtra("profilePath")
+
+                var path  = data!!.getStringExtra("profilePath")
                 pathList.set(
-                    contentsLayout.indexOfChild(selectedView) - 1,
-                    profilePath
+                    contentsLayout.indexOfChild(selectedImageView.parent as View) - 1,
+                    path
                 ) // pathList안에 이미지를 넣어줌. / 첫 인자: 넣을 인덱스 위치/ 두번째 인자: 들어갈 element  / 즉 기존 이미지는 없어지고 새로운 이미지가 넣어지는듯?
-                Glide.with(this).load(profilePath).override(1000)
+                Glide.with(this).load(path ).override(1000)
                     .into(selectedImageView)   //이미지를 수정해줌
             }
         }
     }
+
+
+
 
     var onClickListener =
         View.OnClickListener { v ->
@@ -416,27 +418,30 @@ class WritePostActivity : BasicActivity() {
             var i = 0
             repeat(contentsLayout.childCount) {   //linearLayout이 몇개인지 셈. 일단 editText만 있는 linearLayout하나(제목아래의 내용적는 editTEXT)는 무조건 옵션으로 존재함.
                 //반복문임.  contentsLayout안에 있는 자식뷰의 갯수만큼 반복
-                Log.e("태그", "Writepost의 storageuploader중 contentsLayout.childCount: " + contentsLayout.childCount)
+                Log.e(
+                    "태그",
+                    "Writepost의 storageuploader중 contentsLayout.childCount: " + contentsLayout.childCount
+                )
 
                 val linearLayout = contentsLayout.getChildAt(i) as LinearLayout    //즉 이건 contentsItemView객체 하나임
                 var j=0
                 repeat(linearLayout.childCount) {  //이제 하나의 contentsItemView객체의 안을 돌면서 이미지인지 editText인지 LinearLayout인지 판별. 멤버가 3개라 최소3번은 돈다?
-                    Log.e("태그","linearLayout.childCount: "+linearLayout.childCount) 
+                    Log.e("태그", "linearLayout.childCount: " + linearLayout.childCount)
                     val view = linearLayout.getChildAt(j)
                     if (view is EditText) {               //코틀린에선 자료형이 일치하는지 판별을 is 연산자씀. 자바에선 instanceof 였음.
                         var text = view.text.toString()   //인덱스 0이 첫번째이므로 이미지뷰이고 1은 editText뷰임
-                        Log.e("태그","EditText: "+view)
+                        Log.e("태그", "EditText: " + view)
                        // if (text.length >0) {
                             contentsList.add(text)  //contentsList에 모아서 store업로드시에 유용하게 이걸 올려주려고
-                            Log.e("태그","contentsList에 editText추가: "+contentsList.toString())
+                            Log.e("태그", "contentsList에 editText추가: " + contentsList.toString())
                         //}
                     } else if (view is ImageView) {   //자식뷰가 url이 아닐경우에만 스토리지, db에 저장해줄거임  //
-                        Log.e("태그","ImageView: "+view)
+                        Log.e("태그", "ImageView: " + view)
                         if(pathList.size > pathCount){  //이거 안해주면 indexoutofbounds에러남
                             var path = pathList[pathCount]
                             successCount++
                             contentsList.add(path)  //contentsList에 사진경로를 넣어줌. pathList라는 리스트안엔 아까 게시글 써줄때 넣은 사진들의 경로가 순서대로 들어있음
-                            Log.e("태그","contentsList에 이미지뷰 추가: "+contentsList.toString())
+                            Log.e("태그", "contentsList에 이미지뷰 추가: " + contentsList.toString())
 
                             var pathArray =
                                 path.split(".")       // .을 기준으로 나눠서 사진경로문자열을 pathArray배열안에 저장
@@ -447,6 +452,7 @@ class WritePostActivity : BasicActivity() {
 
                             //**여긴 파이어베이스-문서-가이드-개발-스토리지-파일업로드-(스트림에서업로드) 에서 가져온 코드임. 파일(사진)경로를 받아서 스토리지에 데이터 저장할때 사용함
                             val stream = FileInputStream(File(pathList[pathCount]))
+
 
                             var metadata = storageMetadata {
                                 //(문서-스토리지-파일 메타데이터사용-커스텀메타데이터)   //메타데이터를 통해 각 데이터(사진 등)의 인덱스 위치를 알 수 있음
@@ -489,7 +495,7 @@ class WritePostActivity : BasicActivity() {
                                         )  //밑에 만들어둔 함수임. 게시글 객체를 인자로 받아서 게시글을 db에 등록시켜줌. documentReference를 인자로 보내는 이유는
                                         // db에 있는 게시글들의 uid값이랑 스토리지에 있는 이미지들 uid값이랑 같게 해주는게 찾을때 편해서 그리 해주려고.
 
-                                        Log.e("태그","storeupload햇을때 contentsList: "+contentsList)
+                                        Log.e("태그", "storeupload햇을때 contentsList: " + contentsList)
                                     }
                                 }
                             }
@@ -498,7 +504,7 @@ class WritePostActivity : BasicActivity() {
                     }  //여기까지가 자식뷰가 이미지뷰일때
                     else {        //뷰가 LinearLayout일 때
                         linearLayout.removeView(view)       //식당이름 텍스트뷰 모여있는 linearLayout 뷰는 제거해줌
-                        Log.e("태그","removeView로 제거한 뷰: "+view)
+                        Log.e("태그", "removeView로 제거한 뷰: " + view)
                     }
                     j++
                 }  //작은 repeat문
@@ -514,14 +520,18 @@ class WritePostActivity : BasicActivity() {
     }
 
 
+
     //회원이 확인버튼 눌렀을때 회원이 쓴 게시글을 db(클라우드firestore)에 올려주는 코드가진 함수
     private fun storeupload(documentReference: DocumentReference, writeinfo: PostInfo) {
         writeinfo.getPostInfo()?.let {
             documentReference.set(it)                //add함수는 자동으로 데이터의 documents에 uid를 암거나 만들어서 넣어줌. 섞이지 않게. 그리고 set은 내가 uid만든거에 넣어주는함수. documentReference변수가 내가 따로 가져온 uid값임
                 .addOnSuccessListener {
-                    loaderLayout.visibility = View.GONE
                     Log.d(TAG, "DocumentSnapshot successfully written!")
-                    Toast.makeText(this, "게시물을 등록하였습니다.", Toast.LENGTH_SHORT).show()
+                    loaderLayout.visibility = View.GONE
+
+                    val resultIntent = Intent()
+                    resultIntent.putExtra("postinfo", postInfo)
+                    setResult(RESULT_OK, resultIntent)
                     finish()
                 }
                 .addOnFailureListener { e ->
