@@ -115,7 +115,7 @@ class MainActivity : BasicActivity() {
     var onClickListener =
         View.OnClickListener { v ->
             when (v.id) {
-                /*
+                              /*
                                case R.id.logoutButton:
                                    FirebaseAuth.getInstance().signOut();
                                    myStartActivity(SignUpActivity.class);

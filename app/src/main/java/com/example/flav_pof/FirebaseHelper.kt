@@ -13,11 +13,9 @@ class FirebaseHelper(private val activity: Activity) {
     private var onPostListener: OnPostListener? = null
     private var successCount = 0
 
-
     fun setOnPostListener(onPostListener: OnPostListener?) {
         this.onPostListener = onPostListener
     }
-
 
     fun storageDelete(postInfo: PostInfo) {
         val storage = FirebaseStorage.getInstance()
@@ -29,9 +27,14 @@ class FirebaseHelper(private val activity: Activity) {
 
             if (Patterns.WEB_URL.matcher(contents).matches() && contents.contains("https://firebasestorage.googleapis.com/v0/b/flavmvp-9fe0d.appspot.com/o/posts")) {
 
-
                 successCount++
-                val desertRef = storageRef.child("posts/" + id + "/" + contents.split("\\?")[0].split("%2F")[contents.split("\\?")[0].split("%2F").size - 1])
+                var list: List<String> =
+                    contents.split("?")  //이미지경로안를 split해서 이미지의 이름을 가져옴. 이미지의 이름을 알기위해
+                var list2: List<String> = list[0].split("%2F")
+                var name = list2[list2.size - 1] //스토리지에 저장된 이미지의 이름(ex. 0.jpg)을 알아냄
+                Log.e("태그","메인엑티비티에서 저장된 이미지 이름인 name값: "+name)
+
+                val desertRef = storageRef.child("posts/" + id + "/" + name)
                 desertRef.delete().addOnSuccessListener {
                     successCount--
                     storeDelete(id)
@@ -44,7 +47,7 @@ class FirebaseHelper(private val activity: Activity) {
         storeDelete(id)
     }
 
-    private fun storeDelete(id: String?) {
+    private fun storeDelete(id: String?) { 
         val firebaseFirestore = FirebaseFirestore.getInstance()
         if (successCount == 0) {
             firebaseFirestore.collection("posts").document(id!!)

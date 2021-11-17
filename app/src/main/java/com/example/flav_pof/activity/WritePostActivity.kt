@@ -148,7 +148,6 @@ class WritePostActivity : BasicActivity() {
             buttonsBackgroundlayout.visibility = View.GONE
         }
 
-
         //작성중인 게시물의 이미지 삭제하기
         // 1. 이미 저장해서 존재하던 게시물 이미지 수정하기 2. +버튼 눌러서 저장안된 새 게시물 작성중에 이미지 수정하기
         //->2가지 경우로 나누는 이유는 아직 파베 스토리지에 저장안된 이미지인 경우엔 postInfo.id값이 없기 때문에 밑의 지우기로직때 에러뜸. 그니까 예외처리해주기
