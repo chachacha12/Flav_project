@@ -31,6 +31,7 @@ import kotlinx.android.synthetic.main.view_loader.*
 import org.json.JSONArray
 import java.io.File
 import java.io.FileInputStream
+import java.net.URLConnection
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -41,8 +42,10 @@ class WritePostActivity : BasicActivity() {
     private var pathList = ArrayList<String>()       //게시글에 넣은 사진이미지들의 경로들 여기에 저장해서 리스트로 만들거임
     private lateinit var buttonsBackgroundlayout: RelativeLayout     //게시글에 있는 이미지or 이 레이아웃 자체를 눌렀을때 이미지 수정 및 삭제하는 기능을 위한 레이아웃객체 전역으로둠
     private lateinit var selectedImageView: ImageView //사용자가 게시글에 올린 이미지 삭제or수정하려고 선택했을때 그 이미지를 이 전역변수에 저장해둘거임. 삭제하기 편하게.
-    private var selectedEditText: EditText? = null  //우선 null로 지정해둠. 안해두면 포커스 지정안해줬을때 에러남. selectedEditText변수가 쓰이는데 초기화는 안되어있어서 에러나는듯. 그래서 null로 초기화해줌
-    private var postInfo: PostInfo? = null    //특정 게시물 수정하기or삭제하기 버튼 눌렀을때 이 변수에 넣어줄거임. 여러 지역함수?안에서 쓸거라 전역으로빼둠
+    private var selectedEditText: EditText? =
+        null  //우선 null로 지정해둠. 안해두면 포커스 지정안해줬을때 에러남. selectedEditText변수가 쓰이는데 초기화는 안되어있어서 에러나는듯. 그래서 null로 초기화해줌
+    private var postInfo: PostInfo? =
+        null    //특정 게시물 수정하기or삭제하기 버튼 눌렀을때 이 변수에 넣어줄거임. 여러 지역함수?안에서 쓸거라 전역으로빼둠
     lateinit var storageRef: StorageReference   //게시글 삭제할떄 스토리지에도 접근해서 이미지 지워줘야해서, 그때 필요함
 
 
@@ -53,7 +56,8 @@ class WritePostActivity : BasicActivity() {
 
         var storage = Firebase.storage   //파이어베이스 저장소(스토리지)의 객체를 가져옴
         storageRef = storage.reference   //게시글 삭제할때, 스토리지에서 지워주기위해 필요함
-        postInfo = (intent.getSerializableExtra("postInfo") as? PostInfo)  //MainActivity에서 게시글 수정버튼을 눌러서 보낸 인텐트에 실린 값(수정하고자하는 게시물 객체)를 받음. 인텐트를 받을땐 getIntent() 또는 Intent 이용.
+        postInfo =
+            (intent.getSerializableExtra("postInfo") as? PostInfo)  //MainActivity에서 게시글 수정버튼을 눌러서 보낸 인텐트에 실린 값(수정하고자하는 게시물 객체)를 받음. 인텐트를 받을땐 getIntent() 또는 Intent 이용.
         //getSerializable은 보내는, 받는 데이터가 내가 만든 클래스의 객체일때 사용함.
 
         postinit()
@@ -70,7 +74,9 @@ class WritePostActivity : BasicActivity() {
             var contentsList = postInfo!!.contents
             for (i in contentsList.indices) {
                 var contents = contentsList.get(i)
-                if (Patterns.WEB_URL.matcher(contents).matches() && contents.contains("https://firebasestorage.googleapis.com/v0/b/flavmvp-9fe0d.appspot.com/o/posts")) {        //올바른 url형식인지 판별, 즉 이미지or영상인지 // Patterns.WEB_URL.matcher().matches() 이 구문은 matcher안의 문자열이 올바른 url형식인지 판단해서 true나 false반환함
+                if (Patterns.WEB_URL.matcher(contents)
+                        .matches() && contents.contains("https://firebasestorage.googleapis.com/v0/b/flavmvp-9fe0d.appspot.com/o/posts")
+                ) {        //올바른 url형식인지 판별, 즉 이미지or영상인지 // Patterns.WEB_URL.matcher().matches() 이 구문은 matcher안의 문자열이 올바른 url형식인지 판단해서 true나 false반환함
                     pathList.add(contents)
 
                     val contentsItemView = ContentsItemView(this)
@@ -87,7 +93,8 @@ class WritePostActivity : BasicActivity() {
 
                     if (i < contentsList.size - 1) {   //처음에 이 게시글 만들때 이미지 붙여놓고 밑에 같이 생성되었던 editText안에 글을 써두었다면.
                         var nextContents = contentsList.get(i + 1)
-                        if (!Patterns.WEB_URL.matcher(nextContents).matches() ||!nextContents.contains(
+                        if (!Patterns.WEB_URL.matcher(nextContents)
+                                .matches() || !nextContents.contains(
                                 "https://firebasestorage.googleapis.com/v0/b/flavmvp-9fe0d.appspot.com/o/posts"
                             )
                         ) { //다음 contents가 이미지나 영상이 아닐경우에만
@@ -153,14 +160,12 @@ class WritePostActivity : BasicActivity() {
         //->2가지 경우로 나누는 이유는 아직 파베 스토리지에 저장안된 이미지인 경우엔 postInfo.id값이 없기 때문에 밑의 지우기로직때 에러뜸. 그니까 예외처리해주기
         delete.setOnClickListener {
             var selectedView = selectedImageView.parent as View   // .parent 또는 getParent()를 하면 그 뷰의 부모 뷰(linearLayout 등)가 선택되어진다.  //removeView()안에는 뷰가 와야하는데 레이아웃이 와버려서 에러뜸. 그러므로 as를 통해 뷰로 형변환 해줌
-
             //mainAct에서 가져온 부분임. (스토리지에서 특정 게시물 삭제해주는 로직)********************************************8
             var list: List<String> = pathList.get(contentsLayout.indexOfChild(selectedView) - 1)
                 .split("?")  //이미지 경로안을 split해서 이미지의 이름을 가져옴. 이미지의 이름을 알기위해
             var list2: List<String> = list[0].split("%2F")
             var name = list2[list2.size - 1] //스토리지에 저장된 이미지의 이름(ex. 0.jpg)을 알아냄
             Log.e("로그: ", "이름: " + name)
-
             if(name.contains("/")){   //+버튼눌러서 서버 스토리지에 아직 저장안된 이미지를 삭제하려 할떄 : 이미지 경로값에 슬래쉬 있어서 이 조건문 포함
                 Toast.makeText(this, "파일을 삭제하였습니다.", Toast.LENGTH_SHORT).show()
             }else{   //서버 스토리지에 이미 저장된 이미지를 삭제해주려 할때
@@ -192,15 +197,17 @@ class WritePostActivity : BasicActivity() {
             pathList.removeAt(contentsLayout.indexOfChild(selectedView) - 1)
             contentsLayout.removeView(selectedView)
             buttonsBackgroundlayout.visibility = View.GONE
-        }
+     
+        }  //delete
+
 
         contentsEditText.onFocusChangeListener =
             onFocusChangedListener   //포커스리스너 붙이면 포커스가 있는지 판별함. 포커스 있으면 이 뷰가 selectedEditText가 됨
         titleEditText.setOnFocusChangeListener { v, hasFocus ->
             selectedEditText = null
         }   //만약 제목칸에 포커스 있을때, 이미지 넣었을때 처리
-
     }  //init
+
 
     //식당이름 arrayList가 전달됨
     // 이미지가 저장된 파일경로가 string값으로 여기로 인텐트 통해서 전달됨 / 사용자가 갤러리에서 카드뷰사진 하나 선택했을때
@@ -213,8 +220,8 @@ class WritePostActivity : BasicActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
             0 -> if (resultCode == Activity.RESULT_OK) {          //requestCode가 0일땐 갤러리에서 선택한 사진을 게시글에 붙여줌
-                var path  = data!!.getStringExtra("profilePath")  //데이터(파일)을 받아서 저장
-                pathList.add(path )     //ArrayList에 사진경로들을 저장함
+                var path = data!!.getStringExtra("profilePath")  //데이터(파일)을 받아서 저장
+                pathList.add(path)     //ArrayList에 사진경로들을 저장함
                 Log.e("태그", "이미지 경로: " + path)
 
                 val layoutParams = ViewGroup.LayoutParams(
@@ -291,18 +298,16 @@ class WritePostActivity : BasicActivity() {
             }
             1 -> if (resultCode == Activity.RESULT_OK) {    //이미지를 수정하려고 새 이미지를 선택했을때
 
-                var path  = data!!.getStringExtra("profilePath")
+                var path = data!!.getStringExtra("profilePath")
                 pathList.set(
                     contentsLayout.indexOfChild(selectedImageView.parent as View) - 1,
                     path
                 ) // pathList안에 이미지를 넣어줌. / 첫 인자: 넣을 인덱스 위치/ 두번째 인자: 들어갈 element  / 즉 기존 이미지는 없어지고 새로운 이미지가 넣어지는듯?
-                Glide.with(this).load(path ).override(1000)
+                Glide.with(this).load(path).override(1000)
                     .into(selectedImageView)   //이미지를 수정해줌
             }
         }
     }
-
-
 
 
     var onClickListener =
@@ -323,52 +328,52 @@ class WritePostActivity : BasicActivity() {
                     buttonsBackgroundLayout.visibility = View.GONE
                 }
                 R.id.delete -> {
-
-                    val selectedView = selectedImageView.getParent() as View
-                    val list =
-                        pathList[contentsLayout.indexOfChild(selectedView) - 1].split("\\?")
-                            .toTypedArray()
-                    val list2 = list[0].split("%2F").toTypedArray()
-                    val name = list2[list2.size - 1]
-                    Log.e("로그: ", "이름: $name")
-
-                    val desertRef = storageRef.child(
-                        "posts/" + postInfo!!.id + "/" + name
-                    )
-
-                    desertRef.delete().addOnSuccessListener {
-                        Toast.makeText(
-                            this@WritePostActivity,
-                            "파일을 삭제하였습니다.",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        pathList.removeAt(contentsLayout.indexOfChild(selectedView) - 1)
-                        contentsLayout.removeView(selectedView)
-
-                        /*
-                        //밑에 나온 식당명 텍스트뷰들도 지워주는 로직
-                        var i = 0
-                        repeat(contentsLayout.childCount) {
-                            var view = contentsLayout.getChildAt(i)
-                            if (view is TextView) {
-                                contentsLayout.removeView(view)       //식당이름 텍스트뷰들은 제거해줌
-                            }
-                            i++
+                    var selectedView =
+                        selectedImageView.parent as View   // .parent 또는 getParent()를 하면 그 뷰의 부모 뷰(linearLayout 등)가 선택되어진다.  //removeView()안에는 뷰가 와야하는데 레이아웃이 와버려서 에러뜸. 그러므로 as를 통해 뷰로 형변환 해줌
+                    //mainAct에서 가져온 부분임. (스토리지에서 특정 게시물 삭제해주는 로직)********************************************8
+                    var list: List<String> =
+                        pathList.get(contentsLayout.indexOfChild(selectedView) - 1)
+                            .split("?")  //이미지 경로안을 split해서 이미지의 이름을 가져옴. 이미지의 이름을 알기위해
+                    var list2: List<String> = list[0].split("%2F")
+                    var name = list2[list2.size - 1] //스토리지에 저장된 이미지의 이름(ex. 0.jpg)을 알아냄
+                    Log.e("로그: ", "이름: " + name)
+                    if (name.contains("/")) {   //+버튼눌러서 서버 스토리지에 아직 저장안된 이미지를 삭제하려 할떄 : 이미지 경로값에 슬래쉬 있어서 이 조건문 포함
+                        Toast.makeText(this, "파일을 삭제하였습니다.", Toast.LENGTH_SHORT).show()
+                    } else {   //서버 스토리지에 이미 저장된 이미지를 삭제해주려 할때
+                        //파이어베이스 문서-스토리지-안드로이드-파일삭제  (스토리지 안의 내용 삭제)
+                        val desertRef =
+                            storageRef.child("posts/" + postInfo!!.id + "/" + name) //스토리지에서 지울 이미지의 경로를 줌
+                        Log.e(
+                            "WritePostAct 태그",
+                            "postInfo!!.id + /name값: " + postInfo!!.id + "/" + name
+                        )
+                        desertRef.delete().addOnSuccessListener {
+                            Toast.makeText(this, "파일을 삭제하였습니다.", Toast.LENGTH_SHORT).show()
+                        }.addOnFailureListener {
+                            Toast.makeText(this, "파일을 삭제하지 못하였습니다.", Toast.LENGTH_SHORT).show()
+                            Log.e("태그", "")
                         }
-                         */
-                        buttonsBackgroundLayout.visibility = View.GONE
-                    }.addOnFailureListener {
-                        Toast.makeText(
-                            this@WritePostActivity,
-                            "파일을 삭제하는데 실패하였습니다.",
-                            Toast.LENGTH_SHORT
-                        ).show()
                     }
+                    //*********************
+                    //밑에 식당명 텍스트뷰들도 떳었다면 그것들도 마저 삭제해줌
+                    /*
+                    var i=0
+                    repeat(contentsLayout.chldCount){
+                        var view =   contentsLayout.getChildAt(i)
+                        if(view is TextView){
+                            contentsLayout.removeView(view)
+                        }
+                        i++
+                    }
+                     */
+                    //********************************************
+                    //스토리지에서도 삭제됐으니(저장되어 있는 상태였다면)  이제 pathList에서 해당 이미지를 삭제함  // indexOfChild를 써서 contentsLayout의 몇번째 뷰인지 알아냄  //첫번째 editText가 무조건 있으니까 마이너스 1 해줌
+                    pathList.removeAt(contentsLayout.indexOfChild(selectedView) - 1)
+                    contentsLayout.removeView(selectedView)
+                    buttonsBackgroundlayout.visibility = View.GONE
                 }
             }
         }
-
-
 
 
     //onFocusChangedListener는 뷰가 포커스를 가지고 있는지 판별해주고, 가지고 있다면(hasFocus) 그때의 이벤트를 처리해줌
@@ -392,6 +397,7 @@ class WritePostActivity : BasicActivity() {
             user = Firebase.auth.currentUser!!          // 현재 회원객체 가져옴
             var contentsList =
                 ArrayList<String>()     // 게시글쓸때 이미지첨부하고 그 밑에 생긴 editText에 쓴 내용들을 여기에 모을거임
+            var formatList: ArrayList<String> = ArrayList()
             var storage = Firebase.storage   //파이어베이스 저장소(스토리지)의 객체를 하나 만듬
             val storageRef = storage.reference
             val firebaseFirestore =
@@ -422,24 +428,37 @@ class WritePostActivity : BasicActivity() {
                     "Writepost의 storageuploader중 contentsLayout.childCount: " + contentsLayout.childCount
                 )
 
-                val linearLayout = contentsLayout.getChildAt(i) as LinearLayout    //즉 이건 contentsItemView객체 하나임
-                var j=0
+                val linearLayout =
+                    contentsLayout.getChildAt(i) as LinearLayout    //즉 이건 contentsItemView객체 하나임
+                var j = 0
                 repeat(linearLayout.childCount) {  //이제 하나의 contentsItemView객체의 안을 돌면서 이미지인지 editText인지 LinearLayout인지 판별. 멤버가 3개라 최소3번은 돈다?
                     Log.e("태그", "linearLayout.childCount: " + linearLayout.childCount)
                     val view = linearLayout.getChildAt(j)
                     if (view is EditText) {               //코틀린에선 자료형이 일치하는지 판별을 is 연산자씀. 자바에선 instanceof 였음.
                         var text = view.text.toString()   //인덱스 0이 첫번째이므로 이미지뷰이고 1은 editText뷰임
                         Log.e("태그", "EditText: " + view)
-                       // if (text.length >0) {
-                            contentsList.add(text)  //contentsList에 모아서 store업로드시에 유용하게 이걸 올려주려고
-                            Log.e("태그", "contentsList에 editText추가: " + contentsList.toString())
+                        // if (text.length >0) {
+                        contentsList.add(text)  //contentsList에 모아서 store업로드시에 유용하게 이걸 올려주려고
+                        formatList.add("text");
+                        Log.e("태그", "contentsList에 editText추가: " + contentsList.toString())
                         //}
                     } else if (view is ImageView) {   //자식뷰가 url이 아닐경우에만 스토리지, db에 저장해줄거임  //
                         Log.e("태그", "ImageView: " + view)
-                        if(pathList.size > pathCount){  //이거 안해주면 indexoutofbounds에러남
+                        if (pathList.size > pathCount) {  //이거 안해주면 indexoutofbounds에러남
                             var path = pathList[pathCount]
                             successCount++
                             contentsList.add(path)  //contentsList에 사진경로를 넣어줌. pathList라는 리스트안엔 아까 게시글 써줄때 넣은 사진들의 경로가 순서대로 들어있음
+
+
+                            val mimeType: String = URLConnection.guessContentTypeFromName(path)
+                            if (mimeType != null && mimeType.startsWith("image")) {
+                                formatList.add("image")
+                            } else if (mimeType != null && mimeType.startsWith("video")) {
+                                formatList.add("video")
+                            } else {
+                                formatList.add("text")
+                            }
+
                             Log.e("태그", "contentsList에 이미지뷰 추가: " + contentsList.toString())
 
                             var pathArray =
@@ -485,6 +504,7 @@ class WritePostActivity : BasicActivity() {
                                         var WriteInfo = PostInfo(
                                             tilte,
                                             contentsList,
+                                            //formatList,
                                             user.uid,
                                             date
                                         )  //게시글 객체 하나 생성
@@ -517,7 +537,6 @@ class WritePostActivity : BasicActivity() {
             Toast.makeText(this, "제목을 입력해주세요.", Toast.LENGTH_SHORT).show()
         }
     }
-
 
 
     //회원이 확인버튼 눌렀을때 회원이 쓴 게시글을 db(클라우드firestore)에 올려주는 코드가진 함수

@@ -15,6 +15,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import android.widget.RelativeLayout
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import com.bumptech.glide.Glide
@@ -27,6 +28,7 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import kotlinx.android.synthetic.main.activity_member_init.*
 import kotlinx.android.synthetic.main.activity_sign_up.checkbutton
+import kotlinx.android.synthetic.main.fragment_camera2_basic.*
 import kotlinx.android.synthetic.main.view_loader.*
 import java.io.File
 import java.io.FileInputStream
@@ -36,7 +38,7 @@ class MemberInitActivity : BasicActivity() {
 
      var profilePath: String? = null //이미지가 저장된 파일의 경로를 전역으로 둠
     private lateinit var user: FirebaseUser   //회원 객체를 전역으로 선언만 해둠
-
+    private val buttonBackgroundLayout: RelativeLayout? = null
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,32 +63,34 @@ class MemberInitActivity : BasicActivity() {
         when (requestCode) {
             0 -> if (resultCode == Activity.RESULT_OK) {
                 profilePath = data!!.getStringExtra("profilePath")
-                Glide.with(this).load(profilePath).centerCrop().override(500).into(profileimageView)
+                Glide.with(this).load(profilePath).centerCrop().override(500).into(profileImageView)
                 //with()안에는 이미지를 띄울 프래그먼트나 액티비티정보를 넣어줘야해서 어댑터클래스의 인자에 띄울 데이터셋 에다가 액티비티도 추가해
                 // 매니패스트안에 android:requestLegacyExternalStorage="true"  이것도 추가해줘야 사진 온전히 나옴
+                buttonBackgroundLayout?.visibility = View.GONE;
             }
         }
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
     fun init() {
-        checkbutton.setOnClickListener {
+        checkButton.setOnClickListener {
             storageUploader()
         }
 
-        profileimageView.setOnClickListener {
-            //이미지뷰 클릭시
-            if (buttonsCardView.visibility == View.VISIBLE) {
-                buttonsCardView.visibility = View.GONE
-            } else {
-                buttonsCardView.visibility = View.VISIBLE
-            }
+        buttonsBackgroundLayout?.setOnClickListener {
+            buttonsBackgroundLayout.visibility = View.GONE
         }
 
-        videoModify.setOnClickListener {
+        profileImageView.setOnClickListener {
+            //이미지뷰 클릭시
+            buttonsBackgroundLayout?.visibility = View.VISIBLE
+        }
+
+        picture.setOnClickListener {
             //사진촬영버튼 클릭시
             var i = Intent(this, CameraActivity::class.java)
-            startActivityForResult(i,
+            startActivityForResult(
+                i,
                 0
             ) //다른 액티비티로 이 인텐트 보내고 그 다른 액티비티에서 일처리 끝나면 결과값or데이터 가지고 다시 이 액티비티로 돌아올거임
         }

@@ -8,7 +8,7 @@ import com.example.flav_pof.listener.OnPostListener
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 
-aa
+
 //스토리지, 스토어에서 게시물 삭제시켜주는 로직을 책임지는 클래스
 class FirebaseHelper(private val activity: Activity) {
     private var onPostListener: OnPostListener? = null

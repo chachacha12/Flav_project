@@ -2,10 +2,13 @@ package com.example.flav_pof
 
 import java.io.Serializable
 import java.util.*
+import kotlin.collections.ArrayList
+
 //:serializable을 추가한 이유는 MainActivity에서 인텐트를 보내려는데 이 객체를 putExtra에 실어서 보내려는데,, 그러려면 이걸 해줘야해서임
 data class PostInfo(
     val title: String,
     var contents: ArrayList<String>,
+    //val formats: ArrayList<String>,
     val publisher: String,
     val createdAt: Date?,
     val id: String? = null
@@ -19,9 +22,14 @@ data class PostInfo(
         val docData: MutableMap<String, Any> = HashMap()
         docData["title"] = title
         docData["contents"] = contents
+        //docData["formats"] = formats
         docData["publisher"] = publisher
         docData["createdAt"] = createdAt!!
         return docData
     }
+
+
+
+
 
 }

@@ -160,6 +160,7 @@ class MainActivity : BasicActivity() {
                             PostInfo(
                                 document.data.get("title").toString(),
                                 document.data.get("contents") as ArrayList<String>,  //형변환
+                                //document.data.get("formats") as ArrayList<String>,
                                 document.data.get("publisher").toString(),
                                 document.getDate("createdAt")?.time?.let { Date(it) },  //게시글 생성일정보
                                 document.id
