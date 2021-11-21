@@ -33,6 +33,7 @@ class MainAdapter(
     private var MORE_INDEX = 2
     private var firebaseHelper = FirebaseHelper(activity)  //firebaseHelper 객체생성
 
+
     //뷰홀더에 텍스트뷰말고 카드뷰를 넣음
     class MainViewHolder(val cardView: CardView) : RecyclerView.ViewHolder(cardView)
 
@@ -55,7 +56,8 @@ class MainAdapter(
         //특정 게시글을 눌렀을때 효과
         cardView.setOnClickListener {
             val intent = Intent(activity, PostActivity::class.java)
-            intent.putExtra("postInfo", myDataset.get(mainViewHolder.adapterPosition))
+
+            intent.putExtra("postInfo", myDataset[mainViewHolder.adapterPosition])
             activity.startActivity(intent)
         }
 
@@ -77,11 +79,13 @@ class MainAdapter(
     // 여기서 리사이클러뷰의 리스트 하나하나 가리키는 뷰홀더와 내가 주는 데이터(게시글)가 연결되어짐. 즉 리사이클러뷰 화면에 띄워짐
      //액티비티에서 게시글 업데이트 해주려고 mainAdapter.notifyDataSetChanged() 하면 이 함수만 작동함.
     override fun onBindViewHolder(holder: MainViewHolder, position: Int) {
+
+        val safePosition: Int = holder.adapterPosition
+
         var cardView = holder.cardView
         var titletextView = cardView.titleTextView
-
-        var postInfo= myDataset.get(position)
-        titletextView.setText(postInfo.title)
+        var postInfo= myDataset[safePosition]
+        titletextView.text = postInfo.title
 
         val readContentsVIew: ReadContentsVIew = cardView.findViewById(R.id.readContentsView)
 
@@ -93,8 +97,6 @@ class MainAdapter(
         if (contentsLayout.getTag() == null || !contentsLayout.getTag().equals(postInfo)) {     //데이터가 같을수도 있는데 계속 뷰들 다 지웠다 만들고 하는건 낭비라서 이 로직 추가함.(null일땐 처음 앱 실행할때를 위해) 이 로직 없다면 스크롤 내릴때마다 뷰들 삭제되고 생성되고했을거임
             contentsLayout.setTag(postInfo)
             contentsLayout.removeAllViews()   //액티비티 onResume()의 notifyDataSetChanged()를 통해 게시글 업데이트 해줄때마다 뷰 다 지우고 새롭게 만들어줄거임
-            val MORE_INDEX = 2   //메인화면상에서 한 게시글마다 몇개의 뷰까지 보여주고 더보기 나오게 할지를 정할 숫자. 2개로 함
-
 
             readContentsVIew.setMoreIndex(MORE_INDEX)
             readContentsVIew.setPostInfo(postInfo)
@@ -116,7 +118,7 @@ class MainAdapter(
                     true
                 }
                 R.id.delete -> {                  //삭제하기 눌렀을때
-                    firebaseHelper.storageDelete(myDataset.get(position))
+                    firebaseHelper.storageDelete(myDataset[position])
                     true
                 }
                 else -> false

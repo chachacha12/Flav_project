@@ -9,10 +9,13 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 
 
+
 //스토리지, 스토어에서 게시물 삭제시켜주는 로직을 책임지는 클래스
 class FirebaseHelper(private val activity: Activity) {
     private var onPostListener: OnPostListener? = null
     private var successCount = 0
+
+
 
     fun setOnPostListener(onPostListener: OnPostListener?) {
         this.onPostListener = onPostListener
@@ -38,24 +41,24 @@ class FirebaseHelper(private val activity: Activity) {
                 val desertRef = storageRef.child("posts/" + id + "/" + name)
                 desertRef.delete().addOnSuccessListener {
                     successCount--
-                    storeDelete(id)
+                    storeDelete(id, postInfo)
                 }.addOnFailureListener {
                     Log.e("태그","contents: "+ contents)
                     Toast.makeText(activity, "Error", Toast.LENGTH_SHORT).show()
                 }
             }
         }
-        storeDelete(id)
+        storeDelete(id, postInfo)
     }
 
-    private fun storeDelete(id: String?) { 
+    private fun storeDelete(id: String?, postInfo:PostInfo) {
         val firebaseFirestore = FirebaseFirestore.getInstance()
         if (successCount == 0) {
             firebaseFirestore.collection("posts").document(id!!)
                 .delete()
                 .addOnSuccessListener {
                     Toast.makeText(activity, "게시글을 삭제하였습니다.", Toast.LENGTH_SHORT).show()
-                    onPostListener!!.onDelete()
+                    onPostListener?.onDelete(postInfo)
                     //postsUpdate();
                 }
                 .addOnFailureListener {

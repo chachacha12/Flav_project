@@ -73,7 +73,7 @@ class PostActivity : BasicActivity() {
     }
 
     var onPostListener: OnPostListener = object : OnPostListener {
-        override fun onDelete() {
+        override fun onDelete(postInfo: PostInfo) {
             Log.e("로그 ", "삭제 성공")
         }
 
