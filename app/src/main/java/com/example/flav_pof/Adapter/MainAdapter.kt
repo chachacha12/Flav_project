@@ -89,7 +89,6 @@ class MainAdapter(
 
         val readContentsVIew: ReadContentsVIew = cardView.findViewById(R.id.readContentsView)
 
-
         var contentsLayout = cardView.contentsLayout  //여기안에 contentsList의 내용들(사진,영상,글) 등을 넣을거임
 
 

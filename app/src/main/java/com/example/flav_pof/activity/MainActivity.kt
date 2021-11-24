@@ -111,6 +111,10 @@ class MainActivity : BasicActivity() {
 
                 val firstVisibleItemPosition =
                     (layoutManager as LinearLayoutManager?)!!.findFirstVisibleItemPosition() //리사이클러뷰에 보이는 뷰중 첫번째것의 위치정보
+
+
+                /*
+                //위로 스크롤시 업데이트 해주는 로직 - 이거 작성시 스크롤때 자꾸 앱꺼짐 에러남
                 if (newState == 1 && firstVisibleItemPosition == 0) {  // 맨위에서 바로 위로 스크롤한건지 확인위해(밑에서 쭉올라오면서 맨위까지 스크롤한 경우 제외하기위해)
                     topScrolled = true  //맨위에서 스크롤이 맞다고 표시
                     Log.e("태그","맨위에서 스크롤이 맞다고 표시 완료")
@@ -121,6 +125,8 @@ class MainActivity : BasicActivity() {
                     Log.e("태그","상단드레그로 업데이트@@@@@@@@@")
                     topScrolled = false
                 }
+
+                 */
             }
 
             //스크롤 내려가거나 올라갈때 계속 동작함
@@ -236,11 +242,10 @@ class MainActivity : BasicActivity() {
                         // 그래서 onBindView안에서 기능들 다 넣어줘야함.
                         //즉, 어댑터에 postList 있는데 그게 새로 바뀐(게시글 삭제or수정시) postList가 들어옴
                     } else {
-                        Log.d("태그", "Error getting documents: ", documents.getException());
+                        Log.d("태그", "Error getting documents: ", documents.exception)
                     }
-                    updating = false;
+                    updating = false
                 }
-
            /*                                                                                                                                 //limit(10)은 10개의 아이템만 가져오겠다는 뜻
                 .addOnCompleteListener { documents ->
                    for (document in documents) {           //postList안에 게시글 데이터들을 넣어줌 (document가 posts컬렉션안에 있는 각각 게시글들 인듯)
