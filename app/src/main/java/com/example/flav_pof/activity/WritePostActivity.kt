@@ -75,7 +75,7 @@ class WritePostActivity : BasicActivity() {
             for (i in contentsList.indices) {
                 var contents = contentsList.get(i)
                 if (Patterns.WEB_URL.matcher(contents)
-                        .matches() && contents.contains("https://firebasestorage.googleapis.com/v0/b/flavmvp-9fe0d.appspot.com/o/posts")
+                        .matches() && contents!!.contains("https://firebasestorage.googleapis.com/v0/b/flavmvp-9fe0d.appspot.com/o/posts")
                 ) {        //올바른 url형식인지 판별, 즉 이미지or영상인지 // Patterns.WEB_URL.matcher().matches() 이 구문은 matcher안의 문자열이 올바른 url형식인지 판단해서 true나 false반환함
                     pathList.add(contents)
 
@@ -94,7 +94,7 @@ class WritePostActivity : BasicActivity() {
                     if (i < contentsList.size - 1) {   //처음에 이 게시글 만들때 이미지 붙여놓고 밑에 같이 생성되었던 editText안에 글을 써두었다면.
                         var nextContents = contentsList.get(i + 1)
                         if (!Patterns.WEB_URL.matcher(nextContents)
-                                .matches() || !nextContents.contains(
+                                .matches() || !nextContents!!.contains(
                                 "https://firebasestorage.googleapis.com/v0/b/flavmvp-9fe0d.appspot.com/o/posts"
                             )
                         ) { //다음 contents가 이미지나 영상이 아닐경우에만

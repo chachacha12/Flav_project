@@ -41,6 +41,7 @@ dependencies {
 
     //갤러리의 이미지 가져와서 리사이클러뷰에 넣을때, 이미지를 보기좋게 리사이징 해주는 라이브러리
     implementation 'com.github.bumptech.glide:glide:4.11.0'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
@@ -61,17 +62,6 @@ dependencies {
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
     implementation 'com.google.android.material:material:1.2.1'
-
-
-
-
-
-
-
-
-
-
-
 
 
 }

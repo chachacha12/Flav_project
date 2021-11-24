@@ -19,22 +19,20 @@ import android.widget.RelativeLayout
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import com.bumptech.glide.Glide
-import com.example.flav_pof.MemberInfo
+import com.example.flav_pof.UserInfo
 import com.example.flav_pof.R
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
-import kotlinx.android.synthetic.main.activity_member_init.*
-import kotlinx.android.synthetic.main.activity_sign_up.checkbutton
-import kotlinx.android.synthetic.main.fragment_camera2_basic.*
+import kotlinx.android.synthetic.main.activity_user_init.*
 import kotlinx.android.synthetic.main.view_loader.*
 import java.io.File
 import java.io.FileInputStream
 
 
-class MemberInitActivity : BasicActivity() {
+class UserInitActivity : BasicActivity() {
 
      var profilePath: String? = null //이미지가 저장된 파일의 경로를 전역으로 둠
     private lateinit var user: FirebaseUser   //회원 객체를 전역으로 선언만 해둠
@@ -43,7 +41,7 @@ class MemberInitActivity : BasicActivity() {
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_member_init)
+        setContentView(R.layout.activity_user_init)
         setToolbarTitle("회원정보")
         init()
     }
@@ -128,13 +126,13 @@ class MemberInitActivity : BasicActivity() {
 
             if (profilePath == null) {        //만약 사용자가 프로필이미지를 등록안하고 회원정보를 등록했을때를 대비한것
                 //프로필이미지 없을때는 4가지의 기입한 데이터만 db(클라우드store)에 올리기
-                var memberinfo = MemberInfo(
+                var userInfo  = UserInfo(
                     name,
                     phoneNumber,
                     birthDay,
                     address
                 )  //이미지정보만 뺀 회원객체 하나 생성
-                storeUploader(memberinfo)  //밑에 만들어둔 함수임. 회원객체를 인자로 받아서 회원정보 4개를 db에 등록시켜줌
+                storeUploader(userInfo )  //밑에 만들어둔 함수임. 회원객체를 인자로 받아서 회원정보 4개를 db에 등록시켜줌
 
             } else {
                 //**여긴 파이어베이스-문서-가이드-개발-스토리지-파일업로드-(스트림에서업로드) 에서 가져온 코드임. 파일경로를 받아서 스토리지에 데이터 저장할때 사용함
@@ -153,14 +151,14 @@ class MemberInitActivity : BasicActivity() {
                         val downloadUri =
                             task.result   //데이터(이미지)의 URL을 가져옴. 즉 내폰에 저장된 이미지파일의 경로를 가져옴
 
-                        var memberinfo = MemberInfo(
+                        var userInfo  = UserInfo(
                             name,
                             phoneNumber,
                             birthDay,
                             address,
                             downloadUri.toString()
                         )  //회원객체 하나 생성
-                        storeUploader(memberinfo)  //밑에 만들어둔 함수임. 회원객체를 인자로 받아서 회원정보 4개를 db에 등록시켜줌
+                        storeUploader(userInfo )  //밑에 만들어둔 함수임. 회원객체를 인자로 받아서 회원정보 4개를 db에 등록시켜줌
                     } else {
                         Toast.makeText(this, "회원정보를 보내는데 실패하였습니다.", Toast.LENGTH_SHORT).show()
                     }
@@ -173,14 +171,14 @@ class MemberInitActivity : BasicActivity() {
 
 
     //회원이 회원정보액티비티에서 4가지정보(이름. 전번, 생일, 주소)를 입력하고 확인버튼 눌렀을때 그 정보들을 db에 올려주는 코드가진 함수
-    private fun storeUploader(memberinfo: MemberInfo) {
+    private fun storeUploader(userInfo: UserInfo) {
 
         //***************** 파이어베이스 클라우드 FIREStore에 저장하기 위한 코드*****************
         //UID를 매겨줌. 그래서 그 UID를 불러서 데이터베이스에 사용자정보 입력할때 같이 입력해주면 나중에 그 키로 사용자 찾고 할때 편함
         val db =
             FirebaseFirestore.getInstance()        //파이어베이스사이트-문서-가이드-클라우드firestore-초기화 에서 가져온 코드임
         db.collection("users").document(user!!.uid)
-            .set(memberinfo)   //document에다가 현재 유저의 uid를 넣어줌.. 이럼 나중에 회원들 따로 찾기 쉬워서?
+            .set(userInfo)   //document에다가 현재 유저의 uid를 넣어줌.. 이럼 나중에 회원들 따로 찾기 쉬워서?
             .addOnSuccessListener {
                 loaderLayout.visibility = View.GONE
                 Toast.makeText(this, "회원정보 등록을 성공하였습니다.", Toast.LENGTH_SHORT).show()

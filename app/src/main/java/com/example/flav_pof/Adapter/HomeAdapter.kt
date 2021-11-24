@@ -24,10 +24,10 @@ import java.util.*
 
 
 //괄호안은 어댑터클래스의 인자들
-class MainAdapter(
+class HomeAdapter(
     var activity: Activity,
     private var myDataset: ArrayList<PostInfo>
-)  : RecyclerView.Adapter<MainAdapter.MainViewHolder>() {
+)  : RecyclerView.Adapter<HomeAdapter.MainViewHolder>() {
 
     //전역
     private var MORE_INDEX = 2
