@@ -3,6 +3,7 @@
     <string name="request_permission">This sample needs camera permission.</string>
     <string name="camera_error">This device doesn\'t support Camera2 API.</string>
     <string name="please_grant_permission">권한을 허용해 주세요.</string>
+    <string name="kakao_app_key">c96f6bd57c1d1f50be96460adb9705c3</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

@@ -6,17 +6,23 @@ package com.example.flav_pof.activity
 //이 앱은 파이어베이스를 기반으로해서 만듬. (파이어베이스는 서버리스인 db임. 이 db가 서버역할도 하는 것)
 // 파이어베이스-문서-가이드-개발(인증(앱에 파이어베이스연결, 신규사용자가입 등 기능), cloud firestore(db에 저장된 회원정보 읽거나 추가 기능), storage() 등을 이용)
 
-import android.R
 import android.content.Intent
+import android.content.pm.PackageInfo
+import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Base64
 import android.util.Log
 import com.example.flav_pof.fragment.HomeFragment
 import com.example.flav_pof.fragment.UserInfoFragment
 import com.example.flav_pof.fragment.UserListFragment
+import com.example.flav_pof.fragment.mapFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
+import java.security.MessageDigest
+import java.security.NoSuchAlgorithmException
+
 
 class MainActivity : BasicActivity() {
     //전역으로 해둔 이유는 여러함수 안에서 불러와서 쓰고 싶기에. 등등
@@ -27,8 +33,31 @@ class MainActivity : BasicActivity() {
         setContentView(com.example.flav_pof.R.layout.activity_main)
         setToolbarTitle("뿌윙클")
 
+        getHashKey()
         init()
     }
+
+    //해시키 가져오기 - 카톡sdk와 연동위해서 필요함
+    private fun getHashKey() {
+        var packageInfo: PackageInfo? = null
+        try {
+            packageInfo = packageManager.getPackageInfo(packageName, PackageManager.GET_SIGNATURES)
+        } catch (e: PackageManager.NameNotFoundException) {
+            e.printStackTrace()
+        }
+        if (packageInfo == null) Log.e("KeyHash", "KeyHash:null")
+        for (signature in packageInfo!!.signatures) {
+            try {
+                val md: MessageDigest = MessageDigest.getInstance("SHA")
+                md.update(signature.toByteArray())
+                Log.e("KeyHash", Base64.encodeToString(md.digest(), Base64.DEFAULT))
+            } catch (e: NoSuchAlgorithmException) {
+                Log.e("KeyHash", "Unable to get MessageDigest. signature=$signature", e)
+            }
+        }
+    }
+
+
 
     //액티비티가 재실행되거나 홈버튼 눌러서 나갔다왔을때 등의 경우에 onCreate말고 이 함수가 실행됨. (이때마다 게시글들 새로고침 해주면될듯)
     //앱 처음 실행시엔 onCreate와 onResume함수가 둘다 실행되므로 중복되는 코드는 쓰지 않기
@@ -52,7 +81,7 @@ class MainActivity : BasicActivity() {
     fun init() {
         val firebaseUser = FirebaseAuth.getInstance().currentUser
         if (firebaseUser == null) {//만약 현재 유저가 null이면... (즉, 로그인이 아직 안되어있다는 뜻)
-            myStartActivity(SignUpActivity::class.java ) //회원가입창 화면으로 이동
+            myStartActivity(SignUpActivity::class.java) //회원가입창 화면으로 이동
         } else {
             val documentReference =
                 FirebaseFirestore.getInstance().collection("users").document(firebaseUser.uid)
@@ -78,6 +107,7 @@ class MainActivity : BasicActivity() {
                 .replace(com.example.flav_pof.R.id.container, homeFragment)
                 .commit()
 
+            //바텀네비게이션탭 선택에 따라 붙혀줄 fragment
             val bottomNavigationView = findViewById<BottomNavigationView>(com.example.flav_pof.R.id.bottomNavigationView)
             bottomNavigationView.setOnNavigationItemSelectedListener {
 
@@ -103,13 +133,20 @@ class MainActivity : BasicActivity() {
                             .commit()
                         true
                     }
+                    com.example.flav_pof.R.id.map -> {
+                        val mapfragment = mapFragment()
+                        Log.e("태그", "mapfrag로 replace")
+                        supportFragmentManager.beginTransaction()
+                            .replace(com.example.flav_pof.R.id.container, mapfragment)
+                            .commit()
+                        true
+                    }
                     else ->
                         true
                 }
             }//setOnNavigationItemSelectedListener
 
         }//else
-
     }  //init
 
     private fun myStartActivity(c: Class<*>) {

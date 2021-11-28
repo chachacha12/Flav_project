@@ -30,7 +30,6 @@ class UserListFragment : Fragment() {
     private var updating = false
     private var topScrolled = false
 
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -42,7 +41,7 @@ class UserListFragment : Fragment() {
         userList = ArrayList()
         userListAdapter = UserListAdapter(requireActivity(), userList!!)
 
-        var recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
+        val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
 
         recyclerView.setHasFixedSize(true)
         recyclerView.layoutManager = LinearLayoutManager(activity)
@@ -117,7 +116,7 @@ class UserListFragment : Fragment() {
         val collectionReference = firebaseFirestore!!.collection("users")
         collectionReference.get()
             .addOnCompleteListener { task ->
-                if (task.isSuccessful()) {
+                if (task.isSuccessful) {
                     if (clear) {
                         userList!!.clear()
                     }

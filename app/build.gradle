@@ -19,6 +19,10 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    viewBinding {
+        enabled = true
+    }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -34,6 +38,16 @@ android {
 
 
 dependencies {
+
+    //카카오톡 sdk를 추가해줌 - 카톡로그인 위해서
+    implementation group: project.KAKAO_SDK_GROUP, name: 'usermgmt', version: project.KAKAO_SDK_VERSION
+
+
+    //구글맵관련 라이브러리
+    implementation 'com.google.android.gms:play-services-maps:18.0.0'
+    implementation 'com.google.android.gms:play-services-location:18.0.0'
+
+
     implementation 'com.amplifyframework:aws-auth-cognito:1.28.1'
 
     implementation 'com.squareup.retrofit2:retrofit:2.4.0'
