@@ -33,9 +33,7 @@ class LoginActivity : BasicActivity() {
         // Add this line, to include the Auth plugin.
         Amplify.addPlugin(AWSCognitoAuthPlugin())
         Amplify.configure(applicationContext)
-
          */
-
 
         init()
     }

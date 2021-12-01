@@ -34,6 +34,7 @@
             android:orientation="vertical"
             android:padding="10dp">
 
+
             <EditText
                 android:id="@+id/emaileditText"
                 android:layout_width="match_parent"
@@ -58,12 +59,14 @@
                 android:layout_height="wrap_content"
                 android:text="로그인" />
 
+
             <Button
                 android:id="@+id/gotoPasswordResetButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="비밀번호 재설정" />
         </LinearLayout>
+
     </LinearLayout>
     <include
         layout="@layout/view_loader"
