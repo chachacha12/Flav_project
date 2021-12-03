@@ -29,10 +29,8 @@ allprojects {
         google()
         jcenter()
 
-        maven{
-            url "https://maven.google.com"
-        }
-        /*카카오*/
+        /*카카오 로그인 - 이 작업을 해줘야 gradle(app)쪽에 implement한 라이브러리를 다운받는 소통창구가 여기임*/
+        mavenCentral()
         maven { url 'http://devrepo.kakao.com:8088/nexus/content/groups/public/'}
 
 

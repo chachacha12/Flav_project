@@ -7,9 +7,18 @@ import android.os.Bundle
 import androidx.annotation.LayoutRes
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
+import com.example.flav_pof.retrofit_service
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 
 open class BasicActivity : AppCompatActivity() {
+
+    var retrofit = Retrofit.Builder()
+        .baseUrl("https://www.flavorus.shop/")
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+    var server = retrofit.create(retrofit_service::class.java)  //서버와 만들어둔 인터페이스를 연결시켜줌.
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,7 +30,7 @@ open class BasicActivity : AppCompatActivity() {
     override fun setContentView(@LayoutRes layoutResID: Int) {
         super.setContentView(layoutResID)
 
-        val myToolbar = findViewById<androidx.appcompat.widget.Toolbar>(com.example.flav_pof.R.id.toolbar) as androidx.appcompat.widget.Toolbar
+        val myToolbar = findViewById<androidx.appcompat.widget.Toolbar>(com.example.flav_pof.R.id.toolbar)
         setSupportActionBar(myToolbar)
     }
 

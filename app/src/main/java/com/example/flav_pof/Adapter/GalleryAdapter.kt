@@ -11,8 +11,9 @@ import android.view.ViewGroup
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.flav_pof.Name
+import com.example.flav_pof.classes.Name
 import com.example.flav_pof.R
+import com.example.flav_pof.activity.BasicActivity
 import com.example.flav_pof.retrofit_service
 import kotlinx.android.synthetic.main.item_gallery.view.*
 import okhttp3.MediaType
@@ -27,18 +28,11 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.io.File
 
 
-class GalleryAdapter(var activity: Activity, private val myDataset: ArrayList<String?>?) :     //어댑터클래스의 인자 2개
+class GalleryAdapter(var activity: Activity, private val myDataset: ArrayList<String?>?,  var server:retrofit_service) :     //어댑터클래스의 인자 3개, 어댑터클래스엔 basicactivity상속 안되있으므로 액티비티에서 server를 가져옴
     RecyclerView.Adapter<GalleryAdapter.GalleryViewHolder>() {
 
-    //레트로핏
-    var retrofit = Retrofit.Builder()
-        .baseUrl("https://www.flavorus.shop/")
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-    var server = retrofit.create(retrofit_service::class.java)  //서버와 만들어둔 인터페이스를 연결시켜줌.
 
     lateinit var name_list:JSONArray  //주변식당이름을 서버로부터 받아와서 저장해줄 전역변수. 이 변수를 writepostAct에 보낼거임
-
     var resultIntent = Intent()  //writepostactivity로 데이터 실어서 보내줄 인텐트
     lateinit var file:MultipartBody.Part  //이미지파일 담을 곳
 
@@ -53,7 +47,6 @@ class GalleryAdapter(var activity: Activity, private val myDataset: ArrayList<St
             .inflate(R.layout.item_gallery, parent, false) as CardView   //inflate에 들어간 레이아웃은 row파일과 같은거임.
 
         val galleryViewHolder = GalleryViewHolder(cardView)  //밑의 setOnClickListener에서 사용자가 선택한 특정뷰의 위치값 알아야해서 여기서 뷰홀더객체생성
-
         cardView.setOnClickListener {                //사용자가 갤러리에서 특정 사진을 클릭해서 선택했을때
 
             //레트로핏 post image 업로드
@@ -69,7 +62,6 @@ class GalleryAdapter(var activity: Activity, private val myDataset: ArrayList<St
             resultIntent = Intent()
             resultIntent.putExtra("profilePath", myDataset!![galleryViewHolder.adapterPosition])  //돌려보낼 인텐트에 값 넣어줌. 여기선 이미지가 저장된 경로를 보냄
             thread_start()
-
         }
         return galleryViewHolder
     }
@@ -147,5 +139,4 @@ class GalleryAdapter(var activity: Activity, private val myDataset: ArrayList<St
     }
 
     override fun getItemCount() = myDataset!!.size
-
 }

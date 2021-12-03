@@ -1,10 +1,11 @@
 package com.example.flav_pof
 
+import com.example.flav_pof.classes.Name
+import com.example.flav_pof.classes.Users
+import com.example.flav_pof.classes.Users_request
 import okhttp3.MultipartBody
 import retrofit2.Call
-import retrofit2.http.Multipart
-import retrofit2.http.POST
-import retrofit2.http.Part
+import retrofit2.http.*
 
 interface retrofit_service {
 
@@ -25,5 +26,17 @@ interface retrofit_service {
     @Multipart
     @POST("app/rekog")
     fun postpic_rekog_Request(@Part file: MultipartBody.Part): Call<Name> //file의 타입은 MultipartBody.Part. 반환값은 Name객체
+
+
+    //유정 등록 요청
+    //@Multipart
+    //@FormUrlEncoded
+    @POST("app/user")
+    fun user_add_Request(@Body users: Users): Call<Users_request>
+
+
+
+
+
 
 }

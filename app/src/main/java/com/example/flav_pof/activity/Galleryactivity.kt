@@ -79,7 +79,7 @@ class Galleryactivity : BasicActivity() {
     private fun recyclerInit() {
         val numberOfColumns = 3      //리사이클러뷰를 통해 사진들 띄울때 가로에 사진을 3개씩 보여줄거임
 
-        var viewAdapter = GalleryAdapter(this, getImagesPath(this)
+        var viewAdapter = GalleryAdapter(this, getImagesPath(this), server
         )       //getImagesPath()라는 밑에 정의한 함수를 통해 갤러리의 이미지들 경로 가져올거임
         //이 액티비티정보를 어댑터에 넘겨주는 이유는 이미지를 리사이징해줄때 필요한 with()함수안에 액티비티정보가 필요해서임.
         //그래서 어댑터클래스에 이 액티비티정보도 줌
