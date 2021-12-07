@@ -197,9 +197,7 @@ class WritePostActivity : BasicActivity() {
             pathList.removeAt(contentsLayout.indexOfChild(selectedView) - 1)
             contentsLayout.removeView(selectedView)
             buttonsBackgroundlayout.visibility = View.GONE
-     
         }  //delete
-
 
         contentsEditText.onFocusChangeListener =
             onFocusChangedListener   //포커스리스너 붙이면 포커스가 있는지 판별함. 포커스 있으면 이 뷰가 selectedEditText가 됨

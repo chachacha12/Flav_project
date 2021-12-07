@@ -30,22 +30,32 @@ android {
         }
     }
 
+    //자바 버전 설정
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+    //카카오 로그인 기능 위한 작업
+    kotlinOptions {
+        jvmTarget = "1.8"
     }
 }
 
 
 dependencies {
-
     //카톡로그인 위해서
-    implementation 'com.kakao.sdk:usermgmt:1.27.0'
-    //implementation group: project.KAKAO_SDK_GROUP, name: 'usermgmt', version: project.KAKAO_SDK_VERSION
+    //implementation 'com.kakao.sdk:usermgmt:1.27.0'
+    implementation "com.kakao.sdk:v2-user:2.8.3" // 카카오 로그인
+    implementation "com.kakao.sdk:v2-talk:2.8.3" // 친구, 메시지(카카오톡)
+    implementation "com.kakao.sdk:v2-story:2.8.3" // 카카오스토리
+    implementation "com.kakao.sdk:v2-link:2.8.3" // 메시지(카카오링크)
+    implementation "com.kakao.sdk:v2-navi:2.8.3" // 카카오내비
+
 
     //구글맵관련 라이브러리
     implementation 'com.google.android.gms:play-services-maps:18.0.0'
     implementation 'com.google.android.gms:play-services-location:18.0.0'
+
 
 
     implementation 'com.amplifyframework:aws-auth-cognito:1.28.1'

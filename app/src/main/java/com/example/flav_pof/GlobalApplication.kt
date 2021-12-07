@@ -1,7 +1,7 @@
 package com.example.flav_pof
 
 import android.app.Application
-import com.kakao.auth.*
+import com.kakao.sdk.common.KakaoSdk
 
 
 //카카오 api연동을 위한 클래스s
@@ -12,18 +12,19 @@ import com.kakao.auth.*
 class GlobalApplication : Application() {
     override fun onCreate() {
         super.onCreate()
-        instance = this
+        //instance = this
 
-        // Kakao Sdk 초기화
-        KakaoSDK.init(KakaoSDKAdapter())
+        // Kakao SDK 초기화
+        KakaoSdk.init(this, "c96f6bd57c1d1f50be96460adb9705c3")
     }
 
     override fun onTerminate() {
         super.onTerminate()
-        instance = null
+       // instance = null
     }
 
 
+    /*
     inner class KakaoSDKAdapter : KakaoAdapter() {
 
         //카카오 로그인 세션을 불러올 때의 설정값을 설정하는 부분
@@ -68,4 +69,6 @@ class GlobalApplication : Application() {
                 return instance
             }
     }
+
+     */
 }

@@ -50,8 +50,24 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
+
+
+        <!-- 리다이렉트url을 위한 부분임.AuthCodeHandlerActivity는 카카오에서 제공하는 액티비티임.  -->
+        <activity
+            android:name="com.kakao.sdk.auth.AuthCodeHandlerActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <!-- Redirect URI: "kakao{NATIVE_APP_KEY}://oauth" -->
+                <data android:host="oauth"
+                    android:scheme="kakaoc96f6bd57c1d1f50be96460adb9705c3" />
+            </intent-filter>
+        </activity>
+
 
     </application>
 

@@ -33,13 +33,6 @@ import java.io.IOException
 
 class CameraActivity : BasicActivity(){
 
-    //레트로핏
-    var retrofit = Retrofit.Builder()
-        .baseUrl("http://192.168.0.116:3000/")
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-    var server = retrofit.create(retrofit_service::class.java)  //서버와 만들어둔 인터페이스를 연결시켜줌.
-
 
 
     private lateinit var camera2BasicFragment: Camera2BasicFragment  //카메라2프래그먼트객체를 전역으로 둠

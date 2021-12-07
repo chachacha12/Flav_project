@@ -8,29 +8,18 @@ import android.os.Looper
 import android.os.Message
 import android.util.Log
 import android.widget.Toast
-import androidx.annotation.Nullable
 import com.example.flav_pof.R
-import com.example.flav_pof.classes.Name
 import com.example.flav_pof.classes.Users
 import com.example.flav_pof.classes.Users_request
-import com.example.flav_pof.retrofit_service
-import com.kakao.auth.AuthType
-import com.kakao.auth.ISessionCallback
-import com.kakao.auth.Session
-import com.kakao.network.ErrorResult
-import com.kakao.usermgmt.UserManagement
-import com.kakao.usermgmt.callback.MeV2ResponseCallback
-import com.kakao.usermgmt.response.MeV2Response
-import com.kakao.usermgmt.response.model.Profile
-import com.kakao.util.OptionalBoolean
-import com.kakao.util.exception.KakaoException
+import com.kakao.sdk.auth.AuthApiClient
+import com.kakao.sdk.auth.model.OAuthToken
+import com.kakao.sdk.common.KakaoSdk
+import com.kakao.sdk.common.model.KakaoSdkError
+import com.kakao.sdk.user.UserApiClient
 import kotlinx.android.synthetic.main.activity_login_kakao.*
-import org.json.JSONArray
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 
 class KakaoLoginActivity: BasicActivity() {
@@ -40,90 +29,147 @@ class KakaoLoginActivity: BasicActivity() {
     lateinit var strNick: String
     lateinit var strprofileImg: String
     lateinit var strEmail: String
+    lateinit var kakao_token: String  //카카오 api접근을 위해 저장해두는 엑세스 토큰
     lateinit var user:Users //유저객체
 
-    //카톡 로그인 관리하는 객체
-    private lateinit var sessionCallback:ISessionCallback
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login_kakao)
         setToolbarTitle("카카오 로그인")
 
-        //카톡 로그인 관리하는 객체
-        sessionCallback = object: ISessionCallback{
-            override fun onSessionOpened() {
-                //여기서 실제 로그인 요청을 함
-                requestMe()
+        has_kakaotoken()  //카카오 토큰 있는지 판별
+
+        //로그인 이미지 눌렀을때
+        login.setOnClickListener {
+            // 로그인 공통 callback 함수 - 밑에서 카톡 깔려있는지 없는지에 따라서 로그인 작업 수행해주고 그후 로그인 성공실패 작업은 여기서
+            val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
+                if (error != null) {    //오류 발생시
+                    Log.e("태그", "로그인 실패", error)
+                }
+                else if (token != null) {   //토큰이 있을때 (밑에서 로그인 작업으로 생겼을때)
+                    Log.e("태그", "로그인 성공 ${token.accessToken}")
+                    kakao_token = token.accessToken
+                    UserinfoCall_notoken()  //현재 로그인된 사용자 정보 가져옴 (이름, 이메일), 그리고 유저객체 하나 만듬
+                }  //토큰 있을때 작업
+            }  //콜백함수
+
+            // 카카오톡이 설치되어 있으면 카카오톡으로 로그인, 아니면 카카오 계정으로 로그인
+            if (UserApiClient.instance.isKakaoTalkLoginAvailable(this)) {
+                UserApiClient.instance.loginWithKakaoTalk(this, callback = callback)
+                Log.e("태그", "loginWithKakaoTalk")
+            } else {
+                UserApiClient.instance.loginWithKakaoAccount(this, callback = callback)
+                Log.e("태그", "loginWithKakaoAccount")
             }
-            override fun onSessionOpenFailed(exception: KakaoException?) {
-                Log.e("SessionCallback :: ", "onSessionOpenFailed : " + exception?.message)
+
+        }  //로그인 버튼 클릭시
+    } //onCrete함수
+
+
+    //사용자가 아예 토큰도 없고 카톡 로그인 안되어있는 상태일때 -사용자 정보 가져와서 main에 넘겨주고 유저객체 만들어서 플레브 서버에 유저 등록.
+    fun UserinfoCall_notoken(){
+        // 사용자 정보 요청
+        UserApiClient.instance.me { user, error ->
+            if (error != null) {
+                Log.e("태그", "사용자 정보 요청 실패", error)
             }
+            else if (user != null) {
+                strNick = user.kakaoAccount?.profile?.nickname.toString()
+                strEmail = user.kakaoAccount?.email.toString()
+                strprofileImg = user.kakaoAccount?.profile?.thumbnailImageUrl.toString()
+
+                this.user = Users(strEmail,strNick,kakao_token) //유저객체 하나 생성
+
+                //main에 보내줄 회원정보 데이터 값들
+                MainAct_Intent = Intent(this@KakaoLoginActivity, MainActivity::class.java)
+                MainAct_Intent.putExtra("id", user.id)  //회원번호
+                MainAct_Intent.putExtra("name",strNick)  //프로필이름
+                MainAct_Intent.putExtra("profileImg",strprofileImg)  //프로필이미지url
+                MainAct_Intent.putExtra("email",strEmail)  //이메일정보 넘겨줌
+
+                thread_start()  // 서버에 위에서 만든 신규유저 등록해주고 main화면으로 이동시키는 작업
+                Log.e("태그", "UserinfoCall_notoken:  사용자 정보 요청 성공" +
+                        "\n회원번호: ${user.id}" +
+                        "\n이메일: ${user.kakaoAccount?.email}" +
+                        "\n닉네임: ${user.kakaoAccount?.profile?.nickname}" +
+                        "\n프로필사진: ${user.kakaoAccount?.profile?.thumbnailImageUrl}")
+            }
+            Toast.makeText(this@KakaoLoginActivity, strNick+"님 환영합니다.", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+
+    //사용자가 토큰값있고 로그인 되어있는 상태라서 바로 main으로 넘어가도될때 - 유저정보 가져와서 main에 넘겨줌
+    fun UserinfoCall_hastoken(){
+        // 사용자 정보 요청
+        UserApiClient.instance.me { user, error ->
+            if (error != null) {
+                Log.e("태그", "사용자 정보 요청 실패", error)
+            }
+            else if (user != null) {
+                strNick = user.kakaoAccount?.profile?.nickname.toString()
+                strEmail = user.kakaoAccount?.email.toString()
+                strprofileImg = user.kakaoAccount?.profile?.thumbnailImageUrl.toString()
+
+
+                //main에 보내줄 회원정보 데이터 값들
+                MainAct_Intent = Intent(this@KakaoLoginActivity, MainActivity::class.java)
+                MainAct_Intent.putExtra("id", user.id)  //회원번호
+                MainAct_Intent.putExtra("name",strNick)  //프로필이름
+                MainAct_Intent.putExtra("profileImg",strprofileImg)  //프로필이미지url
+                MainAct_Intent.putExtra("email",strEmail)  //이메일정보 넘겨줌
+
+                Log.e("태그", "UserinfoCall_hastoken :   사용자 정보 요청 성공" +
+                        "\n회원번호: ${user.id}" +
+                        "\n이메일: ${user.kakaoAccount?.email}" +
+                        "\n닉네임: ${user.kakaoAccount?.profile?.nickname}" +
+                        "\n프로필사진: ${user.kakaoAccount?.profile?.thumbnailImageUrl}")
+            }
+            startActivity(MainAct_Intent)  //main으로 유저정보 실어서 보내줌
+
+            Toast.makeText(this@KakaoLoginActivity, strNick+"님 환영합니다.", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+
+
+
+
+    //처음 앱 실행하면 토큰 있는지 등등 판별해줌
+    fun has_kakaotoken()
+    {
+        //카카오 토큰 있는지 판별
+        if (AuthApiClient.instance.hasToken()) {  //토큰이 있을때
+            UserApiClient.instance.accessTokenInfo { _, error ->
+                if (error != null) {  //토큰에 오류가 있을때
+                    if (error is KakaoSdkError && error.isInvalidTokenError()) {
+                        //로그인 필요
+                        Toast.makeText(this@KakaoLoginActivity, "error != null입니다. 로그인해주세요 ", Toast.LENGTH_SHORT).show()
+                        Log.e("태그", "UpdateKakakotalkUI/    error != null입니다. 로그인해주세요 ")
+                    }
+                    else {
+                        //기타 다른 토큰 에러
+                        Log.e("태그", "UpdateKakakotalkUI/   기타 에러남 ")
+                    }
+                }
+                else {  //토큰 이미 존재할때 (필요 시 토큰 갱신됨)
+                    Log.e("태그", "has_kakaotoken함수 결과 이미 토큰값 존재. 사용자 정보값 가지고 바로 main으로 이동")
+                    UserinfoCall_hastoken()
+                    finish()  //카카오 로그인 액티비티 닫아줌
+                }
+            }
+        }
+        else {
+            //로그인 필요
+            Toast.makeText(this@KakaoLoginActivity, "토큰이 없습니다. 로그인 해주세요", Toast.LENGTH_SHORT).show()
+            Log.e("태그", "UpdateKakakotalkUI/   토큰이 없습니다. 로그인 해주세요")
 
         }
-
-        Session.getCurrentSession().addCallback(sessionCallback)
-        //이 구문이 있으면 일단 세션이 유지되고 있어서 별도로 로그아웃 안하면 자동로그인 될거임.
-        Session.getCurrentSession().checkAndImplicitOpen()
     }
 
 
-    override fun onDestroy() {
-        super.onDestroy()
-
-        // 세션 콜백 삭제
-        Session.getCurrentSession().removeCallback(sessionCallback)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, @Nullable data: Intent?) {
-        // 카카오톡|스토리 간편로그인 실행 결과를 받아서 SDK로 전달
-        if (Session.getCurrentSession().handleActivityResult(requestCode, resultCode, data)) {
-            return
-        }
-        super.onActivityResult(requestCode, resultCode, data)
-    }
-
-
-    // 사용자 정보 요청
-    private fun requestMe() {
-        UserManagement.getInstance()
-            .me(object : MeV2ResponseCallback() {
-                override fun onSessionClosed(errorResult: ErrorResult) {
-                    //세션닫힘
-                    Log.e("KAKAO_API", "세션이 닫혀 있음: $errorResult")
-                }
-
-                override fun onFailure(errorResult: ErrorResult) {
-                    //요청했지만 로그인 실패했을시
-                    Log.e("KAKAO_API", "사용자 정보 요청 실패: $errorResult")
-                    Toast.makeText(this@KakaoLoginActivity, "로그인 도중에 오류가 발생했습니다.",Toast.LENGTH_SHORT).show()
-                }
-
-                override fun onSuccess(result: MeV2Response) {
-                    //요청해서 로그인 성공.여기서 이제 인텐트로 다른 액티비티로 이동하거나 등등 해주면 된다
-                    //로그인 성공시 카카오에서 result라는 객체를 던져줌. result를 이용해서 카카오 디벨로퍼-동의항목에서 받을 사용자 정보들 데이터를 가져올 수 있음
-
-                    //유저이름, 이메일 전역변수를 초기화
-                    strNick = result.kakaoAccount.profile.nickname
-                    strEmail = result.kakaoAccount.email
-                    user = Users(strEmail,strNick) //유저객체 하나 생성
-
-                    thread_start()  //서버에 유저 등록시켜주는 스레드 생성
-
-                    Toast.makeText(this@KakaoLoginActivity, "환영합니다!",Toast.LENGTH_SHORT).show()
-
-                    MainAct_Intent = Intent(this@KakaoLoginActivity, MainActivity::class.java)
-                    MainAct_Intent.putExtra("name",result.kakaoAccount.profile.nickname)  //프로필이름
-                    MainAct_Intent.putExtra("profileImg", result.kakaoAccount.profile.profileImageUrl)  //프로필이미지url
-                    MainAct_Intent.putExtra("email", result.kakaoAccount.email)  //이메일정보 넘겨줌
-
-                    Log.e("kakologin에서의 카카오", "  strNick: $strNick"+ "  strprofileImg: "+result.kakaoAccount.profile.profileImageUrl+
-                            "  strEmail: $strEmail")
-                }
-            })
-    }
-
-    //서버에 유저 등록시키는 작업
+    //플레브 서버에 유저 등록시키는 작업
     fun user_add_Request(){
         server.user_add_Request(user).enqueue(object : Callback<Users_request> {
             override fun onFailure(call: Call<Users_request>, t: Throwable) {
@@ -180,11 +226,6 @@ class KakaoLoginActivity: BasicActivity() {
         }
         handler.obtainMessage().sendToTarget()
     }
-
-
-
-
-
 
 
 }
