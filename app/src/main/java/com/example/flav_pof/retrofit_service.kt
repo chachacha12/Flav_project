@@ -1,5 +1,6 @@
 package com.example.flav_pof
 
+import com.example.flav_pof.classes.Filename
 import com.example.flav_pof.classes.Name
 import com.example.flav_pof.classes.Users
 import com.example.flav_pof.classes.Users_request
@@ -35,7 +36,10 @@ interface retrofit_service {
     fun user_add_Request(@Body users: Users): Call<Users_request>
 
 
-
+    //s3 이미지 업로드 요청
+    @Multipart
+    @POST("app/s3/{user_id}")
+    fun s3_upload_Request(@Query("user_id") user_id:Int, @Part file: MultipartBody.Part): Call<Filename>
 
 
 

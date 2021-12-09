@@ -16,6 +16,9 @@ import android.widget.*
 import com.bumptech.glide.Glide
 import com.example.flav_pof.PostInfo
 import com.example.flav_pof.R
+import com.example.flav_pof.classes.Filename
+import com.example.flav_pof.classes.Name
+import com.example.flav_pof.classes.Usersingleton
 import com.example.flav_pof.view.ContentsItemView
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
@@ -28,7 +31,13 @@ import com.google.firebase.storage.ktx.storageMetadata
 import kotlinx.android.synthetic.main.activity_write_post.*
 import kotlinx.android.synthetic.main.view_contents_edit_text.*
 import kotlinx.android.synthetic.main.view_loader.*
+import okhttp3.MediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import org.json.JSONArray
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.io.File
 import java.io.FileInputStream
 import java.net.URLConnection
@@ -47,6 +56,7 @@ class WritePostActivity : BasicActivity() {
     private var postInfo: PostInfo? =
         null    //특정 게시물 수정하기or삭제하기 버튼 눌렀을때 이 변수에 넣어줄거임. 여러 지역함수?안에서 쓸거라 전역으로빼둠
     lateinit var storageRef: StorageReference   //게시글 삭제할떄 스토리지에도 접근해서 이미지 지워줘야해서, 그때 필요함
+    lateinit var file: MultipartBody.Part  //s3 스토리지에 업로드할 이미지파일 담을 곳
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -159,16 +169,17 @@ class WritePostActivity : BasicActivity() {
         // 1. 이미 저장해서 존재하던 게시물 이미지 수정하기 2. +버튼 눌러서 저장안된 새 게시물 작성중에 이미지 수정하기
         //->2가지 경우로 나누는 이유는 아직 파베 스토리지에 저장안된 이미지인 경우엔 postInfo.id값이 없기 때문에 밑의 지우기로직때 에러뜸. 그니까 예외처리해주기
         delete.setOnClickListener {
-            var selectedView = selectedImageView.parent as View   // .parent 또는 getParent()를 하면 그 뷰의 부모 뷰(linearLayout 등)가 선택되어진다.  //removeView()안에는 뷰가 와야하는데 레이아웃이 와버려서 에러뜸. 그러므로 as를 통해 뷰로 형변환 해줌
+            var selectedView =
+                selectedImageView.parent as View   // .parent 또는 getParent()를 하면 그 뷰의 부모 뷰(linearLayout 등)가 선택되어진다.  //removeView()안에는 뷰가 와야하는데 레이아웃이 와버려서 에러뜸. 그러므로 as를 통해 뷰로 형변환 해줌
             //mainAct에서 가져온 부분임. (스토리지에서 특정 게시물 삭제해주는 로직)********************************************8
             var list: List<String> = pathList.get(contentsLayout.indexOfChild(selectedView) - 1)
                 .split("?")  //이미지 경로안을 split해서 이미지의 이름을 가져옴. 이미지의 이름을 알기위해
             var list2: List<String> = list[0].split("%2F")
             var name = list2[list2.size - 1] //스토리지에 저장된 이미지의 이름(ex. 0.jpg)을 알아냄
             Log.e("로그: ", "이름: " + name)
-            if(name.contains("/")){   //+버튼눌러서 서버 스토리지에 아직 저장안된 이미지를 삭제하려 할떄 : 이미지 경로값에 슬래쉬 있어서 이 조건문 포함
+            if (name.contains("/")) {   //+버튼눌러서 서버 스토리지에 아직 저장안된 이미지를 삭제하려 할떄 : 이미지 경로값에 슬래쉬 있어서 이 조건문 포함
                 Toast.makeText(this, "파일을 삭제하였습니다.", Toast.LENGTH_SHORT).show()
-            }else{   //서버 스토리지에 이미 저장된 이미지를 삭제해주려 할때
+            } else {   //서버 스토리지에 이미 저장된 이미지를 삭제해주려 할때
                 //파이어베이스 문서-스토리지-안드로이드-파일삭제  (스토리지 안의 내용 삭제)
                 val desertRef =
                     storageRef.child("posts/" + postInfo!!.id + "/" + name) //스토리지에서 지울 이미지의 경로를 줌
@@ -386,7 +397,7 @@ class WritePostActivity : BasicActivity() {
 
 
     //memberinit액티비티에서 가져온 함수 2개 -> profileUpdate와 uploader함수를 변형해준거임
-    private fun storageUpload()   //사용자가 확인버튼 눌르면 실행시킬 함수 -게시글 작성한걸 파이어베이스에 등록(업데이트)해줌   (이미지 삭제, 수정 했을땐, 그 이미지를 db,스토리지에서 지우는 작업을 지우는 즉시 했음. 메인액티비티에서. 그래서 여기선 db, 스토리지에 등록만 해줌됨 )
+    private fun storageUpload()   //사용자가 확인버튼 누르면 실행시킬 함수 -게시글 작성한걸 파이어베이스에 등록(업데이트)해줌   (이미지 삭제, 수정 했을땐, 그 이미지를 db,스토리지에서 지우는 작업을 지우는 즉시 했음. 메인액티비티에서. 그래서 여기선 db, 스토리지에 등록만 해줌됨 )
     {
         var tilte = titleEditText.text.toString()
 
@@ -461,6 +472,48 @@ class WritePostActivity : BasicActivity() {
 
                             var pathArray =
                                 path.split(".")       // .을 기준으로 나눠서 사진경로문자열을 pathArray배열안에 저장
+
+
+                            //플레브 서버 aws s3에 이미지 업로드 작업
+                            //레트로핏 post image 업로드
+                            var imageFile = File(pathList[pathCount])
+                            Log.e("s3업로드 태그", "s3저장할 이미지 uri: " + pathList[pathCount])
+                            var reqFile: RequestBody = RequestBody.create(
+                                //MediaType.parse("multipart/form-data"),
+                                MediaType.parse("image/jpeg"),
+                                imageFile
+                            )
+                            file =
+                                MultipartBody.Part.createFormData("photo", imageFile.name, reqFile)
+
+                            Log.e("writepost 태그", "Usersingleton.userid: " + Usersingleton.userid)
+                            server.s3_upload_Request( Usersingleton.userid!!, file)
+                                .enqueue(object : Callback<Filename> {
+                                    override fun onFailure(call: Call<Filename>, t: Throwable) {
+                                        Log.e("s3업로드 태그", "ss3업로드 / 서버 통신 아예 실패" + t.message)
+                                    }
+
+                                    override fun onResponse(
+                                        call: Call<Filename>,
+                                        response: Response<Filename>
+                                    ) {
+                                        if (response.isSuccessful) {
+                                            Log.e(
+                                                "s3업로드 태그",
+                                                "s3업로드 / 통신성공" + response.body()?.filename
+                                            )
+                                            // handler()  //서버통해 데이터 가져오는 거 성공하면 핸들러함수 통해서 식당이름리스트 데이터 담아서 writepostactivity이동
+                                        } else {
+                                            Log.e(
+                                                "s3업로드 태그",
+                                                "s3업로드 / 서버접근 성공했지만 올바르지 않은 response값" + response.body()?.filename + "에러: " + response.errorBody()
+                                                    .toString()
+                                            )
+                                            //handler()
+                                        }
+                                    }
+                                })
+
 
                             //*****************파이어베이스 스토리지에 사진경로로 사진 저장하기 위한 코드***************** memberinit에서 가져옴
                             val mountainImagesRef =
@@ -564,7 +617,6 @@ class WritePostActivity : BasicActivity() {
         intent.putExtra("media", media)
         startActivityForResult(intent, requestCode)
     }
-
 }
 
 

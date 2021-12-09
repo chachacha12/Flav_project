@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.flav_pof.retrofit_service
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import kotlin.properties.Delegates
 
 
 open class BasicActivity : AppCompatActivity() {

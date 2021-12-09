@@ -10,6 +10,7 @@ import com.kakao.sdk.common.KakaoSdk
 
 
 class GlobalApplication : Application() {
+
     override fun onCreate() {
         super.onCreate()
         //instance = this

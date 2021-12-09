@@ -12,6 +12,7 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Base64
 import android.util.Log
+import com.example.flav_pof.classes.Usersingleton
 import com.example.flav_pof.fragment.HomeFragment
 import com.example.flav_pof.fragment.UserInfoFragment
 import com.example.flav_pof.fragment.UserListFragment
@@ -30,6 +31,7 @@ class MainActivity : BasicActivity() {
     var strNick: String? = null
     var strprofileImg: String? = null
     var strEmail: String? = null
+    var userId: Int? = null  //회원정보
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,8 +39,10 @@ class MainActivity : BasicActivity() {
         setToolbarTitle("뿌윙클")
 
 
+
         //kakaoLoginAct에서 보낸 인텐트를 받아서 로그인한 사용자 정보를 얻는다.
         var intent = intent
+        userId = intent.getIntExtra("id",0)  //정보가 없으면 0이 오는듯
         strNick = intent.getStringExtra("name")
         strprofileImg= intent.getStringExtra("profileImg")
         strEmail= intent.getStringExtra("email")
@@ -86,7 +90,7 @@ class MainActivity : BasicActivity() {
                                 Log.d(TAG, "DocumentSnapshot data: " + document.data)
                             } else {
                                 Log.d(TAG, "No such document")
-                                myStartActivity(UserInitActivity::class.java)
+                               // myStartActivity(UserInitActivity::class.java)
                             }
                         }
                     } else {
