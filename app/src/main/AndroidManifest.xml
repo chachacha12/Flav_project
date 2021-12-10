@@ -45,6 +45,8 @@
         <activity android:name=".activity.BasicActivity"></activity>
         <activity android:name=".activity.WritePostActivity"></activity>
         <activity android:name=".activity.KakaoLoginActivity">
+        </activity>
+        <activity android:name=".appIntro.AppIntroActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

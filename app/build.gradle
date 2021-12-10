@@ -43,6 +43,12 @@ android {
 
 
 dependencies {
+
+    //앱소개화면에서 뷰페이저2를 사용해서 슬라이드기능 넣기위해
+    implementation("androidx.viewpager2:viewpager2:1.0.0")
+    //뷰페이저에서 애니메이션 기능을 위해 깃허브에서 특정 라이브러리 가져옴 - 인디케이터 애니메이션 오픈소스
+    implementation 'com.tbuonomo:dotsindicator:4.2'
+
     //카톡로그인 위해서
     //implementation 'com.kakao.sdk:usermgmt:1.27.0'
     implementation "com.kakao.sdk:v2-user:2.8.3" // 카카오 로그인
