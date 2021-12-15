@@ -7,17 +7,20 @@ package com.example.flav_pof.activity
 import android.app.Activity
 import android.content.Intent
 import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.util.Patterns
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.annotation.RequiresApi
 import com.bumptech.glide.Glide
 import com.example.flav_pof.PostInfo
 import com.example.flav_pof.R
 import com.example.flav_pof.classes.Filename
 import com.example.flav_pof.classes.Name
+import com.example.flav_pof.classes.Rekognition_response
 import com.example.flav_pof.classes.Usersingleton
 import com.example.flav_pof.view.ContentsItemView
 import com.google.firebase.auth.FirebaseUser
@@ -41,6 +44,7 @@ import retrofit2.Response
 import java.io.File
 import java.io.FileInputStream
 import java.net.URLConnection
+import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -70,6 +74,9 @@ class WritePostActivity : BasicActivity() {
             (intent.getSerializableExtra("postInfo") as? PostInfo)  //MainActivity에서 게시글 수정버튼을 눌러서 보낸 인텐트에 실린 값(수정하고자하는 게시물 객체)를 받음. 인텐트를 받을땐 getIntent() 또는 Intent 이용.
         //getSerializable은 보내는, 받는 데이터가 내가 만든 클래스의 객체일때 사용함.
 
+        getRekognition()
+
+        Log.e("writepost 태그", "방금막 writepost로 왔을때 Usersingleton.userid: " + Usersingleton.kakao_id)
         postinit()
         init()
     }
@@ -134,11 +141,13 @@ class WritePostActivity : BasicActivity() {
             // 이 액티비티로 돌아올때 onActivityResult()함수에서 requestCode를 비교해서 각각 다른 동작을 수행하게 할때를 위한 구분이 됨
         }
 
+        /*
         video.setOnClickListener {
             var i = Intent(this, Galleryactivity::class.java)
             i.putExtra("media", "video")
             startActivityForResult(i, 0)
         }
+         */
 
         buttonsBackgroundlayout =
             buttonsBackgroundLayout    //게시글 올린 이미지 삭제or수정 창 끄려고할때 .  //전역변수를 초기화해줌.
@@ -148,6 +157,7 @@ class WritePostActivity : BasicActivity() {
                 buttonsBackgroundlayout.visibility = View.GONE
             }
         }
+
 
         //작성중인 게시물의 이미지 다른 이미지로 수정하기
         imageModify.setOnClickListener {
@@ -324,7 +334,7 @@ class WritePostActivity : BasicActivity() {
             when (v.id) {
                 R.id.checkButton -> storageUpload()
                 R.id.image -> myStartActivity(Galleryactivity::class.java, "image", 0)
-                R.id.video -> myStartActivity(Galleryactivity::class.java, "video", 0)
+               // R.id.video -> myStartActivity(Galleryactivity::class.java, "video", 0)
                 R.id.buttonsBackgroundLayout -> if (buttonsBackgroundLayout.visibility === View.VISIBLE) {
                     buttonsBackgroundLayout.visibility = View.GONE
                 }
@@ -389,7 +399,6 @@ class WritePostActivity : BasicActivity() {
     // 여기선 뷰가 이 리스너를 달고 있고 포커스를 가지고 있다면 그 뷰가 전역변수인 selectedEditText가 된다. 즉 이 리스너는 selectedEditText를 정해주는 기능
     private var onFocusChangedListener =
         View.OnFocusChangeListener { v, hasFocus -> selectedEditText = v as EditText }
-
 
     //전역변수
     var pathCount = 0     //게시글에 첨부된 사진이 몇개인지 알기위해서
@@ -473,11 +482,10 @@ class WritePostActivity : BasicActivity() {
                             var pathArray =
                                 path.split(".")       // .을 기준으로 나눠서 사진경로문자열을 pathArray배열안에 저장
 
-
                             //플레브 서버 aws s3에 이미지 업로드 작업
                             //레트로핏 post image 업로드
                             var imageFile = File(pathList[pathCount])
-                            Log.e("s3업로드 태그", "s3저장할 이미지 uri: " + pathList[pathCount])
+                            Log.e("s3업로드 태그", "s3에 저장할 이미지 uri: " + pathList[pathCount])
                             var reqFile: RequestBody = RequestBody.create(
                                 //MediaType.parse("multipart/form-data"),
                                 MediaType.parse("image/jpeg"),
@@ -486,11 +494,15 @@ class WritePostActivity : BasicActivity() {
                             file =
                                 MultipartBody.Part.createFormData("photo", imageFile.name, reqFile)
 
-                            Log.e("writepost 태그", "Usersingleton.userid: " + Usersingleton.userid)
-                            server.s3_upload_Request( Usersingleton.userid!!, file)
+                            Log.e("writepost 태그", "Usersingleton.userid: " + Usersingleton.kakao_id)
+
+
+
+                            //플레브 서버로부터 업로드하는 이미지를 s3에 올리는 작업
+                            server.s3_upload_Request(Usersingleton.kakao_id!!, file)
                                 .enqueue(object : Callback<Filename> {
                                     override fun onFailure(call: Call<Filename>, t: Throwable) {
-                                        Log.e("s3업로드 태그", "ss3업로드 / 서버 통신 아예 실패" + t.message)
+                                        Log.e("s3업로드 태그", "s3업로드 / 서버 통신 아예 실패" + t.message)
                                     }
 
                                     override fun onResponse(
@@ -500,19 +512,21 @@ class WritePostActivity : BasicActivity() {
                                         if (response.isSuccessful) {
                                             Log.e(
                                                 "s3업로드 태그",
-                                                "s3업로드 / 통신성공" + response.body()?.filename
+                                                "s3업로드 / 통신성공" + response.body()?.filepath
                                             )
                                             // handler()  //서버통해 데이터 가져오는 거 성공하면 핸들러함수 통해서 식당이름리스트 데이터 담아서 writepostactivity이동
                                         } else {
                                             Log.e(
                                                 "s3업로드 태그",
-                                                "s3업로드 / 서버접근 성공했지만 올바르지 않은 response값" + response.body()?.filename + "에러: " + response.errorBody()
+                                                "s3업로드 / 서버접근 성공했지만 올바르지 않은 response값" + response.body()?.filepath + "에러: " + response.errorBody()
                                                     .toString()
                                             )
                                             //handler()
                                         }
                                     }
                                 })
+
+
 
 
                             //*****************파이어베이스 스토리지에 사진경로로 사진 저장하기 위한 코드***************** memberinit에서 가져옴
@@ -588,6 +602,34 @@ class WritePostActivity : BasicActivity() {
             Toast.makeText(this, "제목을 입력해주세요.", Toast.LENGTH_SHORT).show()
         }
     }
+
+
+    //음식사진 인식값 가져오는 api(음식사진인지 판별)
+    private fun getRekognition(){
+        //서버로부터 특정기간 이용자별 로그를 가져옴.
+        server.postpic_rekog_Request("1639482649907.jpeg","2013981477"
+        ).enqueue(object : Callback<Rekognition_response> {
+            override fun onFailure(
+                call: Call<Rekognition_response>,
+                t: Throwable
+            ) {  //object로 받아옴. 서버에서 받은 object모델과 맞지 않으면 실패함수로 빠짐
+                Log.e("태그", "getRekognition api 통신 아예실패  ,t.message: "+t.message)
+            }
+            override fun onResponse(call: Call<Rekognition_response>, response: Response<Rekognition_response>) {
+                if (response.isSuccessful) {
+
+                    Log.e("태그", "getRekognition api 통신 성공!!. response.body().rekogData: "+response.body()?.rekogData)
+                } else {
+                    Log.e("태그", "getRekognition 서버접근 성공했지만 리스폰스값 못가져옴.  response.body().toString(): " + response.body().toString())
+                }
+            }
+        })
+
+    }
+
+
+
+
 
 
     //회원이 확인버튼 눌렀을때 회원이 쓴 게시글을 db(클라우드firestore)에 올려주는 코드가진 함수

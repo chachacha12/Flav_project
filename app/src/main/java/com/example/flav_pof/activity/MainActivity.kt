@@ -42,7 +42,7 @@ class MainActivity : BasicActivity() {
 
         //kakaoLoginAct에서 보낸 인텐트를 받아서 로그인한 사용자 정보를 얻는다.
         var intent = intent
-        userId = intent.getIntExtra("id",0)  //정보가 없으면 0이 오는듯
+        //userId = intent.getIntExtra("id",0)  //정보가 없으면 0이 오는듯
         strNick = intent.getStringExtra("name")
         strprofileImg= intent.getStringExtra("profileImg")
         strEmail= intent.getStringExtra("email")

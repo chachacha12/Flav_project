@@ -82,9 +82,9 @@ class KakaoLoginActivity: BasicActivity() {
 
                 this.user = Users(strEmail,strNick,kakao_token) //유저객체 하나 생성
 
-                Usersingleton.userid = user.id!!.toInt()  //유저 싱글톤에 있는 회원번호 전역변수를 초기화
+                Usersingleton.kakao_id = user.id!!.toInt()  //유저 싱글톤에 있는 회원번호 전역변수를 초기화
 
-                Log.e("카카오로그인화면 태그", "아예 첫 실행일때 user_id값 초기화 성공: "+ Usersingleton.userid)
+                Log.e("카카오로그인화면 태그", "아예 첫 실행일때 user_id값 초기화 성공: "+ Usersingleton.kakao_id)
 
                 //main에 보내줄 회원정보 데이터 값들
                 MainAct_Intent = Intent(this@KakaoLoginActivity, MainActivity::class.java)
@@ -118,13 +118,13 @@ class KakaoLoginActivity: BasicActivity() {
                 strprofileImg = user.kakaoAccount?.profile?.thumbnailImageUrl.toString()
 
 
-                Usersingleton.userid = user.id!!.toInt()  //유저 싱글톤에 있는 회원번호 전역변수를 초기화
+                Usersingleton.kakao_id = user.id!!.toInt()  //유저 싱글톤에 있는 회원번호 전역변수를 초기화
 
-                Log.e("카카오로그인화면 태그", "토큰있고 로그인되있을때 user_id값 초기화 성공: "+ Usersingleton.userid)
+                Log.e("카카오로그인화면 태그", "토큰있고 로그인되있을때 user_id값 초기화 성공: "+ Usersingleton.kakao_id)
 
                 //main에 보내줄 회원정보 데이터 값들
                 MainAct_Intent = Intent(this@KakaoLoginActivity, MainActivity::class.java)
-                MainAct_Intent.putExtra("id", user.id!!)  //회원번호
+                //MainAct_Intent.putExtra("id", user.id!!)  //회원번호
                 MainAct_Intent.putExtra("name",strNick)  //프로필이름
                 MainAct_Intent.putExtra("profileImg",strprofileImg)  //프로필이미지url
                 MainAct_Intent.putExtra("email",strEmail)  //이메일정보 넘겨줌
