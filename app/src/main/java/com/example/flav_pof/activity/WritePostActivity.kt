@@ -168,12 +168,14 @@ class WritePostActivity : BasicActivity() {
             Log.e("로그: ", "이미지수정")
         }
 
+        /*
         videoModify.setOnClickListener {
             var i = Intent(this, Galleryactivity::class.java)
             i.putExtra("media", "video")
             startActivityForResult(i, 1)
             buttonsBackgroundlayout.visibility = View.GONE
         }
+         */
 
         //작성중인 게시물의 이미지 삭제하기
         // 1. 이미 저장해서 존재하던 게시물 이미지 수정하기 2. +버튼 눌러서 저장안된 새 게시물 작성중에 이미지 수정하기
@@ -606,7 +608,7 @@ class WritePostActivity : BasicActivity() {
 
     //음식사진 인식값 가져오는 api(음식사진인지 판별)
     private fun getRekognition(){
-        //서버로부터 특정기간 이용자별 로그를 가져옴.
+
         server.postpic_rekog_Request("1639482649907.jpeg","2013981477"
         ).enqueue(object : Callback<Rekognition_response> {
             override fun onFailure(
