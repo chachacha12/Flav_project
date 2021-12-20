@@ -43,8 +43,12 @@ class UserInitActivity : BasicActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_user_init)
         setToolbarTitle("회원정보")
+
         init()
+
+
     }
+
 
     override fun onBackPressed() {      //이 액티비티에서 뒤로가기를 누르면, 회원정보를 입력 안했는데도 바로 메인액티비티로 다시 가는 문제가 있어서..
         super.onBackPressed()             //이 함수를 오버라이딩해서 뒤로가기를 눌렀을때 이벤트를 따로 지정해줌
@@ -102,7 +106,6 @@ class UserInitActivity : BasicActivity() {
     }  //init
 
 
-
     fun storageUploader()   //사용자가 확인버튼 눌르면 실행시킬 함수 - 사용자의 기본 정보들을 파이어베이스에 등록(업데이트)해줌
     {
         var name = nameEditText.text.toString()
@@ -128,9 +131,7 @@ class UserInitActivity : BasicActivity() {
                 //프로필이미지 없을때는 4가지의 기입한 데이터만 db(클라우드store)에 올리기
                 var userInfo  = UserInfo(
                     name,
-                    phoneNumber,
-                    birthDay,
-                    address
+                    phoneNumber
                 )  //이미지정보만 뺀 회원객체 하나 생성
                 storeUploader(userInfo )  //밑에 만들어둔 함수임. 회원객체를 인자로 받아서 회원정보 4개를 db에 등록시켜줌
 
@@ -153,10 +154,7 @@ class UserInitActivity : BasicActivity() {
 
                         var userInfo  = UserInfo(
                             name,
-                            phoneNumber,
-                            birthDay,
-                            address,
-                            downloadUri.toString()
+                            phoneNumber
                         )  //회원객체 하나 생성
                         storeUploader(userInfo )  //밑에 만들어둔 함수임. 회원객체를 인자로 받아서 회원정보 4개를 db에 등록시켜줌
                     } else {
@@ -168,6 +166,7 @@ class UserInitActivity : BasicActivity() {
             Toast.makeText(this, "회원정보를 입력해주세요.", Toast.LENGTH_SHORT).show()
         }
     }  //profileUpdate()함수
+
 
 
     //회원이 회원정보액티비티에서 4가지정보(이름. 전번, 생일, 주소)를 입력하고 확인버튼 눌렀을때 그 정보들을 db에 올려주는 코드가진 함수
@@ -191,4 +190,6 @@ class UserInitActivity : BasicActivity() {
         //사이트에 있던 리스너 2개를 달아줘서 db에 데이터 등록 성공했는지 실패했는지 말해줌
 
     }
+
+
 }

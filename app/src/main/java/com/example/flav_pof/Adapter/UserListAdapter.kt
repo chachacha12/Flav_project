@@ -42,14 +42,12 @@ class UserListAdapter(
         val cardView = holder.cardView
         val photoImageVIew: ImageView = cardView.findViewById(com.example.flav_pof.R.id.photoImageVIew)
         val nameTextView = cardView.findViewById<TextView>(com.example.flav_pof.R.id.nameTextView)
-        val addressTextView = cardView.findViewById<TextView>(com.example.flav_pof.R.id.addressTextView)
         val userInfo = mDataset!![position]
-        if (mDataset!![position].photoUrl != null) {
-            Glide.with(activity!!).load(mDataset!![position].photoUrl).centerCrop().override(500)
+        if (mDataset!![position].profileimage != null) {
+            Glide.with(activity!!).load(mDataset!![position].profileimage).centerCrop().override(500)
                 .into(photoImageVIew)
         }
-        nameTextView.setText(userInfo.name)
-        addressTextView.setText(userInfo.address)
+        nameTextView.text = userInfo.name
     }
 
     override fun getItemCount(): Int {

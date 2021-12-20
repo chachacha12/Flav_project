@@ -1,7 +1,11 @@
 package com.example.flav_pof.fragment
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.os.Message
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -9,13 +13,20 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.flav_pof.Adapter.HomeAdapter
 import com.example.flav_pof.Adapter.UserListAdapter
 import com.example.flav_pof.PostInfo
 import com.example.flav_pof.R
 import com.example.flav_pof.UserInfo
 import com.example.flav_pof.activity.WritePostActivity
+import com.example.flav_pof.classes.Name
 import com.example.flav_pof.listener.OnPostListener
 import com.google.firebase.firestore.FirebaseFirestore
+import com.kakao.sdk.talk.TalkApiClient
+import org.json.JSONArray
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 
 /**
@@ -37,7 +48,6 @@ class UserListFragment : Fragment() {
 
         val view: View = inflater.inflate(R.layout.fragment_user_list, container, false)
 
-        firebaseFirestore = FirebaseFirestore.getInstance()
         userList = ArrayList()
         userListAdapter = UserListAdapter(requireActivity(), userList!!)
 
@@ -46,104 +56,71 @@ class UserListFragment : Fragment() {
         recyclerView.setHasFixedSize(true)
         recyclerView.layoutManager = LinearLayoutManager(activity)
         recyclerView.adapter = userListAdapter
-        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-                super.onScrollStateChanged(recyclerView, newState)
-                val layoutManager = recyclerView.layoutManager
-                val firstVisibleItemPosition =
-                    (layoutManager as LinearLayoutManager?)!!.findFirstVisibleItemPosition()
-                if (newState == 1 && firstVisibleItemPosition == 0) {
-                    topScrolled = true
-                }
-                if (newState == 0 && topScrolled) {
-                    postsUpdate(true)
-                    topScrolled = false
-                }
-            }
 
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-                val layoutManager = recyclerView.layoutManager
-                val visibleItemCount = layoutManager!!.childCount
-                val totalItemCount = layoutManager.itemCount
-                val firstVisibleItemPosition =
-                    (layoutManager as LinearLayoutManager?)!!.findFirstVisibleItemPosition()
-                val lastVisibleItemPosition =
-                    (layoutManager as LinearLayoutManager?)!!.findLastVisibleItemPosition()
-                if (totalItemCount - 3 <= lastVisibleItemPosition && !updating) {
-                    postsUpdate(false)
-                }
-                if (0 < firstVisibleItemPosition) {
-                    topScrolled = false
-                }
-            }
-        })
-        postsUpdate(false)
+        thread_start()
 
         return view
     }
 
-    override fun onDetach() {
-        super.onDetach()
-    }
+    private fun postsUpdate() {
+        // 카카오톡 친구 목록 가져오기 (기본)
+        TalkApiClient.instance.friends { friends, error ->
+            if (error != null) {
+                Log.e(TAG, "카카오톡 친구 목록 가져오기 실패", error)
+            } else if (friends != null) {
+                Log.i(TAG, "카카오톡 친구 목록 가져오기 성공 \n${friends.elements?.joinToString("\n")}")
 
-    override fun onPause() {
-        super.onPause()
-    }
-
-    var onClickListener =
-        View.OnClickListener { v ->
-            when (v.id) {
-                R.id.floatingActionButton -> myStartActivity(WritePostActivity::class.java)
-            }
-        }
-
-    var onPostListener: OnPostListener = object : OnPostListener {
-        override fun onDelete(postInfo: PostInfo) {
-           // userList!!.remove(postInfo)
-            userListAdapter!!.notifyDataSetChanged()
-            Log.e("로그: ", "삭제 성공")
-        }
-
-        override fun onModify() {
-            Log.e("로그: ", "수정 성공")
-        }
-    }
-
-    private fun postsUpdate(clear: Boolean) {
-        updating = true
-        //Date date = userList.size() == 0 || clear ? new Date() : userList.get(userList.size() - 1).getCreatedAt();
-        val collectionReference = firebaseFirestore!!.collection("users")
-        collectionReference.get()
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    if (clear) {
-                        userList!!.clear()
-                    }
-                    for (document in task.getResult()!!) {
-                        Log.d(TAG, document.id + " => " + document.data)
-                        userList!!.add(
-                            UserInfo(
-                                document.data["name"].toString(),
-                                document.data["phoneNumber"].toString(),
-                                document.data["birthDay"].toString(),
-                                document.data["address"].toString(),
-                                if (document.data["photoUrl"] == null) null else document.data["photoUrl"].toString()
-                            )
+                // userList!!.clear()
+                var i = 0
+                repeat(friends.elements?.size!!) {
+                    userList!!.add(
+                        UserInfo(
+                            friends.elements?.get(i)?.profileNickname!!,
+                            friends.elements?.get(i)?.profileThumbnailImage!!
                         )
-                    }
-                    userListAdapter!!.notifyDataSetChanged()
-                } else {
-                    Log.d(TAG, "Error getting documents: ", task.getException())
+                    )
+                    i++
                 }
-                updating = false
+                Log.e(TAG, "userList:  " + userList.toString())
+                handler()
+                Log.e(TAG, "유저리스트가져오기 성공!  핸들러 실행하여 리사이클러뷰 notifiy ")
+
+                // 친구의 UUID 로 메시지 보내기 가능
             }
+        }
     }
+
+    private fun thread_start() {
+        var thread = Thread(null, getData()) //스레드 생성후 스레드에서 작업할 함수 지정(getDATA)
+        thread.start()
+        Log.e("친구리스트 태그", "thread_start시작됨.")
+    }
+
+    fun getData() = Runnable {
+        kotlin.run {
+            try {
+                //원하는 자료처리(데이터 로딩 등)
+                postsUpdate()
+                Log.e("친구리스트 태그", "getData성공. 데이터 가져옴")
+            } catch (e: Exception) {
+                Log.e("친구리스트 태그", "getData실패")
+            }
+        }
+    }
+
+    private fun handler() {
+        var handler = object : Handler(Looper.getMainLooper()) {
+            override fun handleMessage(msg: Message) {
+                //데이터 가져오는 작업 다 끝나고 실행시킬 내용들
+                userListAdapter!!.notifyDataSetChanged()  //리사이클러뷰에 바뀐 데이터값 다시 업데이트
+            }
+        }
+        handler.obtainMessage().sendToTarget()
+    }
+
 
     private fun myStartActivity(c: Class<*>) {
         val intent = Intent(activity, c)
         startActivityForResult(intent, 0)
     }
-
-
 }

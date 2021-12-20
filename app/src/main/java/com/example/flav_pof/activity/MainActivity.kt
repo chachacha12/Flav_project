@@ -21,6 +21,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
+import com.kakao.sdk.talk.TalkApiClient
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 
@@ -49,6 +50,11 @@ class MainActivity : BasicActivity() {
 
         Log.e("main에서의 카카오", "  strNick: $strNick"+ "  strprofileImg: $strprofileImg"+
             "  strEmail: $strEmail")
+
+
+        
+
+
 
         //getHashKey()
         init()
