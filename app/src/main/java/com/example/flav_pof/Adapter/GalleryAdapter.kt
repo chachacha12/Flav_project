@@ -85,17 +85,17 @@ class GalleryAdapter(var activity: Activity, private val myDataset: ArrayList<St
             }
             override fun onResponse(call: Call<Name>, response: Response<Name>) {
                 if (response.isSuccessful) {
-                    Log.e("태그", "통신성공" + response.body()?.name)
+                    Log.e("태그", "통신성공" + response.body()?.result)
                     handler()  //서버통해 데이터 가져오는 거 성공하면 핸들러함수 통해서 식당이름리스트 데이터 담아서 writepostactivity이동
                 } else {
                     Log.e(
                         "태그",
-                        "서버접근 성공했지만 올바르지 않은 response값" + response.body()?.name + "에러: " + response.errorBody().toString()
+                        "서버접근 성공했지만 올바르지 않은 response값" + response.body()?.result + "에러: " + response.errorBody().toString()
                     )
                     handler()
                 }
                 //response값(주변 식당들 이름)을 writepost액티비티에 전달을 위해
-                 var jsonArray = JSONArray(response.body()?.name)  //서버로부터 주변음식점이름을 List<Any>타입으로 받아옴. 그걸 jsonarray로 만듬
+                 var jsonArray = JSONArray(response.body()?.result)  //서버로부터 주변음식점이름을 List<Any>타입으로 받아옴. 그걸 jsonarray로 만듬
                  name_list = jsonArray//주변 음식점정보 jsonarray를 name_list변수에 저장
                 Log.e("태그", "(jsonarray상태인) name_list: "+ name_list)
             }

@@ -30,6 +30,7 @@ class KakaoLoginActivity: BasicActivity() {
     lateinit var strNick: String
     lateinit var strprofileImg: String
     lateinit var strEmail: String
+    lateinit var  strkakaoid: String
     lateinit var kakao_token: String  //카카오 api접근을 위해 저장해두는 엑세스 토큰
     lateinit var user: Users //유저객체
 
@@ -76,8 +77,9 @@ class KakaoLoginActivity: BasicActivity() {
                 strNick = user.kakaoAccount?.profile?.nickname.toString()
                 strEmail = user.kakaoAccount?.email.toString()
                 strprofileImg = user.kakaoAccount?.profile?.thumbnailImageUrl.toString()
+                strkakaoid = user.id!!.toString()
 
-                this.user = Users(strEmail, strNick, kakao_token) //유저객체 하나 생성
+                this.user = Users(strEmail, strNick, kakao_token, strkakaoid) //유저객체 하나 생성
 
                 Usersingleton.kakao_id = user.id!!.toInt()  //유저 싱글톤에 있는 회원번호 전역변수를 초기화
 
@@ -113,6 +115,7 @@ class KakaoLoginActivity: BasicActivity() {
                 strNick = user.kakaoAccount?.profile?.nickname.toString()
                 strEmail = user.kakaoAccount?.email.toString()
                 strprofileImg = user.kakaoAccount?.profile?.thumbnailImageUrl.toString()
+                strkakaoid = user.id!!.toString()
 
                 Usersingleton.kakao_id = user.id!!.toInt()  //유저 싱글톤에 있는 회원번호 전역변수를 초기화
 
@@ -186,7 +189,7 @@ class KakaoLoginActivity: BasicActivity() {
                 } else {
                     Log.e(
                         "태그",
-                        "서버접근 성공했지만 올바르지 않은 response값" + response.body()?.msg + "response.body(): " + response.body() + ",response.message(): " + response.message()
+                        "서버접근 성공했지만 올바르지 않은 response값" + response.body()?.msg + "response.body(): " + response.body() + ",response.message(): " + response.errorBody()?.string()
                     )
                     handler()
                 }

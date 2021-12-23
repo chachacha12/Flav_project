@@ -498,8 +498,6 @@ class WritePostActivity : BasicActivity() {
 
                             Log.e("writepost 태그", "Usersingleton.userid: " + Usersingleton.kakao_id)
 
-
-
                             //플레브 서버로부터 업로드하는 이미지를 s3에 올리는 작업
                             server.s3_upload_Request(Usersingleton.kakao_id!!, file)
                                 .enqueue(object : Callback<Filename> {
@@ -520,13 +518,15 @@ class WritePostActivity : BasicActivity() {
                                         } else {
                                             Log.e(
                                                 "s3업로드 태그",
-                                                "s3업로드 / 서버접근 성공했지만 올바르지 않은 response값" + response.body()?.filepath + "에러: " + response.errorBody()
-                                                    .toString()
+                                                "s3업로드 / 서버접근 성공했지만 올바르지 않은 response값" + response.body()?.filepath + "에러: " +  response.errorBody()?.string()
+
                                             )
                                             //handler()
                                         }
                                     }
                                 })
+
+
 
 
 
@@ -628,10 +628,6 @@ class WritePostActivity : BasicActivity() {
         })
 
     }
-
-
-
-
 
 
     //회원이 확인버튼 눌렀을때 회원이 쓴 게시글을 db(클라우드firestore)에 올려주는 코드가진 함수
