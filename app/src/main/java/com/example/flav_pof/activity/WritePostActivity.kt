@@ -18,10 +18,7 @@ import androidx.annotation.RequiresApi
 import com.bumptech.glide.Glide
 import com.example.flav_pof.PostInfo
 import com.example.flav_pof.R
-import com.example.flav_pof.classes.Filename
-import com.example.flav_pof.classes.Name
-import com.example.flav_pof.classes.Rekognition_response
-import com.example.flav_pof.classes.Usersingleton
+import com.example.flav_pof.classes.*
 import com.example.flav_pof.view.ContentsItemView
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
@@ -62,6 +59,17 @@ class WritePostActivity : BasicActivity() {
     lateinit var storageRef: StorageReference   //게시글 삭제할떄 스토리지에도 접근해서 이미지 지워줘야해서, 그때 필요함
     lateinit var file: MultipartBody.Part  //s3 스토리지에 업로드할 이미지파일 담을 곳
 
+    //컨텐츠 업로드 로직 관련 변수
+    lateinit var contents:Contents  //컨텐츠 객체
+    var filename:String? = null  //split해서 filepath에서 filename값 가져오려고.
+    var restname:String? = null  //식당명
+    var adj1_id: Int? = null  //태그1
+    var adj2_id:Int? =null  //태그2
+    var locationtag_id:Int? =null  //태그 장소명사
+    lateinit var lat:String  //위도
+    lateinit var lng:String  //경도
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -74,9 +82,9 @@ class WritePostActivity : BasicActivity() {
             (intent.getSerializableExtra("postInfo") as? PostInfo)  //MainActivity에서 게시글 수정버튼을 눌러서 보낸 인텐트에 실린 값(수정하고자하는 게시물 객체)를 받음. 인텐트를 받을땐 getIntent() 또는 Intent 이용.
         //getSerializable은 보내는, 받는 데이터가 내가 만든 클래스의 객체일때 사용함.
 
-        getRekognition()
+        //getRekognition()
 
-        Log.e("writepost 태그", "방금막 writepost로 왔을때 Usersingleton.userid: " + Usersingleton.kakao_id)
+        Log.e("writepost 태그", "방금막 writepost로 왔을때 Usersingleton.kakao_id: " + Usersingleton.kakao_id)
         postinit()
         init()
     }
@@ -311,8 +319,11 @@ class WritePostActivity : BasicActivity() {
                             contentsItemView.setText(textView.text.toString())   //이미지 아래에 생성되는 editText에 식당명 삽입해줌
                             Log.e(
                                 "태그",
-                                "contentsItemView의 editText에 setText" + textView.text.toString()
+                                "restname선택: " + textView.text.toString()
                             )
+
+                            restname = textView.text.toString()
+
                         }
                     }
                 }
@@ -514,20 +525,25 @@ class WritePostActivity : BasicActivity() {
                                                 "s3업로드 태그",
                                                 "s3업로드 / 통신성공" + response.body()?.filepath
                                             )
+                                            var filepath_list = response.body()?.filepath?.split('/')
+                                            filename = filepath_list!!.last()  //filename값을 받아옴
+                                            Log.e(
+                                                "s3업로드 태그",
+                                                "filename: " + filename
+                                            )
+
+                                            Contents_Upload()  //컨텐츠를 업로드하는 함수
+
                                             // handler()  //서버통해 데이터 가져오는 거 성공하면 핸들러함수 통해서 식당이름리스트 데이터 담아서 writepostactivity이동
                                         } else {
                                             Log.e(
                                                 "s3업로드 태그",
                                                 "s3업로드 / 서버접근 성공했지만 올바르지 않은 response값" + response.body()?.filepath + "에러: " +  response.errorBody()?.string()
-
                                             )
                                             //handler()
                                         }
                                     }
                                 })
-
-
-
 
 
 
@@ -604,6 +620,38 @@ class WritePostActivity : BasicActivity() {
             Toast.makeText(this, "제목을 입력해주세요.", Toast.LENGTH_SHORT).show()
         }
     }
+
+
+    //컨텐츠 업로드 로직
+    private fun Contents_Upload(){
+
+        if(filename !=null && restname != null){
+            contents  =Contents(Usersingleton.kakao_id!!, filename!!, restname!!, 1,1,1,37.54001365000000000,127.06800310000000000     )
+        }else{
+            Toast.makeText(this, "컨텐츠 업로드에 필요한 모든 옵션을 선택해주세요.", Toast.LENGTH_SHORT).show()
+            finish()
+        }
+
+        server.contents_upload_Request(contents
+        ).enqueue(object : Callback<Contents_response> {
+            override fun onFailure(
+                call: Call<Contents_response>,
+                t: Throwable
+            ) {  //object로 받아옴. 서버에서 받은 object모델과 맞지 않으면 실패함수로 빠짐
+                Log.e("태그", "컨텐츠 업로드 통신 아예실패  ,t.message: "+t.message)
+            }
+            override fun onResponse(call: Call<Contents_response>, response: Response<Contents_response>) {
+                if (response.isSuccessful) {
+
+                    Log.e("태그", "컨텐츠 업로드 통신 성공!!. +response.body()?.content_id: "+response.body()?.content_id)
+                } else {
+                    Log.e("태그", "컨텐츠 업로드 서버접근 성공했지만 리스폰스값 못가져옴.  response.errorBody()?.string(): " + response.errorBody()?.string())
+                }
+            }
+        })
+
+    }
+
 
 
     //음식사진 인식값 가져오는 api(음식사진인지 판별)

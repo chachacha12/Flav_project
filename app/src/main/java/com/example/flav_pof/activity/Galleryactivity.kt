@@ -11,6 +11,8 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.provider.MediaStore.MediaColumns
+import android.view.View
+import android.view.WindowManager
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
@@ -27,6 +29,15 @@ class Galleryactivity : BasicActivity() {
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+
+        //상태표시줄(배터리, 시간) 숨겨주는 로직
+        // Hide the status bar.
+        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
+        // Remember that you should never show the action bar if the
+        // status bar is hidden, so hide that too if necessary.
+        actionBar?.hide()
+
         setContentView(R.layout.activity_gallery)
         setToolbarTitle("갤러리")
 

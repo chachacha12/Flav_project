@@ -10,6 +10,5 @@
         android:id="@+id/imageView"
         android:layout_width="130dp"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp"
         android:adjustViewBounds="true" />
 </androidx.cardview.widget.CardView>
