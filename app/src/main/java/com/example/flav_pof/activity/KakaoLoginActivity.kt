@@ -9,6 +9,7 @@ import android.os.Message
 import android.util.Log
 import android.widget.Toast
 import com.example.flav_pof.R
+import com.example.flav_pof.appIntro.AppIntroActivity
 import com.example.flav_pof.classes.Users
 import com.example.flav_pof.classes.Users_request
 import com.example.flav_pof.classes.Usersingleton
@@ -26,19 +27,24 @@ import retrofit2.Response
 class KakaoLoginActivity: BasicActivity() {
 
     var MainAct_Intent = Intent()  //Mainactivity로 데이터 실어서 보내줄 인텐트
-
     lateinit var strNick: String
     lateinit var strprofileImg: String
     lateinit var strEmail: String
     lateinit var  strkakaoid: String
     lateinit var kakao_token: String  //카카오 api접근을 위해 저장해두는 엑세스 토큰
     lateinit var user: Users //유저객체
+    var introact_check = false  //소개화면에서 온 경우인지 아닌지를 구별해줄 변수
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login_kakao)
         setToolbarTitle("카카오 로그인")
+
+        //앱소개화면어댑터에서 보낸 인텐트를 받아서 로그인한 사용자 정보를 얻는다.
+        var intent = getIntent()
+        introact_check = intent.getBooleanExtra("check",false)
+        Log.e("태그", "카톡로그인 처음왓을때 바로 introact_check: " + introact_check)
 
         has_kakaotoken()  //카카오 토큰 있는지 판별
 
@@ -136,8 +142,8 @@ class KakaoLoginActivity: BasicActivity() {
                             "\n프로필사진: ${user.kakaoAccount?.profile?.thumbnailImageUrl}"
                 )
             }
+            finish()  //카카오 로그인 액티비티 닫아줌
             startActivity(MainAct_Intent)  //main으로 유저정보 실어서 보내줌
-
             Toast.makeText(this@KakaoLoginActivity, strNick + "님 환영합니다.", Toast.LENGTH_SHORT).show()
         }
     }
@@ -163,13 +169,20 @@ class KakaoLoginActivity: BasicActivity() {
                 } else {  //토큰 이미 존재할때 (필요 시 토큰 갱신됨)
                     Log.e("태그", "has_kakaotoken함수 결과 이미 토큰값 존재. 사용자 정보값 가지고 바로 main으로 이동")
                     UserinfoCall_hastoken()
-                    finish()  //카카오 로그인 액티비티 닫아줌
                 }
             }
         } else {
-            //로그인 필요
-            Toast.makeText(this@KakaoLoginActivity, "토큰이 없습니다. 로그인 해주세요", Toast.LENGTH_SHORT).show()
-            Log.e("태그", "UpdateKakakotalkUI/   토큰이 없습니다. 로그인 해주세요")
+            if(introact_check == false){   //소개화면에 갔다온게 아닌 경우
+                finish()
+                //소개화면으로 보내줌.
+                Log.e("태그", "introact_check == null. 앱소개화면으로 이동합니다.")
+                var i = Intent(this@KakaoLoginActivity, AppIntroActivity::class.java)
+                startActivity(i)
+            }else{              //소개화면에 갔다가 온 경우
+                //로그인 필요
+                Toast.makeText(this@KakaoLoginActivity, "토큰이 없습니다. 로그인 해주세요", Toast.LENGTH_SHORT).show()
+                Log.e("태그", "UpdateKakakotalkUI/ 앱소개화면엔 갔다왔고,  토큰이 없습니다. 로그인 해주세요")
+            }
         }
     }
 

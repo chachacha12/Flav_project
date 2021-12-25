@@ -48,7 +48,6 @@ class GalleryAdapter(var activity: Activity, private val myDataset: ArrayList<St
 
         val galleryViewHolder = GalleryViewHolder(cardView)  //밑의 setOnClickListener에서 사용자가 선택한 특정뷰의 위치값 알아야해서 여기서 뷰홀더객체생성
         cardView.setOnClickListener {                //사용자가 갤러리에서 특정 사진을 클릭해서 선택했을때
-
             //레트로핏 post image 업로드
             var imageFile = File(myDataset!![galleryViewHolder.adapterPosition])
             Log.e("태그", "이미지 uri: " + myDataset!![galleryViewHolder.adapterPosition])

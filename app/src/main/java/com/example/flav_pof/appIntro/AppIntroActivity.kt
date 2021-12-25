@@ -7,6 +7,7 @@ import androidx.viewpager2.widget.ViewPager2
 import com.example.flav_pof.R
 import com.example.flav_pof.activity.BasicActivity
 import kotlinx.android.synthetic.main.activity_appintro.*
+import kotlinx.android.synthetic.main.layout_intro_pager_item.*
 
 //처음 앱 소개해주는 액티비티
 //뷰페이저도 리사이클러뷰랑 똑같음. - 어댑터 필요하고 뷰홀더, on바인드뷰 등 필요하고..
@@ -24,17 +25,17 @@ class AppIntroActivity: BasicActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(com.example.flav_pof.R.layout.activity_appintro)
+        setContentView(R.layout.activity_appintro)
         Log.d(TAG, "앱소개액티비티 - OnCreate 실행")
 
         //버튼 누를때 이벤트 처리
         previous_btn.setOnClickListener {
-            Log.d(TAG, "MainActivity - 이전 버튼 클릭")
+            Log.e(TAG, "MainActivity - 이전 버튼 클릭")
             my_intro_view_pager.currentItem = my_intro_view_pager.currentItem - 1
         }
 
         next_btn.setOnClickListener {
-            Log.d(TAG, "MainActivity - 다음 버튼 클릭")
+            Log.e(TAG, "MainActivity - 다음 버튼 클릭")
             my_intro_view_pager.currentItem = my_intro_view_pager.currentItem + 1
         }
 
@@ -49,7 +50,7 @@ class AppIntroActivity: BasicActivity() {
         pageItemList.add(PageItem(R.color.colorWhite, R.drawable.ic_pager_item_3, "세번째 페이지!"))
 
         //어댑터 객체 생성
-        myIntroPagerRecylerAdapter = MyIntroPagerRecyclerAdapter(pageItemList)
+        myIntroPagerRecylerAdapter = MyIntroPagerRecyclerAdapter(pageItemList, this)
 
         my_intro_view_pager.apply {
             adapter = myIntroPagerRecylerAdapter   //뷰페이저에 어댑터 붙혀줌
@@ -58,7 +59,7 @@ class AppIntroActivity: BasicActivity() {
         }
 
 
-    }
+    }  //oncreate
 
 
 
