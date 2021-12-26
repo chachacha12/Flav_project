@@ -89,8 +89,7 @@ class GalleryAdapter(var activity: Activity, private val myDataset: ArrayList<St
                 } else {
                     Log.e(
                         "태그",
-                        "서버접근 성공했지만 올바르지 않은 response값" + response.body()?.result + "에러: " + response.errorBody().toString()
-                    )
+                        "서버접근 성공했지만 올바르지 않은 response값" + response.body()?.result + "에러: " + response.errorBody()?.string() )
                     handler()
                 }
                 //response값(주변 식당들 이름)을 writepost액티비티에 전달을 위해

@@ -85,16 +85,21 @@ class WritePostActivity : BasicActivity() {
         //getRekognition()
 
         Log.e("writepost 태그", "방금막 writepost로 왔을때 Usersingleton.kakao_id: " + Usersingleton.kakao_id)
-        postinit()
+        postinit()  //수정하기 버튼 눌러서 온경우 일때 동작
         init()
+
     }
+
+
+
+
 
     //수정하기버튼눌러서 이 액티비티 온 경우 등엔 게시글의 editText가 원래 수정전 내용으로 차있도록 하게할거임.
     private fun postinit() {
 
         //여기 구문이 +눌러서 게시글 새로 만드는 것 x이고, 수정or삭제하려고 다시 writepostact에 온 경우에 쓰이는 구문임. 기존 내용들 다시 띄워줌
         if (postInfo != null) {   //null이라면 수정하기버튼 누른게 아니라 +버튼눌러서 새로운 게시글 만드려는거임. 즉, postinit()을 안거쳐도됨
-            titleEditText.setText(postInfo!!.title)
+            titletextView.text = postInfo!!.title
             //이제 contents 내용들 삥삥 돌면서 기존 이미지랑 EditText들을 넣어주면됨
             var contentsList = postInfo!!.contents
             for (i in contentsList.indices) {
@@ -130,32 +135,26 @@ class WritePostActivity : BasicActivity() {
                     contentsEditText.setText(contents)   //첫 editText에다가 수정전, 기존에 있던 내용을 넣어줌
                 }
             } //for
+        }else{             // +버튼눌러서 아예 새 게시물 만드려는 상황일때
+            Create_newpost()
         }
+    }
+
+    private fun Create_newpost(){
+        //갤러리 바로 실행.
+        var i = Intent(this, Galleryactivity::class.java)
+        i.putExtra(
+            "media",
+            "image"
+        )      //갤러리액티비티에 image라는 String값을 보냄. 갤러리액티비티에서 받을땐 키값인 media이용
+        startActivityForResult(i, 0)   //requestCode가 필요한 이유는 나중에 갤러리 액티비티에서 일 마치고 결과값이
+        // 이 액티비티로 돌아올때 onActivityResult()함수에서 requestCode를 비교해서 각각 다른 동작을 수행하게 할때를 위한 구분이 됨
     }
 
     private fun init() {
         checkButton.setOnClickListener {
             storageUpload()                     //이걸 누르면 파이어베이스로 게시글 쓴거 저장됨
         }
-
-        image.setOnClickListener {
-            //누르면 갤러리 실행하면됨
-            var i = Intent(this, Galleryactivity::class.java)
-            i.putExtra(
-                "media",
-                "image"
-            )      //갤러리액티비티에 image라는 String값을 보냄. 갤러리액티비티에서 받을땐 키값인 media이용
-            startActivityForResult(i, 0)   //requestCode가 필요한 이유는 나중에 갤러리 액티비티에서 일 마치고 결과값이
-            // 이 액티비티로 돌아올때 onActivityResult()함수에서 requestCode를 비교해서 각각 다른 동작을 수행하게 할때를 위한 구분이 됨
-        }
-
-        /*
-        video.setOnClickListener {
-            var i = Intent(this, Galleryactivity::class.java)
-            i.putExtra("media", "video")
-            startActivityForResult(i, 0)
-        }
-         */
 
         buttonsBackgroundlayout =
             buttonsBackgroundLayout    //게시글 올린 이미지 삭제or수정 창 끄려고할때 .  //전역변수를 초기화해줌.
@@ -175,15 +174,6 @@ class WritePostActivity : BasicActivity() {
             buttonsBackgroundlayout.visibility = View.GONE
             Log.e("로그: ", "이미지수정")
         }
-
-        /*
-        videoModify.setOnClickListener {
-            var i = Intent(this, Galleryactivity::class.java)
-            i.putExtra("media", "video")
-            startActivityForResult(i, 1)
-            buttonsBackgroundlayout.visibility = View.GONE
-        }
-         */
 
         //작성중인 게시물의 이미지 삭제하기
         // 1. 이미 저장해서 존재하던 게시물 이미지 수정하기 2. +버튼 눌러서 저장안된 새 게시물 작성중에 이미지 수정하기
@@ -211,30 +201,21 @@ class WritePostActivity : BasicActivity() {
                     Log.e("태그", "")
                 }
             }
-            //*********************
-            //밑에 식당명 텍스트뷰들도 떳었다면 그것들도 마저 삭제해줌
-            /*
-            var i=0
-            repeat(contentsLayout.chldCount){
-                var view =   contentsLayout.getChildAt(i)
-                if(view is TextView){
-                    contentsLayout.removeView(view)
-                }
-                i++
-            }
-             */
-            //********************************************
+
             //스토리지에서도 삭제됐으니(저장되어 있는 상태였다면)  이제 pathList에서 해당 이미지를 삭제함  // indexOfChild를 써서 contentsLayout의 몇번째 뷰인지 알아냄  //첫번째 editText가 무조건 있으니까 마이너스 1 해줌
             pathList.removeAt(contentsLayout.indexOfChild(selectedView) - 1)
             contentsLayout.removeView(selectedView)
             buttonsBackgroundlayout.visibility = View.GONE
         }  //delete
 
+        /*
         contentsEditText.onFocusChangeListener =
             onFocusChangedListener   //포커스리스너 붙이면 포커스가 있는지 판별함. 포커스 있으면 이 뷰가 selectedEditText가 됨
-        titleEditText.setOnFocusChangeListener { v, hasFocus ->
+        titletextView.setOnFocusChangeListener { v, hasFocus ->
             selectedEditText = null
         }   //만약 제목칸에 포커스 있을때, 이미지 넣었을때 처리
+
+         */
     }  //init
 
 
@@ -316,7 +297,7 @@ class WritePostActivity : BasicActivity() {
                                 Toast.LENGTH_SHORT
                             ).show()
                             textView.setTextColor(Color.GREEN)
-                            contentsItemView.setText(textView.text.toString())   //이미지 아래에 생성되는 editText에 식당명 삽입해줌
+                            titletextView.text = textView.text.toString()   //이미지 아래에 생성되는 editText에 식당명 삽입해줌
                             Log.e(
                                 "태그",
                                 "restname선택: " + textView.text.toString()
@@ -421,7 +402,7 @@ class WritePostActivity : BasicActivity() {
     //memberinit액티비티에서 가져온 함수 2개 -> profileUpdate와 uploader함수를 변형해준거임
     private fun storageUpload()   //사용자가 확인버튼 누르면 실행시킬 함수 -게시글 작성한걸 파이어베이스에 등록(업데이트)해줌   (이미지 삭제, 수정 했을땐, 그 이미지를 db,스토리지에서 지우는 작업을 지우는 즉시 했음. 메인액티비티에서. 그래서 여기선 db, 스토리지에 등록만 해줌됨 )
     {
-        var tilte = titleEditText.text.toString()
+        var tilte = titletextView.text.toString()
 
         if (tilte.length > 0) {
             loaderLayout.visibility = View.VISIBLE    //로딩화면 보여줌.
@@ -627,6 +608,7 @@ class WritePostActivity : BasicActivity() {
 
         if(filename !=null && restname != null){
             contents  =Contents(Usersingleton.kakao_id!!, filename!!, restname!!, 1,1,1,37.54001365000000000,127.06800310000000000     )
+            Log.e("태그", "컨텐츠 업로드 통신 contents.toString():  "+contents.toString())
         }else{
             Toast.makeText(this, "컨텐츠 업로드에 필요한 모든 옵션을 선택해주세요.", Toast.LENGTH_SHORT).show()
             finish()

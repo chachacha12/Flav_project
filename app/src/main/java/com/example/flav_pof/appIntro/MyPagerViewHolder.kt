@@ -31,15 +31,14 @@ class MyPagerViewHolder(itemView:View, var activity: Activity):RecyclerView.View
         if(pagerItem.bgColor == R.color.colorWhite){
             btn.visibility = View.VISIBLE
 
-            btn.setOnClickListener {   //시작버튼 클릭시 카카오로그인 화면으로 이동
+            //시작버튼 클릭시 카카오로그인 화면으로 이동
+            btn.setOnClickListener {
                 var check = true
                 var intent_intro = Intent(activity, KakaoLoginActivity::class.java)
                 intent_intro.putExtra("check", check)  //앱소개화면에 왔었음을 카톡로그인화면에 알려주는 용도
                 activity.startActivity(intent_intro)
                 Log.e(AppIntroActivity.TAG, "시작버튼 클릭으로 앱소개 어댑터의 onCreateViewHolder 에서 카톡로그인으로 이동")
             }
-
-
         }else{
             btn.visibility = View.GONE
         }
