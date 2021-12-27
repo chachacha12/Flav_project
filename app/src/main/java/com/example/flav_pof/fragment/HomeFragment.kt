@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.flav_pof.Adapter.HomeAdapter
 import com.example.flav_pof.PostInfo
 import com.example.flav_pof.R
-import com.example.flav_pof.activity.WritePostActivity
+import com.example.flav_pof.writepost.WritePostActivity
 import com.example.flav_pof.listener.OnPostListener
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.firestore.FirebaseFirestore

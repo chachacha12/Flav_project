@@ -1,6 +1,5 @@
 package com.example.flav_pof.fragment
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
@@ -13,20 +12,11 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.flav_pof.Adapter.HomeAdapter
 import com.example.flav_pof.Adapter.UserListAdapter
-import com.example.flav_pof.PostInfo
 import com.example.flav_pof.R
 import com.example.flav_pof.UserInfo
-import com.example.flav_pof.activity.WritePostActivity
-import com.example.flav_pof.classes.Name
-import com.example.flav_pof.listener.OnPostListener
 import com.google.firebase.firestore.FirebaseFirestore
 import com.kakao.sdk.talk.TalkApiClient
-import org.json.JSONArray
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 
 /**

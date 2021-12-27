@@ -15,7 +15,7 @@ import com.example.flav_pof.FirebaseHelper
 import com.example.flav_pof.PostInfo
 import com.example.flav_pof.R
 import com.example.flav_pof.activity.PostActivity
-import com.example.flav_pof.activity.WritePostActivity
+import com.example.flav_pof.writepost.WritePostActivity
 import com.example.flav_pof.listener.OnPostListener
 import com.example.flav_pof.view.ReadContentsVIew
 import kotlinx.android.synthetic.main.item_post.view.*

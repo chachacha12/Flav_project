@@ -11,6 +11,7 @@ import com.example.flav_pof.PostInfo
 import com.example.flav_pof.R
 import com.example.flav_pof.listener.OnPostListener
 import com.example.flav_pof.view.ReadContentsVIew
+import com.example.flav_pof.writepost.WritePostActivity
 
 
 class PostActivity : BasicActivity() {

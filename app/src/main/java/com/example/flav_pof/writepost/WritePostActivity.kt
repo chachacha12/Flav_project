@@ -1,4 +1,4 @@
-package com.example.flav_pof.activity
+package com.example.flav_pof.writepost
 //게시글에 올린 이미지들 경로를 pathList라는 리스트에 넣어두고, 그 리스트를 통해 사진들을 파이어베이스 스토리지에 올려주고
 //사진들 url들을 모아서 editText에 쓰여진 내용들과 같이 db(클라우드fireStore)에 올릴거임
 //메타데이터란 어떤 데이터(이미지 등)를 설명해주거나 찾을때 유용하게 쓰는 데이터인듯. 예를 들면 인스타의 해쉬태그 느낌
@@ -7,19 +7,20 @@ package com.example.flav_pof.activity
 import android.app.Activity
 import android.content.Intent
 import android.graphics.Color
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.util.Patterns
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import androidx.annotation.RequiresApi
 import com.bumptech.glide.Glide
 import com.example.flav_pof.PostInfo
 import com.example.flav_pof.R
+import com.example.flav_pof.activity.BasicActivity
+import com.example.flav_pof.activity.Galleryactivity
 import com.example.flav_pof.classes.*
 import com.example.flav_pof.view.ContentsItemView
+import com.google.android.material.tabs.TabLayoutMediator
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.DocumentReference
@@ -41,7 +42,6 @@ import retrofit2.Response
 import java.io.File
 import java.io.FileInputStream
 import java.net.URLConnection
-import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -69,6 +69,9 @@ class WritePostActivity : BasicActivity() {
     lateinit var lat:String  //위도
     lateinit var lng:String  //경도
 
+    //식당명선택 프래그먼트 관련 변수
+    lateinit var namelist_string:String   //인텐트통해서 갤러리에서 사진 선택시에 식당명리스트들 string으로 날라왔고, 프래그먼트로 다시 보내줄거임. 프래그먼트에선 이걸 다시 jsonarray만든 후 이용해야함
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -87,12 +90,7 @@ class WritePostActivity : BasicActivity() {
         Log.e("writepost 태그", "방금막 writepost로 왔을때 Usersingleton.kakao_id: " + Usersingleton.kakao_id)
         postinit()  //수정하기 버튼 눌러서 온경우 일때 동작
         init()
-
     }
-
-
-
-
 
     //수정하기버튼눌러서 이 액티비티 온 경우 등엔 게시글의 editText가 원래 수정전 내용으로 차있도록 하게할거임.
     private fun postinit() {
@@ -128,11 +126,11 @@ class WritePostActivity : BasicActivity() {
                                 "https://firebasestorage.googleapis.com/v0/b/flavmvp-9fe0d.appspot.com/o/posts"
                             )
                         ) { //다음 contents가 이미지나 영상이 아닐경우에만
-                            contentsItemView.setText(nextContents)  //editTEXT에다가 수정전에 작성했던 내용을 넣어줌
+                            //contentsItemView.setText(nextContents)  //editTEXT에다가 수정전에 작성했던 내용을 넣어줌
                         }
                     }
                 } else if (i == 0) {  //i가 0인데 url형식이 아니라면 첫번째 editTEXT가 있다는 것임.
-                    contentsEditText.setText(contents)   //첫 editText에다가 수정전, 기존에 있던 내용을 넣어줌
+                    //contentsEditText.setText(contents)   //첫 editText에다가 수정전, 기존에 있던 내용을 넣어줌
                 }
             } //for
         }else{             // +버튼눌러서 아예 새 게시물 만드려는 상황일때
@@ -208,14 +206,6 @@ class WritePostActivity : BasicActivity() {
             buttonsBackgroundlayout.visibility = View.GONE
         }  //delete
 
-        /*
-        contentsEditText.onFocusChangeListener =
-            onFocusChangedListener   //포커스리스너 붙이면 포커스가 있는지 판별함. 포커스 있으면 이 뷰가 selectedEditText가 됨
-        titletextView.setOnFocusChangeListener { v, hasFocus ->
-            selectedEditText = null
-        }   //만약 제목칸에 포커스 있을때, 이미지 넣었을때 처리
-
-         */
     }  //init
 
 
@@ -240,12 +230,14 @@ class WritePostActivity : BasicActivity() {
                 ) //가로는 matchparent하고 위아래 길이는 wrapcontent인듯?
 
                 val contentsItemView =
-                    ContentsItemView(this)  //이미지와 editText, 식당명TextView담는 객체 하나 만듬
+                    ContentsItemView(this)  //이미지와 editText 담는 객체 하나 만듬
+
 
                 if (selectedEditText == null) {
                     contentsLayout.addView(contentsItemView)
                     //contents_LinearLayout.addView(contentsItemView)
                 } else {            //내가 포커스 준 editText가 있을때
+                    /*
                     var i = 0
                     repeat(contentsLayout.childCount) {
                         if (contentsLayout.getChildAt(i) == selectedEditText?.parent) {   //이미 onFocusChangeListener가 selectedEditText를 내가 포커스 준 녀석으로 바꿔뒀을거임
@@ -256,7 +248,10 @@ class WritePostActivity : BasicActivity() {
                         }
                         i++
                     }
+                     */
                 }
+
+
 
                 contentsItemView.setImage(path)
                 contentsItemView.setOnClickListener {
@@ -269,10 +264,12 @@ class WritePostActivity : BasicActivity() {
                 Log.e("태그", "식당이름 텍스트뷰 생성")
                 // 주변 음식점 이름을 텍스트뷰로 각각 생성해줌
 
-                //intent에  jsonarray를 string값으로 바꿔서 날렸고, 그 string값을 받아서 다시 jsonarray객체로 만들어줌
-                var namelist_string =
-                    data!!.getStringExtra("restaurant_name_list")!!  //주변식당명리스트(string으로 되어있는)가 인텐트에 실려서 날아옴
+                //intent에  jsonarray를 string값으로 바꿔서 날렸고, 그 string값을 받음. 프래그먼트로 날려준후 다시 jsonarray객체로 만들거임
+                namelist_string = data!!.getStringExtra("restaurant_name_list")  //주변식당명리스트(string으로 되어있는)가 인텐트에 실려서 날아옴
 
+                init_viewpager()  //위에서 받은 식당명을 가지고 뷰페이저를 만들어줌.. 프래그먼트 2개 만들고 어댑터 붙히고 등등해서
+
+                /*
                 if (namelist_string == "정보없음") {  //exif정보 없는 사진 등이 들어왔을때
                     Toast.makeText(
                         this,
@@ -308,6 +305,10 @@ class WritePostActivity : BasicActivity() {
                         }
                     }
                 }
+                 */
+
+
+
             }
             1 -> if (resultCode == Activity.RESULT_OK) {    //이미지를 수정하려고 새 이미지를 선택했을때
 
@@ -585,10 +586,6 @@ class WritePostActivity : BasicActivity() {
                             pathCount++
                         }
                     }  //여기까지가 자식뷰가 이미지뷰일때
-                    else {        //뷰가 LinearLayout일 때
-                        linearLayout.removeView(view)       //식당이름 텍스트뷰 모여있는 linearLayout 뷰는 제거해줌
-                        Log.e("태그", "removeView로 제거한 뷰: " + view)
-                    }
                     j++
                 }  //작은 repeat문
                 i++
@@ -680,13 +677,68 @@ class WritePostActivity : BasicActivity() {
                 }
         }
     }
-
     //다른 액티비티로 데이터가지고 이동시켜주는 함수
     private fun myStartActivity(c: Class<*>, media: String, requestCode: Int) {
         val intent = Intent(this, c)
         intent.putExtra("media", media)
         startActivityForResult(intent, requestCode)
     }
+
+
+
+    //************************taplayout과 뷰페이저 관련 내용******************************
+    var textArray = arrayListOf<String>("식당이름선택","태그선택")  //tabLayout에 붙을 텍스트 들임.
+
+    //이 액티비티에 붙힐 프래그먼트 2개를 만들어줌
+    var name_fragment: Choose_name_Fragment? = null
+    var tag_fragment: Choose_tag_Fragment? =null
+
+    /*
+    //FragmentListener 인터페이스 상속받아서 이 함수 꼭 오버라이드 해줘야함. 프래그먼트들 통신에 사용됨
+    override fun onCommand(message: ArrayList<Double>) {
+        tag_fragment?.display(message)
+        Log.e("태그","통계 액티비티통해서 통계프래그먼트의 display함수 실행완료")
+    }
+     */
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        finish()
+    }
+
+    fun init_viewpager(){
+        //프래그먼트들 여기서 초기화
+        name_fragment = Choose_name_Fragment()
+        tag_fragment = Choose_tag_Fragment()
+
+
+        //프래그먼트로 첫번째 이용자 id값을 보내기 (아무도 선택 안했을때를 위해서)
+        var bundle = Bundle()
+        bundle.putString("namelist_string", namelist_string)  //식당명들이 모두 모여 string묶음으로 된걸 frag에 보내줌
+        name_fragment!!.arguments = bundle
+
+        //뷰페이저에 다시 프래그먼트들을 붙혀줌. 이때 어댑터에 인자를 하나 추가해서 내가 위에서 bundle넣어서 새로 만든 프래그먼트를 어댑터에 전달해줌
+        viewpager2.adapter = Name_Tag_Viewpager_Adapter(this@WritePostActivity, name_fragment, tag_fragment)
+
+        //뷰페이저2객체를 슬라이딩 할때마다 tab의 위치도 바뀌어야함. 그 둘을 동기화 해주는 클래스인 TabLayoutMediator을 이용해줌.
+        TabLayoutMediator(tabLayout, viewpager2){
+                tab, position -> tab.text = textArray[position]
+        }.attach()
+        Log.e("태그","뷰페이저만들어짐.")
+
+    } //init_viewpager
+
+
+
+
+
+
+
+
+
+
+
+
 }
 
 

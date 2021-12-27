@@ -50,7 +50,7 @@
         <activity android:name=".activity.CameraActivity"></activity>
         <activity android:name=".activity.Galleryactivity"></activity>
         <activity android:name=".activity.BasicActivity"></activity>
-        <activity android:name=".activity.WritePostActivity"></activity>
+        <activity android:name=".writepost.WritePostActivity"></activity>
         <activity android:name=".activity.KakaoLoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

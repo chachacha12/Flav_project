@@ -32,7 +32,8 @@
             <TextView
                 android:id="@+id/titletextView"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="50dp"
+                android:gravity="center"
                 android:text="제목" />
 
             <LinearLayout
@@ -48,7 +49,23 @@
                 android:id="@+id/viewpager_linearLayout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical"></LinearLayout>
+                android:orientation="vertical">
+
+                <com.google.android.material.tabs.TabLayout
+                    android:id="@+id/tabLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:background="#CBE9F6"
+                    app:tabTextColor="#EDEBEB">
+
+                </com.google.android.material.tabs.TabLayout>
+
+                <androidx.viewpager2.widget.ViewPager2
+                    android:id="@+id/viewpager2"
+                    android:layout_width="match_parent"
+                    android:layout_height="300dp"
+                    android:background="#CBE9F6" />
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -63,7 +80,7 @@
 
                     <TextView
                         android:id="@+id/textView3"
-                        android:layout_width="300dp"
+                        android:layout_width="270dp"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:text="걸맞은 식당이름이 없나요?" />
@@ -71,12 +88,14 @@
                     <androidx.cardview.widget.CardView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:background="#F44336"
                         app:cardCornerRadius="30dp">
 
                         <Button
                             android:id="@+id/selfbutton"
                             android:layout_width="100dp"
                             android:layout_height="wrap_content"
+                            android:background="#F44336"
                             android:text="직접입력하기" />
                     </androidx.cardview.widget.CardView>
                 </LinearLayout>
@@ -84,12 +103,14 @@
                 <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    app:cardBackgroundColor="#F44336"
                     app:cardCornerRadius="30dp">
 
                     <Button
                         android:id="@+id/checkButton"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:background="#F44336"
                         android:text="선택완료" />
                 </androidx.cardview.widget.CardView>
 
