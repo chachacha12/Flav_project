@@ -1,8 +1,9 @@
 package com.example.flav_pof.writepost
 
 import android.content.Context
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.os.Bundle
-import android.provider.Settings.Global.getString
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -10,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.Toast
+import androidx.core.content.ContextCompat.getColor
 import androidx.fragment.app.Fragment
 import com.example.flav_pof.R
 import kotlinx.android.synthetic.main.fragment_choose_name.*
@@ -19,21 +21,27 @@ import org.json.JSONArray
 class Choose_name_Fragment : Fragment() {
 
 
-    var fragmentListener: FragmentListener? = null  //통계 프래그먼트와 통신을 위해 인터페이스 객체 선언
-
+    var onRestaurantNameListener: OnRestaurantNameListener? = null  //writepost액티비티(부모액티비티)에 식당명 데이터를 보내줄 인터페이스
     lateinit var namelist:String  //writepostact에서 보낸 식당명들 리스트
+
+    interface OnRestaurantNameListener{
+        fun onRestaurantNameSet(name: String)
+    }
+
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        if(context is FragmentListener){  //액티비티가 FragmentListener 타입이라면, (즉, 상속받았다면)
-            fragmentListener = context   //액티비티를 가져옴. (액티비티가 인터페이스를 상속받아서 가져와서 이 객체에 대입가능), 이제 액티비티에 있는 onCommand함수를 이 객체 통해 여기서도 쓸 수 있음
+
+        //형변환하여 인터페이스 객체를 가져옴. 이제 액티비티에서 구현한 메소드를 이용해 액티비티쪽으로 데이터 보낼수있게됨
+        if(context is OnRestaurantNameListener){
+            onRestaurantNameListener = context
         }
     }
 
     override fun onDetach() {
         super.onDetach()
-        if(fragmentListener !=null)
-            fragmentListener = null
+        if(onRestaurantNameListener !=null)
+            onRestaurantNameListener = null
     }
 
 
@@ -75,26 +83,35 @@ class Choose_name_Fragment : Fragment() {
             val Object = jsonArray.getJSONObject(i) //jsonarray안의 object에 하나하나 접근
 
             val radioButton = RadioButton(activity)
+
+            radioButton.buttonTintList=
+                activity?.let { it1 -> getColor(it1, R.color.colorFlav) }?.let { it2 ->
+                    ColorStateList.valueOf(
+                        it2
+                    )
+                }
+
+
             radioButton.text = Object.getString("name") //식당명 추출
-            Log.e("태그",  "프래그먼트의 라디오버튼text에 Object.getString(name): " +Object.getString("name") )
+            Log.e("태그", "프래그먼트의 라디오버튼text에 Object.getString(name): " + Object.getString("name"))
 
             val rprms: RadioGroup.LayoutParams =
-                RadioGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+                RadioGroup.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                )
 
             radiogroup.addView(radioButton, rprms)
             i++
+
+            //특정 식당명을 클릭했을시
+            radiogroup.setOnCheckedChangeListener { group, checkedId ->
+                val select = getView()?.findViewById<RadioButton>(checkedId)
+                onRestaurantNameListener?.onRestaurantNameSet(select?.text.toString())  //인터페이스 통해 writepost액티비티에 고른 식당명 보내줌
+                Toast.makeText(activity, select?.text.toString()+" 선택", Toast.LENGTH_SHORT).show()
+            }
         }
     }
-
-
-    /*
-    //데이터를 실어서 특정 액티비티에 보내주는 인텐트를 함수로 만들어둠  //로그 수정작업에 씀
-    fun myStartActivity(c: Class<*>, log: log) {
-        var i = Intent(activity, c)
-        i.putExtra("log", log)  //내가 클래스 통해 만든 객체들을 putExtra로 보내려면 보내려는 객체 클래스(PostInfo)에 : Serializable 해줘야함
-        startActivityForResult(i, 100)  //다른 액티비티 갔다가 그 결과값을 다시 이 액티비티로 가져올것이다.
-    }
-     */
 
 
     //리사이클러뷰를 여기서 제대로 만들어줌.

@@ -3,8 +3,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/contentsImageView"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="200dp"
     android:adjustViewBounds="true"
-    android:maxHeight="300dp"
+    android:maxHeight="200dp"
     android:scaleType="fitXY">
 </ImageView>

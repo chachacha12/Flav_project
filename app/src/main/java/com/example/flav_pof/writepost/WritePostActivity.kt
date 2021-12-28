@@ -5,13 +5,14 @@ package com.example.flav_pof.writepost
 
 
 import android.app.Activity
+import android.app.Dialog
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.util.Patterns
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
 import android.widget.*
 import com.bumptech.glide.Glide
 import com.example.flav_pof.PostInfo
@@ -30,12 +31,11 @@ import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
 import com.google.firebase.storage.ktx.storageMetadata
 import kotlinx.android.synthetic.main.activity_write_post.*
-import kotlinx.android.synthetic.main.view_contents_edit_text.*
+import kotlinx.android.synthetic.main.view_dialog.*
 import kotlinx.android.synthetic.main.view_loader.*
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
-import org.json.JSONArray
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -46,7 +46,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 
-class WritePostActivity : BasicActivity() {
+class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantNameListener {
     private val TAG = "WritePostActivity"
     private lateinit var user: FirebaseUser         //현재 로그인된 회원객체를 전역으로 둘거임. 초기화는 안하고 선언만.
     private var pathList = ArrayList<String>()       //게시글에 넣은 사진이미지들의 경로들 여기에 저장해서 리스트로 만들거임
@@ -71,7 +71,7 @@ class WritePostActivity : BasicActivity() {
 
     //식당명선택 프래그먼트 관련 변수
     lateinit var namelist_string:String   //인텐트통해서 갤러리에서 사진 선택시에 식당명리스트들 string으로 날라왔고, 프래그먼트로 다시 보내줄거임. 프래그먼트에선 이걸 다시 jsonarray만든 후 이용해야함
-
+    private var dilaog01:Dialog? = null  //식당명 직접입렵시 필요한 다이얼로그 객체
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -85,11 +85,14 @@ class WritePostActivity : BasicActivity() {
             (intent.getSerializableExtra("postInfo") as? PostInfo)  //MainActivity에서 게시글 수정버튼을 눌러서 보낸 인텐트에 실린 값(수정하고자하는 게시물 객체)를 받음. 인텐트를 받을땐 getIntent() 또는 Intent 이용.
         //getSerializable은 보내는, 받는 데이터가 내가 만든 클래스의 객체일때 사용함.
 
-        //getRekognition()
 
-        Log.e("writepost 태그", "방금막 writepost로 왔을때 Usersingleton.kakao_id: " + Usersingleton.kakao_id)
+        Log.e(
+            "writepost 태그",
+            "방금막 writepost로 왔을때 Usersingleton.kakao_id: " + Usersingleton.kakao_id
+        )
         postinit()  //수정하기 버튼 눌러서 온경우 일때 동작
         init()
+
     }
 
     //수정하기버튼눌러서 이 액티비티 온 경우 등엔 게시글의 editText가 원래 수정전 내용으로 차있도록 하게할거임.
@@ -97,7 +100,7 @@ class WritePostActivity : BasicActivity() {
 
         //여기 구문이 +눌러서 게시글 새로 만드는 것 x이고, 수정or삭제하려고 다시 writepostact에 온 경우에 쓰이는 구문임. 기존 내용들 다시 띄워줌
         if (postInfo != null) {   //null이라면 수정하기버튼 누른게 아니라 +버튼눌러서 새로운 게시글 만드려는거임. 즉, postinit()을 안거쳐도됨
-            titletextView.text = postInfo!!.title
+            //titletextView.text = postInfo!!.title
             //이제 contents 내용들 삥삥 돌면서 기존 이미지랑 EditText들을 넣어주면됨
             var contentsList = postInfo!!.contents
             for (i in contentsList.indices) {
@@ -150,7 +153,18 @@ class WritePostActivity : BasicActivity() {
     }
 
     private fun init() {
-        checkButton.setOnClickListener {
+
+        //다이얼로그 초기화
+        dilaog01 =  Dialog(this)
+        dilaog01!!.requestWindowFeature(Window.FEATURE_NO_TITLE); // 타이틀 제거
+        dilaog01!!.setContentView(R.layout.view_dialog)
+
+        //식당명 직접입력버튼 클릭시 다이얼로그
+        selfbutton.setOnClickListener {
+            showDialog01()
+        }
+        //확인버튼 클릭시
+        checkButton2.setOnClickListener {
             storageUpload()                     //이걸 누르면 파이어베이스로 게시글 쓴거 저장됨
         }
 
@@ -162,7 +176,6 @@ class WritePostActivity : BasicActivity() {
                 buttonsBackgroundlayout.visibility = View.GONE
             }
         }
-
 
         //작성중인 게시물의 이미지 다른 이미지로 수정하기
         imageModify.setOnClickListener {
@@ -265,7 +278,8 @@ class WritePostActivity : BasicActivity() {
                 // 주변 음식점 이름을 텍스트뷰로 각각 생성해줌
 
                 //intent에  jsonarray를 string값으로 바꿔서 날렸고, 그 string값을 받음. 프래그먼트로 날려준후 다시 jsonarray객체로 만들거임
-                namelist_string = data!!.getStringExtra("restaurant_name_list")  //주변식당명리스트(string으로 되어있는)가 인텐트에 실려서 날아옴
+                namelist_string =
+                    data!!.getStringExtra("restaurant_name_list")  //주변식당명리스트(string으로 되어있는)가 인텐트에 실려서 날아옴
 
                 init_viewpager()  //위에서 받은 식당명을 가지고 뷰페이저를 만들어줌.. 프래그먼트 2개 만들고 어댑터 붙히고 등등해서
 
@@ -308,7 +322,6 @@ class WritePostActivity : BasicActivity() {
                  */
 
 
-
             }
             1 -> if (resultCode == Activity.RESULT_OK) {    //이미지를 수정하려고 새 이미지를 선택했을때
 
@@ -328,7 +341,7 @@ class WritePostActivity : BasicActivity() {
         View.OnClickListener { v ->
             when (v.id) {
                 R.id.checkButton -> storageUpload()
-                R.id.image -> myStartActivity(Galleryactivity::class.java, "image", 0)
+               // R.id.image -> myStartActivity(Galleryactivity::class.java, "image", 0)
                // R.id.video -> myStartActivity(Galleryactivity::class.java, "video", 0)
                 R.id.buttonsBackgroundLayout -> if (buttonsBackgroundLayout.visibility === View.VISIBLE) {
                     buttonsBackgroundLayout.visibility = View.GONE
@@ -403,7 +416,8 @@ class WritePostActivity : BasicActivity() {
     //memberinit액티비티에서 가져온 함수 2개 -> profileUpdate와 uploader함수를 변형해준거임
     private fun storageUpload()   //사용자가 확인버튼 누르면 실행시킬 함수 -게시글 작성한걸 파이어베이스에 등록(업데이트)해줌   (이미지 삭제, 수정 했을땐, 그 이미지를 db,스토리지에서 지우는 작업을 지우는 즉시 했음. 메인액티비티에서. 그래서 여기선 db, 스토리지에 등록만 해줌됨 )
     {
-        var tilte = titletextView.text.toString()
+        //var tilte = titletextView.text.toString()
+        var tilte = "아무정보나 넣음"
 
         if (tilte.length > 0) {
             loaderLayout.visibility = View.VISIBLE    //로딩화면 보여줌.
@@ -507,7 +521,8 @@ class WritePostActivity : BasicActivity() {
                                                 "s3업로드 태그",
                                                 "s3업로드 / 통신성공" + response.body()?.filepath
                                             )
-                                            var filepath_list = response.body()?.filepath?.split('/')
+                                            var filepath_list =
+                                                response.body()?.filepath?.split('/')
                                             filename = filepath_list!!.last()  //filename값을 받아옴
                                             Log.e(
                                                 "s3업로드 태그",
@@ -520,7 +535,8 @@ class WritePostActivity : BasicActivity() {
                                         } else {
                                             Log.e(
                                                 "s3업로드 태그",
-                                                "s3업로드 / 서버접근 성공했지만 올바르지 않은 response값" + response.body()?.filepath + "에러: " +  response.errorBody()?.string()
+                                                "s3업로드 / 서버접근 성공했지만 올바르지 않은 response값" + response.body()?.filepath + "에러: " + response.errorBody()
+                                                    ?.string()
                                             )
                                             //handler()
                                         }
@@ -604,27 +620,48 @@ class WritePostActivity : BasicActivity() {
     private fun Contents_Upload(){
 
         if(filename !=null && restname != null){
-            contents  =Contents(Usersingleton.kakao_id!!, filename!!, restname!!, 1,1,1,37.54001365000000000,127.06800310000000000     )
-            Log.e("태그", "컨텐츠 업로드 통신 contents.toString():  "+contents.toString())
+            contents  =Contents(
+                Usersingleton.kakao_id!!,
+                filename!!,
+                restname!!,
+                1,
+                1,
+                1,
+                37.54001365000000000,
+                127.06800310000000000
+            )
+            Log.e("태그", "컨텐츠 업로드 통신 contents.toString():  " + contents.toString())
         }else{
             Toast.makeText(this, "컨텐츠 업로드에 필요한 모든 옵션을 선택해주세요.", Toast.LENGTH_SHORT).show()
             finish()
         }
 
-        server.contents_upload_Request(contents
+        server.contents_upload_Request(
+            contents
         ).enqueue(object : Callback<Contents_response> {
             override fun onFailure(
                 call: Call<Contents_response>,
                 t: Throwable
             ) {  //object로 받아옴. 서버에서 받은 object모델과 맞지 않으면 실패함수로 빠짐
-                Log.e("태그", "컨텐츠 업로드 통신 아예실패  ,t.message: "+t.message)
+                Log.e("태그", "컨텐츠 업로드 통신 아예실패  ,t.message: " + t.message)
             }
-            override fun onResponse(call: Call<Contents_response>, response: Response<Contents_response>) {
+
+            override fun onResponse(
+                call: Call<Contents_response>,
+                response: Response<Contents_response>
+            ) {
                 if (response.isSuccessful) {
 
-                    Log.e("태그", "컨텐츠 업로드 통신 성공!!. +response.body()?.content_id: "+response.body()?.content_id)
+                    Log.e(
+                        "태그",
+                        "컨텐츠 업로드 통신 성공!!. +response.body()?.content_id: " + response.body()?.content_id
+                    )
                 } else {
-                    Log.e("태그", "컨텐츠 업로드 서버접근 성공했지만 리스폰스값 못가져옴.  response.errorBody()?.string(): " + response.errorBody()?.string())
+                    Log.e(
+                        "태그",
+                        "컨텐츠 업로드 서버접근 성공했지만 리스폰스값 못가져옴.  response.errorBody()?.string(): " + response.errorBody()
+                            ?.string()
+                    )
                 }
             }
         })
@@ -636,20 +673,32 @@ class WritePostActivity : BasicActivity() {
     //음식사진 인식값 가져오는 api(음식사진인지 판별)
     private fun getRekognition(){
 
-        server.postpic_rekog_Request("1639482649907.jpeg","2013981477"
+        server.postpic_rekog_Request(
+            "1639482649907.jpeg", "2013981477"
         ).enqueue(object : Callback<Rekognition_response> {
             override fun onFailure(
                 call: Call<Rekognition_response>,
                 t: Throwable
             ) {  //object로 받아옴. 서버에서 받은 object모델과 맞지 않으면 실패함수로 빠짐
-                Log.e("태그", "getRekognition api 통신 아예실패  ,t.message: "+t.message)
+                Log.e("태그", "getRekognition api 통신 아예실패  ,t.message: " + t.message)
             }
-            override fun onResponse(call: Call<Rekognition_response>, response: Response<Rekognition_response>) {
+
+            override fun onResponse(
+                call: Call<Rekognition_response>,
+                response: Response<Rekognition_response>
+            ) {
                 if (response.isSuccessful) {
 
-                    Log.e("태그", "getRekognition api 통신 성공!!. response.body().rekogData: "+response.body()?.rekogData)
+                    Log.e(
+                        "태그",
+                        "getRekognition api 통신 성공!!. response.body().rekogData: " + response.body()?.rekogData
+                    )
                 } else {
-                    Log.e("태그", "getRekognition 서버접근 성공했지만 리스폰스값 못가져옴.  response.body().toString(): " + response.body().toString())
+                    Log.e(
+                        "태그",
+                        "getRekognition 서버접근 성공했지만 리스폰스값 못가져옴.  response.body().toString(): " + response.body()
+                            .toString()
+                    )
                 }
             }
         })
@@ -687,7 +736,7 @@ class WritePostActivity : BasicActivity() {
 
 
     //************************taplayout과 뷰페이저 관련 내용******************************
-    var textArray = arrayListOf<String>("식당이름선택","태그선택")  //tabLayout에 붙을 텍스트 들임.
+    var textArray = arrayListOf<String>("식당이름선택", "태그선택")  //tabLayout에 붙을 텍스트 들임.
 
     //이 액티비티에 붙힐 프래그먼트 2개를 만들어줌
     var name_fragment: Choose_name_Fragment? = null
@@ -718,18 +767,48 @@ class WritePostActivity : BasicActivity() {
         name_fragment!!.arguments = bundle
 
         //뷰페이저에 다시 프래그먼트들을 붙혀줌. 이때 어댑터에 인자를 하나 추가해서 내가 위에서 bundle넣어서 새로 만든 프래그먼트를 어댑터에 전달해줌
-        viewpager2.adapter = Name_Tag_Viewpager_Adapter(this@WritePostActivity, name_fragment, tag_fragment)
+        viewpager2.adapter = Name_Tag_Viewpager_Adapter(
+            this@WritePostActivity,
+            name_fragment,
+            tag_fragment
+        )
 
         //뷰페이저2객체를 슬라이딩 할때마다 tab의 위치도 바뀌어야함. 그 둘을 동기화 해주는 클래스인 TabLayoutMediator을 이용해줌.
-        TabLayoutMediator(tabLayout, viewpager2){
-                tab, position -> tab.text = textArray[position]
+        TabLayoutMediator(tabLayout, viewpager2){ tab, position -> tab.text = textArray[position]
         }.attach()
-        Log.e("태그","뷰페이저만들어짐.")
+        Log.e("태그", "뷰페이저만들어짐.")
 
     } //init_viewpager
 
+    //프래그먼트에서 식당명(restname) 값을 받아올거임
+    override fun onRestaurantNameSet(name: String) {
+        restname = name
+        Log.e("태그", "프래그먼트에서 고른 식당명 액티비티로 받아옴. restname: " + restname)
+    }
 
+    //식당명 직접 입력하기 버튼 클릭
+    fun showDialog01() {
+        dilaog01?.show() // 다이얼로그 띄우기
 
+        /* 이 함수 안에 원하는 디자인과 기능을 구현하면 된다. */
+        // *주의할 점: findViewById()를 쓸 때는 -> 앞에 반드시 다이얼로그 이름을 붙여야 한다.
+
+        // 취소버튼
+        dilaog01?.cancelbutton?.setOnClickListener {
+            dilaog01?.dismiss() // 다이얼로그 닫기
+        }
+        // 확인 버튼
+        dilaog01?.checkbutton?.setOnClickListener(View.OnClickListener {
+            if(dilaog01?.selfname_editText?.text!!.isEmpty()){
+                Toast.makeText(this,"식당명을 입력해주세요.",Toast.LENGTH_SHORT).show()
+            }else{
+                restname = dilaog01?.selfname_editText?.text.toString()
+                Toast.makeText(this,restname+"을(를) 식당명으로 등록 완료",Toast.LENGTH_SHORT).show()
+                dilaog01?.dismiss() // 다이얼로그 닫기
+                Log.e("태그", "식당명 직접입력으로 restname등록.  restname: " + restname)
+            }
+        })
+    }
 
 
 
