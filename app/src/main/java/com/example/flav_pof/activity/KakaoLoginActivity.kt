@@ -1,12 +1,12 @@
 package com.example.flav_pof.activity
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import com.example.flav_pof.R
 import com.example.flav_pof.appIntro.AppIntroActivity
@@ -15,10 +15,10 @@ import com.example.flav_pof.classes.Users_request
 import com.example.flav_pof.classes.Usersingleton
 import com.kakao.sdk.auth.AuthApiClient
 import com.kakao.sdk.auth.model.OAuthToken
-import com.kakao.sdk.common.KakaoSdk
 import com.kakao.sdk.common.model.KakaoSdkError
 import com.kakao.sdk.user.UserApiClient
 import kotlinx.android.synthetic.main.activity_login_kakao.*
+import kotlinx.android.synthetic.main.view_loader.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -33,8 +33,7 @@ class KakaoLoginActivity: BasicActivity() {
     lateinit var  strkakaoid: String
     lateinit var kakao_token: String  //카카오 api접근을 위해 저장해두는 엑세스 토큰
     lateinit var user: Users //유저객체
-    var introact_check = false  //소개화면에서 온 경우인지 아닌지를 구별해줄 변수
-
+    var introact_check = false  //소개화면에서 온 경우인지 아닌지를 구별해줄 변수 true면 소개화면보고 온것
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,6 +70,49 @@ class KakaoLoginActivity: BasicActivity() {
             }
         }  //로그인 버튼 클릭시
     } //onCrete함수
+
+    //처음 앱 실행하면 토큰 있는지 등등 판별해줌
+    fun has_kakaotoken() {
+        loaderLayout.visibility = View.VISIBLE  //로딩화면보여줌
+
+        //카카오 토큰 있는지 판별
+        if (AuthApiClient.instance.hasToken()) {  //토큰이 있을때
+            UserApiClient.instance.accessTokenInfo { _, error ->
+                if (error != null) {  //토큰에 오류가 있을때
+                    if (error is KakaoSdkError && error.isInvalidTokenError()) {
+                        //로그인 필요
+                        Toast.makeText(
+                            this@KakaoLoginActivity,
+                            "error != null입니다. 로그인해주세요 ",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        loaderLayout.visibility = View.GONE  //로딩화면제거
+                        Log.e("태그", "UpdateKakakotalkUI/    error != null입니다. 로그인해주세요 ")
+                    } else {
+                        //기타 다른 토큰 에러
+                        Log.e("태그", "UpdateKakakotalkUI/   기타 에러남 ")
+                        loaderLayout.visibility = View.GONE  //로딩화면제거
+                    }
+                } else {  //토큰 이미 존재할때 (필요 시 토큰 갱신됨)
+                    Log.e("태그", "has_kakaotoken함수 결과 이미 토큰값 존재. 사용자 정보값 가지고 바로 main으로 이동")
+                    UserinfoCall_hastoken()
+                }
+            }
+        } else {
+            if(introact_check == false){   //소개화면에 갔다온게 아닌 경우
+                finish()
+                //소개화면으로 보내줌.
+                Log.e("태그", "introact_check == null. 앱소개화면으로 이동합니다.")
+                var i = Intent(this@KakaoLoginActivity, AppIntroActivity::class.java)
+                startActivity(i)
+            }else{              //소개화면에 갔다가 온 경우
+                //로그인 필요
+                Toast.makeText(this@KakaoLoginActivity, "토큰이 없습니다. 로그인 해주세요", Toast.LENGTH_SHORT).show()
+                Log.e("태그", "UpdateKakakotalkUI/ 앱소개화면엔 갔다왔고,  토큰이 없습니다. 로그인 해주세요")
+            }
+        }
+    }
+
 
 
     //사용자가 아예 토큰도 없고 카톡 로그인 안되어있는 상태일때 -사용자 정보 가져와서 main에 넘겨주고 유저객체 만들어서 플레브 서버에 유저 등록.
@@ -144,47 +186,11 @@ class KakaoLoginActivity: BasicActivity() {
             }
             finish()  //카카오 로그인 액티비티 닫아줌
             startActivity(MainAct_Intent)  //main으로 유저정보 실어서 보내줌
+            loaderLayout.visibility = View.GONE  //로딩화면제거
             Toast.makeText(this@KakaoLoginActivity, strNick + "님 환영합니다.", Toast.LENGTH_SHORT).show()
         }
     }
 
-    //처음 앱 실행하면 토큰 있는지 등등 판별해줌
-    fun has_kakaotoken() {
-        //카카오 토큰 있는지 판별
-        if (AuthApiClient.instance.hasToken()) {  //토큰이 있을때
-            UserApiClient.instance.accessTokenInfo { _, error ->
-                if (error != null) {  //토큰에 오류가 있을때
-                    if (error is KakaoSdkError && error.isInvalidTokenError()) {
-                        //로그인 필요
-                        Toast.makeText(
-                            this@KakaoLoginActivity,
-                            "error != null입니다. 로그인해주세요 ",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        Log.e("태그", "UpdateKakakotalkUI/    error != null입니다. 로그인해주세요 ")
-                    } else {
-                        //기타 다른 토큰 에러
-                        Log.e("태그", "UpdateKakakotalkUI/   기타 에러남 ")
-                    }
-                } else {  //토큰 이미 존재할때 (필요 시 토큰 갱신됨)
-                    Log.e("태그", "has_kakaotoken함수 결과 이미 토큰값 존재. 사용자 정보값 가지고 바로 main으로 이동")
-                    UserinfoCall_hastoken()
-                }
-            }
-        } else {
-            if(introact_check == false){   //소개화면에 갔다온게 아닌 경우
-                finish()
-                //소개화면으로 보내줌.
-                Log.e("태그", "introact_check == null. 앱소개화면으로 이동합니다.")
-                var i = Intent(this@KakaoLoginActivity, AppIntroActivity::class.java)
-                startActivity(i)
-            }else{              //소개화면에 갔다가 온 경우
-                //로그인 필요
-                Toast.makeText(this@KakaoLoginActivity, "토큰이 없습니다. 로그인 해주세요", Toast.LENGTH_SHORT).show()
-                Log.e("태그", "UpdateKakakotalkUI/ 앱소개화면엔 갔다왔고,  토큰이 없습니다. 로그인 해주세요")
-            }
-        }
-    }
 
     //플레브 서버에 유저 등록시키는 작업
     fun user_add_Request() {

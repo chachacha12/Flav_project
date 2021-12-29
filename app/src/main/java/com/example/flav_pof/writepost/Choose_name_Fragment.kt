@@ -114,13 +114,6 @@ class Choose_name_Fragment : Fragment() {
     }
 
 
-    //리사이클러뷰를 여기서 제대로 만들어줌.
-    fun makerecyclerView(){
-
-    }
-
-
-
     //다른 프래그먼트로 갔다가 다시 이 프래그먼트로 돌아오거나, 뭔가를 사용자가 클릭해서 상호작용할때마다 작동되는 함수인듯?
     override fun onResume() {
         super.onResume()

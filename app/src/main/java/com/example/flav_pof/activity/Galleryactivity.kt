@@ -4,6 +4,7 @@ package com.example.flav_pof.activity         //내폰 갤러리의 모든 사�
                                                 //처음 이 앱을 사용하는 사용자가 Galleryactivity에 왔을때 권한요청을 함
 import android.Manifest
 import android.app.Activity
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.database.Cursor
 import android.net.Uri
@@ -12,7 +13,6 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.provider.MediaStore.MediaColumns
 import android.view.View
-import android.view.WindowManager
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
@@ -32,10 +32,7 @@ class Galleryactivity : BasicActivity() {
 
 
         //상태표시줄(배터리, 시간) 숨겨주는 로직
-        // Hide the status bar.
         window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
-        // Remember that you should never show the action bar if the
-        // status bar is hidden, so hide that too if necessary.
         actionBar?.hide()
 
         setContentView(R.layout.activity_gallery)
@@ -63,9 +60,23 @@ class Galleryactivity : BasicActivity() {
                     arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
                     1
                 )  //권한요청창 띄움
-                Toast.makeText(this,  resources.getString(R.string.please_grant_permission), Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this,
+                    resources.getString(R.string.please_grant_permission),
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         } //when
+    }
+
+    //갤러리에서 뒤로버튼 클릭시 피드화면으로 돌아오고 피드화면에서 백버튼 클릭시 다시 이 갤러리나 WRITEpost로 돌아오지 않게 하기
+    override fun onBackPressed() {
+        super.onBackPressed()
+
+        var intent = Intent(this,  MainActivity::class.java)
+        //백스택들 다 지워주는듯
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        startActivity(intent)
     }
 
     //권한요청에 대한 사용자 응답에 따른 결과
@@ -81,7 +92,11 @@ class Galleryactivity : BasicActivity() {
                     recyclerInit()
                 } else {                          //권한허용 안했을때
                     finish()
-                    Toast.makeText(this,  resources.getString(R.string.please_grant_permission), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this,
+                        resources.getString(R.string.please_grant_permission),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
         }
@@ -90,7 +105,8 @@ class Galleryactivity : BasicActivity() {
     private fun recyclerInit() {
         val numberOfColumns = 3      //리사이클러뷰를 통해 사진들 띄울때 가로에 사진을 3개씩 보여줄거임
 
-        var viewAdapter = GalleryAdapter(this, getImagesPath(this), server
+        var viewAdapter = GalleryAdapter(
+            this, getImagesPath(this), server
         )       //getImagesPath()라는 밑에 정의한 함수를 통해 갤러리의 이미지들 경로 가져올거임
         //이 액티비티정보를 어댑터에 넘겨주는 이유는 이미지를 리사이징해줄때 필요한 with()함수안에 액티비티정보가 필요해서임.
         //그래서 어댑터클래스에 이 액티비티정보도 줌
@@ -124,7 +140,13 @@ class Galleryactivity : BasicActivity() {
             projection = arrayOf(MediaColumns.DATA, MediaStore.Images.Media.BUCKET_DISPLAY_NAME)
         }
 
-        cursor = activity.contentResolver.query(uri, projection, null, null, "${MediaStore.Images.Media.DATE_TAKEN} DESC")  //sortorder를 통해서 갤러리 사진들 최신순으로 정렬
+        cursor = activity.contentResolver.query(
+            uri,
+            projection,
+            null,
+            null,
+            "${MediaStore.Images.Media.DATE_TAKEN} DESC"
+        )  //sortorder를 통해서 갤러리 사진들 최신순으로 정렬
         column_index_data = cursor!!.getColumnIndexOrThrow(MediaColumns.DATA)
         while (cursor.moveToNext()) {
             PathOfImage = cursor.getString(column_index_data)

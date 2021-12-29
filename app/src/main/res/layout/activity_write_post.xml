@@ -4,7 +4,6 @@
     android:id="@+id/RelativeLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="10dp"
     android:background="#FFFFFF">
 
 
@@ -12,12 +11,17 @@
         android:id="@+id/top_LinearLayout"
         android:layout_width="match_parent"
         android:layout_height="40dp"
+        android:layout_margin="15dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
         android:background="#ffffff"
         android:orientation="horizontal">
 
 
         <ImageButton
-            android:id="@+id/imageButton"
+            android:id="@+id/backButton"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_gravity="center"
@@ -44,6 +48,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/top_LinearLayout"
+        android:layout_margin="15dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
         android:background="#FFFFFF"
         android:orientation="vertical"
         android:padding="10dp">
@@ -111,7 +120,7 @@
                     android:layout_width="120dp"
                     android:layout_height="36dp"
                     android:layout_gravity="center_vertical"
-                    android:layout_marginLeft="45dp"
+                    android:layout_marginLeft="40dp"
                     android:background="@drawable/button_round"
                     android:text="직접입력하기"
                     android:textColor="#00aded"

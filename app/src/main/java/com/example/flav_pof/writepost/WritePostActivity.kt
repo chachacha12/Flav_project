@@ -7,6 +7,8 @@ package com.example.flav_pof.writepost
 import android.app.Activity
 import android.app.Dialog
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
 import android.util.Patterns
@@ -95,6 +97,8 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
 
     }
 
+
+
     //수정하기버튼눌러서 이 액티비티 온 경우 등엔 게시글의 editText가 원래 수정전 내용으로 차있도록 하게할거임.
     private fun postinit() {
 
@@ -141,6 +145,7 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
         }
     }
 
+    //+버튼 클릭시
     private fun Create_newpost(){
         //갤러리 바로 실행.
         var i = Intent(this, Galleryactivity::class.java)
@@ -156,13 +161,18 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
 
         //다이얼로그 초기화
         dilaog01 =  Dialog(this)
-        dilaog01!!.requestWindowFeature(Window.FEATURE_NO_TITLE); // 타이틀 제거
-        dilaog01!!.setContentView(R.layout.view_dialog)
 
         //식당명 직접입력버튼 클릭시 다이얼로그
         selfbutton.setOnClickListener {
             showDialog01()
         }
+
+        //  < 뒤로가기 버튼 누르면 액티비티 종료
+        backButton.setOnClickListener {
+            finish()
+        }
+
+
         //확인버튼 클릭시
         checkButton2.setOnClickListener {
             storageUpload()                     //이걸 누르면 파이어베이스로 게시글 쓴거 저장됨
@@ -670,6 +680,7 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
 
 
 
+
     //음식사진 인식값 가져오는 api(음식사진인지 판별)
     private fun getRekognition(){
 
@@ -788,6 +799,9 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
 
     //식당명 직접 입력하기 버튼 클릭
     fun showDialog01() {
+        //dilaog01!!.requestWindowFeature(Window.FEATURE_NO_TITLE) // 타이틀 제거
+        dilaog01!!.setContentView(R.layout.view_dialog)
+        dilaog01!!.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT)) //다이얼로그 테두리 사각형 투명하게 하기(이렇게 해야 다이얼로그 둥근테두리됨)
         dilaog01?.show() // 다이얼로그 띄우기
 
         /* 이 함수 안에 원하는 디자인과 기능을 구현하면 된다. */
@@ -803,7 +817,7 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
                 Toast.makeText(this,"식당명을 입력해주세요.",Toast.LENGTH_SHORT).show()
             }else{
                 restname = dilaog01?.selfname_editText?.text.toString()
-                Toast.makeText(this,restname+"을(를) 식당명으로 등록 완료",Toast.LENGTH_SHORT).show()
+                Toast.makeText(this,"<"+restname+"> 식당명으로 등록 완료",Toast.LENGTH_SHORT).show()
                 dilaog01?.dismiss() // 다이얼로그 닫기
                 Log.e("태그", "식당명 직접입력으로 restname등록.  restname: " + restname)
             }

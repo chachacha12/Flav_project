@@ -4,8 +4,10 @@
     android:id="@+id/toolbar"
     android:layout_width="match_parent"
     android:layout_height="?attr/actionBarSize"
-    android:background="#D300DAF6"
+    android:background="#FFFFFF"
     android:elevation="4dp"
     android:theme="@style/AppTheme"
+    android:visibility="visible"
     app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-    app:titleTextColor="#FFFFFF" />
+    app:subtitleTextColor="#00aded"
+    app:titleTextColor="#00aded" />

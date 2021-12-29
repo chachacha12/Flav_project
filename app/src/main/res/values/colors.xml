@@ -9,5 +9,6 @@
     <color name="colorWhite">#FFFFFF</color>
     <color name="colorBlue">#2196F3</color>
     <color name="colorFlav">#00aded</color>
+    <color name="myStatusBarColor">#ffffff</color> <!-- status bar -->
 
 </resources>
