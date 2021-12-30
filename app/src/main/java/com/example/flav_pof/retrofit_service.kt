@@ -43,5 +43,17 @@ interface retrofit_service {
     @POST("app/contents")
     fun contents_upload_Request(@Body contents: Contents): Call<Contents_response>
 
+    //태그1 요청
+    @GET("app/tag/adj1")
+    fun tag1_Request(): Call<Tag_response>
+
+    //태그2 요청
+    @GET("app/tag/adj2")
+    fun tag2_Request(): Call<Tag_response>
+
+    //태그 장소명사 요청
+    @GET("app/tag/locationtag")
+    fun locationtag_Request(): Call<Tag_response>
+
 
 }

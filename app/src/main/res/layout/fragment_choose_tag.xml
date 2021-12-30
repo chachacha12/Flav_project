@@ -1,15 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/textView4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="프래그2"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <RelativeLayout
+        android:layout_width="320dp"
+        android:layout_height="260dp"
+        android:layout_gravity="center"
+        android:background="@drawable/button2_round"
+        android:gravity="center"
+        android:orientation="vertical">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <LinearLayout
+            android:id="@+id/first_LinearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/name_textView"
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:lineSpacingExtra="9sp"
+                android:text="식당명"
+                android:textColor="#ffffff"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="130dp"
+            android:layout_below="@id/first_LinearLayout"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="12dp"
+            android:background="@drawable/tag_box"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tag1_textView"
+                android:layout_width="100dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/view_outline"
+                android:gravity="center"
+                android:text="태그1" />
+
+            <TextView
+                android:id="@+id/tag2_textView"
+                android:layout_width="100dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/view_outline"
+                android:gravity="center"
+                android:text="태그2" />
+
+            <TextView
+                android:id="@+id/tag3_textView"
+                android:layout_width="100dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="장소태그" />
+        </LinearLayout>
+
+
+    </RelativeLayout>
+
+
+</RelativeLayout>

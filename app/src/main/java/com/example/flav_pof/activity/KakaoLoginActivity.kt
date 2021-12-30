@@ -109,6 +109,7 @@ class KakaoLoginActivity: BasicActivity() {
                 //로그인 필요
                 Toast.makeText(this@KakaoLoginActivity, "토큰이 없습니다. 로그인 해주세요", Toast.LENGTH_SHORT).show()
                 Log.e("태그", "UpdateKakakotalkUI/ 앱소개화면엔 갔다왔고,  토큰이 없습니다. 로그인 해주세요")
+                loaderLayout.visibility = View.GONE  //로딩화면제거
             }
         }
     }

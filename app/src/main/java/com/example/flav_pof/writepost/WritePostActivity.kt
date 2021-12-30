@@ -47,8 +47,8 @@ import java.net.URLConnection
 import java.util.*
 import kotlin.collections.ArrayList
 
-
-class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantNameListener {
+//OnRestaurantNameListener인터페이스는 name프래그먼트와 통신에 사용, fragmentListener는 프래그먼트끼리 통신에 사용
+class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantNameListener, FragmentListener {
     private val TAG = "WritePostActivity"
     private lateinit var user: FirebaseUser         //현재 로그인된 회원객체를 전역으로 둘거임. 초기화는 안하고 선언만.
     private var pathList = ArrayList<String>()       //게시글에 넣은 사진이미지들의 경로들 여기에 저장해서 리스트로 만들거임
@@ -75,6 +75,12 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
     lateinit var namelist_string:String   //인텐트통해서 갤러리에서 사진 선택시에 식당명리스트들 string으로 날라왔고, 프래그먼트로 다시 보내줄거임. 프래그먼트에선 이걸 다시 jsonarray만든 후 이용해야함
     private var dilaog01:Dialog? = null  //식당명 직접입렵시 필요한 다이얼로그 객체
 
+    //tabLayout에 붙을 텍스트들
+    var textArray = arrayListOf("식당이름선택", "태그선택")
+    //이 액티비티에 붙힐 프래그먼트 2개를 만들어줌
+    var name_fragment: Choose_name_Fragment? = null
+    var tag_fragment: Choose_tag_Fragment? =null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -97,6 +103,12 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
 
     }
 
+    //FragmentListener 인터페이스 상속받아서 이 함수 꼭 오버라이드 해줘야함. 프래그먼트들 통신에 사용됨
+    //즉, name프래그먼트에서 데이터(식당명)를 실어서 onComand함수실행. 그럼 여기 부모 액티비티에서 onComand 실행되고 , 실행내용은tag프래그먼트객체로 tag프래그먼트에 만들어둔 display함수임
+    override fun onCommand(message: String) {
+        tag_fragment?.display(message)
+        Log.e("태그","통계 액티비티통해서 통계프래그먼트의 display함수 실행완료")
+    }
 
 
     //수정하기버튼눌러서 이 액티비티 온 경우 등엔 게시글의 editText가 원래 수정전 내용으로 차있도록 하게할거임.
@@ -745,13 +757,7 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
     }
 
 
-
     //************************taplayout과 뷰페이저 관련 내용******************************
-    var textArray = arrayListOf<String>("식당이름선택", "태그선택")  //tabLayout에 붙을 텍스트 들임.
-
-    //이 액티비티에 붙힐 프래그먼트 2개를 만들어줌
-    var name_fragment: Choose_name_Fragment? = null
-    var tag_fragment: Choose_tag_Fragment? =null
 
     /*
     //FragmentListener 인터페이스 상속받아서 이 함수 꼭 오버라이드 해줘야함. 프래그먼트들 통신에 사용됨
@@ -817,11 +823,15 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
                 Toast.makeText(this,"식당명을 입력해주세요.",Toast.LENGTH_SHORT).show()
             }else{
                 restname = dilaog01?.selfname_editText?.text.toString()
-                Toast.makeText(this,"<"+restname+"> 식당명으로 등록 완료",Toast.LENGTH_SHORT).show()
+
+                tag_fragment?.self_name(restname!!)  //태그프로먼트 객체통해서 태그프래그먼트안의 함수실행 - 태그프래그에 식당명을 전달해줌
+
+                Toast.makeText(this,restname+" 식당명으로 등록!",Toast.LENGTH_SHORT).show()
                 dilaog01?.dismiss() // 다이얼로그 닫기
                 Log.e("태그", "식당명 직접입력으로 restname등록.  restname: " + restname)
             }
         })
+
     }
 
 
