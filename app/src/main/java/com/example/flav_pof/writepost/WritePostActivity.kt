@@ -14,7 +14,6 @@ import android.util.Log
 import android.util.Patterns
 import android.view.View
 import android.view.ViewGroup
-import android.view.Window
 import android.widget.*
 import com.bumptech.glide.Glide
 import com.example.flav_pof.PostInfo
@@ -33,7 +32,7 @@ import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
 import com.google.firebase.storage.ktx.storageMetadata
 import kotlinx.android.synthetic.main.activity_write_post.*
-import kotlinx.android.synthetic.main.view_dialog.*
+import kotlinx.android.synthetic.main.dialog_selfname.*
 import kotlinx.android.synthetic.main.view_loader.*
 import okhttp3.MediaType
 import okhttp3.MultipartBody
@@ -81,7 +80,6 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
     var name_fragment: Choose_name_Fragment? = null
     var tag_fragment: Choose_tag_Fragment? =null
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_write_post)
@@ -92,7 +90,6 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
         postInfo =
             (intent.getSerializableExtra("postInfo") as? PostInfo)  //MainActivity에서 게시글 수정버튼을 눌러서 보낸 인텐트에 실린 값(수정하고자하는 게시물 객체)를 받음. 인텐트를 받을땐 getIntent() 또는 Intent 이용.
         //getSerializable은 보내는, 받는 데이터가 내가 만든 클래스의 객체일때 사용함.
-
 
         Log.e(
             "writepost 태그",
@@ -240,6 +237,7 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
             contentsLayout.removeView(selectedView)
             buttonsBackgroundlayout.visibility = View.GONE
         }  //delete
+
 
     }  //init
 
@@ -403,18 +401,6 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
                             Log.e("태그", "")
                         }
                     }
-                    //*********************
-                    //밑에 식당명 텍스트뷰들도 떳었다면 그것들도 마저 삭제해줌
-                    /*
-                    var i=0
-                    repeat(contentsLayout.chldCount){
-                        var view =   contentsLayout.getChildAt(i)
-                        if(view is TextView){
-                            contentsLayout.removeView(view)
-                        }
-                        i++
-                    }
-                     */
                     //********************************************
                     //스토리지에서도 삭제됐으니(저장되어 있는 상태였다면)  이제 pathList에서 해당 이미지를 삭제함  // indexOfChild를 써서 contentsLayout의 몇번째 뷰인지 알아냄  //첫번째 editText가 무조건 있으니까 마이너스 1 해줌
                     pathList.removeAt(contentsLayout.indexOfChild(selectedView) - 1)
@@ -759,13 +745,6 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
 
     //************************taplayout과 뷰페이저 관련 내용******************************
 
-    /*
-    //FragmentListener 인터페이스 상속받아서 이 함수 꼭 오버라이드 해줘야함. 프래그먼트들 통신에 사용됨
-    override fun onCommand(message: ArrayList<Double>) {
-        tag_fragment?.display(message)
-        Log.e("태그","통계 액티비티통해서 통계프래그먼트의 display함수 실행완료")
-    }
-     */
 
     override fun onBackPressed() {
         super.onBackPressed()
@@ -777,8 +756,7 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
         name_fragment = Choose_name_Fragment()
         tag_fragment = Choose_tag_Fragment()
 
-
-        //프래그먼트로 첫번째 이용자 id값을 보내기 (아무도 선택 안했을때를 위해서)
+        //프래그먼트로 식당명 데이터 전달
         var bundle = Bundle()
         bundle.putString("namelist_string", namelist_string)  //식당명들이 모두 모여 string묶음으로 된걸 frag에 보내줌
         name_fragment!!.arguments = bundle
@@ -793,9 +771,14 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
         //뷰페이저2객체를 슬라이딩 할때마다 tab의 위치도 바뀌어야함. 그 둘을 동기화 해주는 클래스인 TabLayoutMediator을 이용해줌.
         TabLayoutMediator(tabLayout, viewpager2){ tab, position -> tab.text = textArray[position]
         }.attach()
-        Log.e("태그", "뷰페이저만들어짐.")
 
+        tag_fragment?.gettag1(server)  //태그 프래그먼트 객체통해 서버로부터 태그1값 가져오기
+        tag_fragment?.gettag2(server)
+        tag_fragment?.gettag3(server)
+
+        Log.e("태그", "뷰페이저만들어짐.")
     } //init_viewpager
+
 
     //프래그먼트에서 식당명(restname) 값을 받아올거임
     override fun onRestaurantNameSet(name: String) {
@@ -806,7 +789,7 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
     //식당명 직접 입력하기 버튼 클릭
     fun showDialog01() {
         //dilaog01!!.requestWindowFeature(Window.FEATURE_NO_TITLE) // 타이틀 제거
-        dilaog01!!.setContentView(R.layout.view_dialog)
+        dilaog01!!.setContentView(R.layout.dialog_selfname)
         dilaog01!!.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT)) //다이얼로그 테두리 사각형 투명하게 하기(이렇게 해야 다이얼로그 둥근테두리됨)
         dilaog01?.show() // 다이얼로그 띄우기
 
