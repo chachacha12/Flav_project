@@ -157,8 +157,6 @@ class Choose_tag_Fragment : Fragment() {
         }
     }
 
-
-
     //이 함수를 액티비티에서 실행해줌. 즉 writepost액티비티 생성될때 이 함수 실행해서 태그값 미리 만들어줌
     //액티비티로부터 server 객체를 받아옴. 프래그먼트에선 사용 못하니..
     fun gettag1(server:retrofit_service){
