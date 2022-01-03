@@ -14,6 +14,7 @@ import com.bumptech.glide.Glide
 import com.example.flav_pof.classes.Name
 import com.example.flav_pof.R
 import com.example.flav_pof.activity.BasicActivity
+import com.example.flav_pof.classes.LatLng
 import com.example.flav_pof.retrofit_service
 import kotlinx.android.synthetic.main.item_gallery.view.*
 import okhttp3.MediaType
@@ -35,6 +36,7 @@ class GalleryAdapter(var activity: Activity, private val myDataset: ArrayList<St
     lateinit var name_list:JSONArray  //주변식당이름을 서버로부터 받아와서 저장해줄 전역변수. 이 변수를 writepostAct에 보낼거임
     var resultIntent = Intent()  //writepostactivity로 데이터 실어서 보내줄 인텐트
     lateinit var file:MultipartBody.Part  //이미지파일 담을 곳
+
 
     class GalleryViewHolder(val cardView: CardView) : RecyclerView.ViewHolder(cardView)   //뷰홀더에 텍스트뷰말고 카드뷰를 넣음
 

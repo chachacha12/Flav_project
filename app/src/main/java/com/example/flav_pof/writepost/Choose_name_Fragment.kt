@@ -2,7 +2,6 @@ package com.example.flav_pof.writepost
 
 import android.content.Context
 import android.content.res.ColorStateList
-import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -14,6 +13,8 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat.getColor
 import androidx.fragment.app.Fragment
 import com.example.flav_pof.R
+import com.example.flav_pof.classes.LatLng
+import com.tbuonomo.viewpagerdotsindicator.setPaddingVertical
 import kotlinx.android.synthetic.main.fragment_choose_name.*
 import org.json.JSONArray
 
@@ -24,8 +25,12 @@ class Choose_name_Fragment : Fragment() {
     lateinit var namelist: String  //writepostact에서 보낸 식당명들 리스트
     var fragmentListener: FragmentListener? = null  //통계 프래그먼트와 통신을 위해 인터페이스 객체 선언
 
+    // 식당명 값을 key로 좌표값 객체를 value로 해서 map만듬.
+    var latlng_map: MutableMap<String, LatLng> = mutableMapOf()
+
+
     interface OnRestaurantNameListener {
-        fun onRestaurantNameSet(name: String)
+        fun onRestaurantNameSet(name: String, latLng: LatLng)
     }
 
     override fun onAttach(context: Context) {
@@ -87,6 +92,7 @@ class Choose_name_Fragment : Fragment() {
             val Object = jsonArray.getJSONObject(i) //jsonarray안의 object에 하나하나 접근
 
             val radioButton = RadioButton(activity)
+            radioButton.setPaddingVertical(10)  //라디오버튼들 사이의 간격 padding값 조절
 
             radioButton.buttonTintList =
                 activity?.let { it1 -> getColor(it1, R.color.colorFlav) }?.let { it2 ->
@@ -95,9 +101,10 @@ class Choose_name_Fragment : Fragment() {
                     )
                 }
 
-
             radioButton.text = Object.getString("name") //식당명 추출
-            Log.e("태그", "프래그먼트의 라디오버튼text에 Object.getString(name): " + Object.getString("name"))
+            var latlng = LatLng(Object.getString("lat"), Object.getString("lng")) //위경도객체 생성
+
+            latlng_map.put(Object.getString("name"), latlng)  //map에 식당명을 키값, 좌표객체값을 value로 저장
 
             val rprms: RadioGroup.LayoutParams =
                 RadioGroup.LayoutParams(
@@ -110,8 +117,10 @@ class Choose_name_Fragment : Fragment() {
 
             //특정 식당명을 클릭했을시
             radiogroup.setOnCheckedChangeListener { group, checkedId ->
-                val select = getView()?.findViewById<RadioButton>(checkedId)
-                onRestaurantNameListener?.onRestaurantNameSet(select?.text.toString())  //인터페이스 통해 writepost액티비티에 고른 식당명 보내줌
+                val select = getView()?.findViewById<RadioButton>(checkedId)  //선택한 라디오버튼
+                //인터페이스 통해 writepost액티비티에 고른 식당명, 좌표객체 보내줌
+                onRestaurantNameListener?.onRestaurantNameSet(select?.text.toString(), latlng_map[select?.text.toString()]!! )
+
                 fragmentListener?.onCommand(select?.text.toString())  //어떻게 보면 액티비티 객체라고 할 수 있는 fragmentListener을 이용해서 액티비티에 있는 onCommand함수를 실행
                 Toast.makeText(activity, select?.text.toString() + " 선택", Toast.LENGTH_SHORT).show()
             }

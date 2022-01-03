@@ -47,7 +47,8 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 //OnRestaurantNameListener인터페이스는 name프래그먼트와 통신에 사용, fragmentListener는 프래그먼트끼리 통신에 사용
-class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantNameListener, FragmentListener {
+//OnTagSetListener 인터페이스는 tag프래그먼트와 통신에 사용
+class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantNameListener, FragmentListener, Choose_tag_Fragment.OnTagSetListener {
     private val TAG = "WritePostActivity"
     private lateinit var user: FirebaseUser         //현재 로그인된 회원객체를 전역으로 둘거임. 초기화는 안하고 선언만.
     private var pathList = ArrayList<String>()       //게시글에 넣은 사진이미지들의 경로들 여기에 저장해서 리스트로 만들거임
@@ -60,6 +61,9 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
     lateinit var storageRef: StorageReference   //게시글 삭제할떄 스토리지에도 접근해서 이미지 지워줘야해서, 그때 필요함
     lateinit var file: MultipartBody.Part  //s3 스토리지에 업로드할 이미지파일 담을 곳
 
+    var pathCount = 0     //게시글에 첨부된 사진이 몇개인지 알기위해서
+    var successCount = 0    //게시글에 첨부한 사진이 여러개일수 있으니, 언제 끝나는지 확인해주기 위한 변수
+
     //컨텐츠 업로드 로직 관련 변수
     lateinit var contents:Contents  //컨텐츠 객체
     var filename:String? = null  //split해서 filepath에서 filename값 가져오려고.
@@ -67,11 +71,11 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
     var adj1_id: Int? = null  //태그1
     var adj2_id:Int? =null  //태그2
     var locationtag_id:Int? =null  //태그 장소명사
-    lateinit var lat:String  //위도
-    lateinit var lng:String  //경도
+     var lat:String?  = null //위도
+     var lng:String?  = null //경도
 
     //식당명선택 프래그먼트 관련 변수
-    lateinit var namelist_string:String   //인텐트통해서 갤러리에서 사진 선택시에 식당명리스트들 string으로 날라왔고, 프래그먼트로 다시 보내줄거임. 프래그먼트에선 이걸 다시 jsonarray만든 후 이용해야함
+    lateinit var namelist_string:String   //인텐트통해서 갤러리에서 사진 선택시에 (식당명리스트 + 위경도) jsonarray이 string으로 날라왔고, 프래그먼트로 다시 보내줄거임. 프래그먼트에선 이걸 다시 jsonarray만든 후 이용해야함
     private var dilaog01:Dialog? = null  //식당명 직접입렵시 필요한 다이얼로그 객체
 
     //tabLayout에 붙을 텍스트들
@@ -97,14 +101,12 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
         )
         postinit()  //수정하기 버튼 눌러서 온경우 일때 동작
         init()
-
     }
 
     //FragmentListener 인터페이스 상속받아서 이 함수 꼭 오버라이드 해줘야함. 프래그먼트들 통신에 사용됨
     //즉, name프래그먼트에서 데이터(식당명)를 실어서 onComand함수실행. 그럼 여기 부모 액티비티에서 onComand 실행되고 , 실행내용은tag프래그먼트객체로 tag프래그먼트에 만들어둔 display함수임
     override fun onCommand(message: String) {
         tag_fragment?.display(message)
-        Log.e("태그","통계 액티비티통해서 통계프래그먼트의 display함수 실행완료")
     }
 
 
@@ -167,7 +169,6 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
     }
 
     private fun init() {
-
         //다이얼로그 초기화
         dilaog01 =  Dialog(this)
 
@@ -180,7 +181,6 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
         backButton.setOnClickListener {
             finish()
         }
-
 
         //확인버튼 클릭시
         checkButton2.setOnClickListener {
@@ -231,14 +231,11 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
                     Log.e("태그", "")
                 }
             }
-
             //스토리지에서도 삭제됐으니(저장되어 있는 상태였다면)  이제 pathList에서 해당 이미지를 삭제함  // indexOfChild를 써서 contentsLayout의 몇번째 뷰인지 알아냄  //첫번째 editText가 무조건 있으니까 마이너스 1 해줌
             pathList.removeAt(contentsLayout.indexOfChild(selectedView) - 1)
             contentsLayout.removeView(selectedView)
             buttonsBackgroundlayout.visibility = View.GONE
         }  //delete
-
-
     }  //init
 
 
@@ -283,8 +280,6 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
                     }
                      */
                 }
-
-
 
                 contentsItemView.setImage(path)
                 contentsItemView.setOnClickListener {
@@ -340,8 +335,6 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
                     }
                 }
                  */
-
-
             }
             1 -> if (resultCode == Activity.RESULT_OK) {    //이미지를 수정하려고 새 이미지를 선택했을때
 
@@ -360,7 +353,7 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
     var onClickListener =
         View.OnClickListener { v ->
             when (v.id) {
-                R.id.checkButton -> storageUpload()
+                R.id.checkButton2 -> storageUpload()
                // R.id.image -> myStartActivity(Galleryactivity::class.java, "image", 0)
                // R.id.video -> myStartActivity(Galleryactivity::class.java, "video", 0)
                 R.id.buttonsBackgroundLayout -> if (buttonsBackgroundLayout.visibility === View.VISIBLE) {
@@ -416,234 +409,224 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
     private var onFocusChangedListener =
         View.OnFocusChangeListener { v, hasFocus -> selectedEditText = v as EditText }
 
-    //전역변수
-    var pathCount = 0     //게시글에 첨부된 사진이 몇개인지 알기위해서
-    var successCount = 0    //게시글에 첨부한 사진이 여러개일수 있으니, 언제 끝나는지 확인해주기 위한 변수
 
-
-    //memberinit액티비티에서 가져온 함수 2개 -> profileUpdate와 uploader함수를 변형해준거임
     private fun storageUpload()   //사용자가 확인버튼 누르면 실행시킬 함수 -게시글 작성한걸 파이어베이스에 등록(업데이트)해줌   (이미지 삭제, 수정 했을땐, 그 이미지를 db,스토리지에서 지우는 작업을 지우는 즉시 했음. 메인액티비티에서. 그래서 여기선 db, 스토리지에 등록만 해줌됨 )
     {
-        //var tilte = titletextView.text.toString()
-        var tilte = "아무정보나 넣음"
+        //만약 사용자가 태그, 식당명 등을 선택안했으면 플레브서버, 파베 다 저장안됨
+        if (restname != null && adj1_id != null && adj2_id != null && locationtag_id != null && lat != null && lng != null) {
+            loaderLayout.visibility = View.VISIBLE
+            //var tilte = titletextView.text.toString()
+            var tilte = "아무정보나 넣음"
 
-        if (tilte.length > 0) {
-            loaderLayout.visibility = View.VISIBLE    //로딩화면 보여줌.
-            user = Firebase.auth.currentUser!!          // 현재 회원객체 가져옴
-            var contentsList =
-                ArrayList<String>()     // 게시글쓸때 이미지첨부하고 그 밑에 생긴 editText에 쓴 내용들을 여기에 모을거임
-            var formatList: ArrayList<String> = ArrayList()
-            var storage = Firebase.storage   //파이어베이스 저장소(스토리지)의 객체를 하나 만듬
-            val storageRef = storage.reference
-            val firebaseFirestore =
-                FirebaseFirestore.getInstance()  //파이어베이스 클라우드firestore(db)객체를 가져옴
+            if (tilte.length > 0) {
+                user = Firebase.auth.currentUser!!          // 현재 회원객체 가져옴
+                var contentsList =
+                    ArrayList<String>()     // 게시글쓸때 이미지첨부하고 그 밑에 생긴 editText에 쓴 내용들을 여기에 모을거임
+                var formatList: ArrayList<String> = ArrayList()
+                var storage = Firebase.storage   //파이어베이스 저장소(스토리지)의 객체를 하나 만듬
+                val storageRef = storage.reference
+                val firebaseFirestore =
+                    FirebaseFirestore.getInstance()  //파이어베이스 클라우드firestore(db)객체를 가져옴
 
-            var documentReference =
-                if (postInfo == null) {  //게시글 새로 만들려고 +버튼 눌러서 이 액티비티 왔을때
-                    firebaseFirestore.collection("posts")
-                        .document()   //db에 있는 posts컬렉션의 documents주소를 가져옴 (이 주소안에 데이터넣거나 등등에 쓰려고가져옴)
-                } else {  //수정버튼을 눌러서 이 액티비티로 왔을때
-                    firebaseFirestore.collection("posts")
-                        .document(postInfo!!.id!!)  //이러면 id에 맞는 특정 위치의 문서에 수정한 게시글이 생기면서 원래 있던 게시글은 덮여써질거임.
-                }
-            //게시글 새로만드려고 이 액티비티 온건지 수정버튼 눌러서 온건지에 따라, 만드는 게시글의 생성일을 새로만들거나, 기존꺼 유지하거나함.
-            var date =
-                if (postInfo == null) {
-                    Date()
-                } else {
-                    postInfo!!.createdAt!!
-                }
+                var documentReference =
+                    if (postInfo == null) {  //게시글 새로 만들려고 +버튼 눌러서 이 액티비티 왔을때
+                        firebaseFirestore.collection("posts")
+                            .document()   //db에 있는 posts컬렉션의 documents주소를 가져옴 (이 주소안에 데이터넣거나 등등에 쓰려고가져옴)
+                    } else {  //수정버튼을 눌러서 이 액티비티로 왔을때
+                        firebaseFirestore.collection("posts")
+                            .document(postInfo!!.id!!)  //이러면 id에 맞는 특정 위치의 문서에 수정한 게시글이 생기면서 원래 있던 게시글은 덮여써질거임.
+                    }
+                //게시글 새로만드려고 이 액티비티 온건지 수정버튼 눌러서 온건지에 따라, 만드는 게시글의 생성일을 새로만들거나, 기존꺼 유지하거나함.
+                var date =
+                    if (postInfo == null) {
+                        Date()
+                    } else {
+                        postInfo!!.createdAt!!
+                    }
 
-            //contentsLayout안에 들어있는 자식뷰의 유형(이미지뷰, 에디트텍스트뷰)에 따라 나눠서 파이어베이스에 저장
-            var i = 0
-            repeat(contentsLayout.childCount) {   //linearLayout이 몇개인지 셈. 일단 editText만 있는 linearLayout하나(제목아래의 내용적는 editTEXT)는 무조건 옵션으로 존재함.
-                //반복문임.  contentsLayout안에 있는 자식뷰의 갯수만큼 반복
-                Log.e(
-                    "태그",
-                    "Writepost의 storageuploader중 contentsLayout.childCount: " + contentsLayout.childCount
-                )
+                //contentsLayout안에 들어있는 자식뷰의 유형(이미지뷰, 에디트텍스트뷰)에 따라 나눠서 파이어베이스에 저장
+                var i = 0
+                repeat(contentsLayout.childCount) {   //linearLayout이 몇개인지 셈. 일단 editText만 있는 linearLayout하나(제목아래의 내용적는 editTEXT)는 무조건 옵션으로 존재함.
+                    //반복문임.  contentsLayout안에 있는 자식뷰의 갯수만큼 반복
+                    Log.e(
+                        "태그",
+                        "Writepost의 storageuploader중 contentsLayout.childCount: " + contentsLayout.childCount
+                    )
 
-                val linearLayout =
-                    contentsLayout.getChildAt(i) as LinearLayout    //즉 이건 contentsItemView객체 하나임
-                var j = 0
-                repeat(linearLayout.childCount) {  //이제 하나의 contentsItemView객체의 안을 돌면서 이미지인지 editText인지 LinearLayout인지 판별. 멤버가 3개라 최소3번은 돈다?
-                    Log.e("태그", "linearLayout.childCount: " + linearLayout.childCount)
-                    val view = linearLayout.getChildAt(j)
-                    if (view is EditText) {               //코틀린에선 자료형이 일치하는지 판별을 is 연산자씀. 자바에선 instanceof 였음.
-                        var text = view.text.toString()   //인덱스 0이 첫번째이므로 이미지뷰이고 1은 editText뷰임
-                        Log.e("태그", "EditText: " + view)
-                        // if (text.length >0) {
-                        contentsList.add(text)  //contentsList에 모아서 store업로드시에 유용하게 이걸 올려주려고
-                        formatList.add("text");
-                        Log.e("태그", "contentsList에 editText추가: " + contentsList.toString())
-                        //}
-                    } else if (view is ImageView) {   //자식뷰가 url이 아닐경우에만 스토리지, db에 저장해줄거임  //
-                        Log.e("태그", "ImageView: " + view)
-                        if (pathList.size > pathCount) {  //이거 안해주면 indexoutofbounds에러남
-                            var path = pathList[pathCount]
-                            successCount++
-                            contentsList.add(path)  //contentsList에 사진경로를 넣어줌. pathList라는 리스트안엔 아까 게시글 써줄때 넣은 사진들의 경로가 순서대로 들어있음
+                    val linearLayout =
+                        contentsLayout.getChildAt(i) as LinearLayout    //즉 이건 contentsItemView객체 하나임
+                    var j = 0
+                    repeat(linearLayout.childCount) {  //이제 하나의 contentsItemView객체의 안을 돌면서 이미지인지 editText인지 LinearLayout인지 판별. 멤버가 3개라 최소3번은 돈다?
+                        Log.e("태그", "linearLayout.childCount: " + linearLayout.childCount)
+                        val view = linearLayout.getChildAt(j)
+                        if (view is EditText) {               //코틀린에선 자료형이 일치하는지 판별을 is 연산자씀. 자바에선 instanceof 였음.
+                            var text = view.text.toString()   //인덱스 0이 첫번째이므로 이미지뷰이고 1은 editText뷰임
+                            Log.e("태그", "EditText: " + view)
+                            // if (text.length >0) {
+                            contentsList.add(text)  //contentsList에 모아서 store업로드시에 유용하게 이걸 올려주려고
+                            formatList.add("text");
+                            Log.e("태그", "contentsList에 editText추가: " + contentsList.toString())
+                            //}
+                        } else if (view is ImageView) {   //자식뷰가 url이 아닐경우에만 스토리지, db에 저장해줄거임  //
+                            Log.e("태그", "ImageView: " + view)
+                            if (pathList.size > pathCount) {  //이거 안해주면 indexoutofbounds에러남
+                                var path = pathList[pathCount]
+                                successCount++
+                                contentsList.add(path)  //contentsList에 사진경로를 넣어줌. pathList라는 리스트안엔 아까 게시글 써줄때 넣은 사진들의 경로가 순서대로 들어있음
 
 
-                            val mimeType: String = URLConnection.guessContentTypeFromName(path)
-                            if (mimeType != null && mimeType.startsWith("image")) {
-                                formatList.add("image")
-                            } else if (mimeType != null && mimeType.startsWith("video")) {
-                                formatList.add("video")
-                            } else {
-                                formatList.add("text")
-                            }
+                                val mimeType: String = URLConnection.guessContentTypeFromName(path)
+                                if (mimeType != null && mimeType.startsWith("image")) {
+                                    formatList.add("image")
+                                } else if (mimeType != null && mimeType.startsWith("video")) {
+                                    formatList.add("video")
+                                } else {
+                                    formatList.add("text")
+                                }
 
-                            Log.e("태그", "contentsList에 이미지뷰 추가: " + contentsList.toString())
+                                Log.e("태그", "contentsList에 이미지뷰 추가: " + contentsList.toString())
 
-                            var pathArray =
-                                path.split(".")       // .을 기준으로 나눠서 사진경로문자열을 pathArray배열안에 저장
+                                var pathArray =
+                                    path.split(".")       // .을 기준으로 나눠서 사진경로문자열을 pathArray배열안에 저장
 
-                            //플레브 서버 aws s3에 이미지 업로드 작업
-                            //레트로핏 post image 업로드
-                            var imageFile = File(pathList[pathCount])
-                            Log.e("s3업로드 태그", "s3에 저장할 이미지 uri: " + pathList[pathCount])
-                            var reqFile: RequestBody = RequestBody.create(
-                                //MediaType.parse("multipart/form-data"),
-                                MediaType.parse("image/jpeg"),
-                                imageFile
-                            )
-                            file =
-                                MultipartBody.Part.createFormData("photo", imageFile.name, reqFile)
+                                //플레브 서버 aws s3에 이미지 업로드 작업
+                                //레트로핏 post image 업로드
+                                var imageFile = File(pathList[pathCount])
+                                Log.e("s3업로드 태그", "s3에 저장할 이미지 uri: " + pathList[pathCount])
+                                var reqFile: RequestBody = RequestBody.create(
+                                    //MediaType.parse("multipart/form-data"),
+                                    MediaType.parse("image/jpeg"),
+                                    imageFile
+                                )
+                                file =
+                                    MultipartBody.Part.createFormData("photo", imageFile.name, reqFile)
 
-                            Log.e("writepost 태그", "Usersingleton.userid: " + Usersingleton.kakao_id)
+                                Log.e("writepost 태그", "Usersingleton.userid: " + Usersingleton.kakao_id)
 
-                            //플레브 서버로부터 업로드하는 이미지를 s3에 올리는 작업
-                            server.s3_upload_Request(Usersingleton.kakao_id!!, file)
-                                .enqueue(object : Callback<Filename> {
-                                    override fun onFailure(call: Call<Filename>, t: Throwable) {
-                                        Log.e("s3업로드 태그", "s3업로드 / 서버 통신 아예 실패" + t.message)
-                                    }
+                                //플레브 서버로부터 업로드하는 이미지를 s3에 올리는 작업
+                                server.s3_upload_Request(Usersingleton.kakao_id!!, file)
+                                    .enqueue(object : Callback<Filename> {
+                                        override fun onFailure(call: Call<Filename>, t: Throwable) {
+                                            Log.e("s3업로드 태그", "s3업로드 / 서버 통신 아예 실패" + t.message)
+                                        }
 
-                                    override fun onResponse(
-                                        call: Call<Filename>,
-                                        response: Response<Filename>
-                                    ) {
-                                        if (response.isSuccessful) {
-                                            Log.e(
-                                                "s3업로드 태그",
-                                                "s3업로드 / 통신성공" + response.body()?.filepath
-                                            )
-                                            var filepath_list =
-                                                response.body()?.filepath?.split('/')
-                                            filename = filepath_list!!.last()  //filename값을 받아옴
-                                            Log.e(
-                                                "s3업로드 태그",
-                                                "filename: " + filename
-                                            )
+                                        override fun onResponse(
+                                            call: Call<Filename>,
+                                            response: Response<Filename>
+                                        ) {
+                                            if (response.isSuccessful) {
+                                                Log.e(
+                                                    "s3업로드 태그",
+                                                    "s3업로드 / 통신성공" + response.body()?.filepath
+                                                )
+                                                var filepath_list =
+                                                    response.body()?.filepath?.split('/')
+                                                filename = filepath_list!!.last()  //filename값을 받아옴
+                                                Log.e(
+                                                    "s3업로드 태그",
+                                                    "filename: " + filename
+                                                )
+                                                Contents_Upload()  //컨텐츠를 업로드하는 함수
 
-                                            Contents_Upload()  //컨텐츠를 업로드하는 함수
+                                                // handler()  //서버통해 데이터 가져오는 거 성공하면 핸들러함수 통해서 식당이름리스트 데이터 담아서 writepostactivity이동
+                                            } else {
+                                                Log.e(
+                                                    "s3업로드 태그",
+                                                    "s3업로드 / 서버접근 성공했지만 올바르지 않은 response값" + response.body()?.filepath + "에러: " + response.errorBody()
+                                                        ?.string()
+                                                )
+                                                //handler()
+                                            }
+                                        }
+                                    })
 
-                                            // handler()  //서버통해 데이터 가져오는 거 성공하면 핸들러함수 통해서 식당이름리스트 데이터 담아서 writepostactivity이동
-                                        } else {
-                                            Log.e(
-                                                "s3업로드 태그",
-                                                "s3업로드 / 서버접근 성공했지만 올바르지 않은 response값" + response.body()?.filepath + "에러: " + response.errorBody()
-                                                    ?.string()
-                                            )
-                                            //handler()
+                                //*****************파이어베이스 스토리지에 사진경로로 사진 저장하기 위한 코드***************** memberinit에서 가져옴
+                                val mountainImagesRef =
+                                    storageRef.child("posts/" + documentReference.id + "/" + pathCount + "." + pathArray[pathArray.size - 1])  //첨부한 사진을 순서대로 번호붙여서 저장할거임.   "."+pathArray[pathArray.size-1 이걸 씀으로 .jpg나 .png등으로 저장될거임
+
+                                //**여긴 파이어베이스-문서-가이드-개발-스토리지-파일업로드-(스트림에서업로드) 에서 가져온 코드임. 파일(사진)경로를 받아서 스토리지에 데이터 저장할때 사용함
+                                val stream = FileInputStream(File(pathList[pathCount]))
+
+
+                                var metadata = storageMetadata {
+                                    //(문서-스토리지-파일 메타데이터사용-커스텀메타데이터)   //메타데이터를 통해 각 데이터(사진 등)의 인덱스 위치를 알 수 있음
+                                    setCustomMetadata(
+                                        "index",
+                                        "" + (contentsList.size - 1)
+                                    )     //게시글 사진 스토리지 저장때 쓸 메타데이터 하나 만듬. index가 키값. contentsList의 마지막 인덱스값 넣어줌
+                                }                                                                //키값다음에 오는 거에는 현재위치?를 넣어줘야함
+
+                                var uploadTask = mountainImagesRef.putStream(
+                                    stream,
+                                    metadata
+                                )  //사진경로와 메타데이터를 인자로 실어서 스토리지주소에 업로드
+                                uploadTask.addOnFailureListener {
+
+                                }.addOnSuccessListener { taskSnapshot ->
+                                    //위에서 만든 메타데이터를 통해 정보(데이터?)의 인덱스값 받음
+                                    var index =
+                                        Integer.parseInt(taskSnapshot.metadata?.getCustomMetadata("index")!!)  //인덱스값을 얻음
+
+                                    //스토리지에 사진경로 올렸고, 다시 스토리지주소를 통해 사진경로(uri)값을 가져오는 작업.
+                                    //가져와서 메타데이터 통해 만든 index값에 맞춰서 리스트에 이미지 uri를 저장하면, editText안의 내용과 uri가 순서대로 contentsList에 잘 들어갈거임!!
+                                    mountainImagesRef.downloadUrl.addOnSuccessListener {
+                                        successCount--
+                                        contentsList.set(
+                                            index,
+                                            it.toString()
+                                        )         //여기서 it이 uri값임.  contentsList의 index에 맞는 인덱스안에 uri넣음
+                                        if (successCount == 0) {    //게시글에 내가 첨부했던 모든 사진들(pathList)이 스토리지에 업로드되었고, 다시 스토리지에서 uri값 가져와서 contentsList에 모두 추가되었을때
+                                            //완료 로직
+                                            var WriteInfo = PostInfo(
+                                                tilte,
+                                                contentsList,
+                                                //formatList,
+                                                user.uid,
+                                                date
+                                            )  //게시글 객체 하나 생성
+                                            storeupload(
+                                                documentReference,
+                                                WriteInfo
+                                            )  //밑에 만들어둔 함수임. 게시글 객체를 인자로 받아서 게시글을 db에 등록시켜줌. documentReference를 인자로 보내는 이유는
+                                            // db에 있는 게시글들의 uid값이랑 스토리지에 있는 이미지들 uid값이랑 같게 해주는게 찾을때 편해서 그리 해주려고.
+                                            Log.e("태그", "storeupload햇을때 contentsList: " + contentsList)
                                         }
                                     }
-                                })
-
-
-
-                            //*****************파이어베이스 스토리지에 사진경로로 사진 저장하기 위한 코드***************** memberinit에서 가져옴
-                            val mountainImagesRef =
-                                storageRef.child("posts/" + documentReference.id + "/" + pathCount + "." + pathArray[pathArray.size - 1])  //첨부한 사진을 순서대로 번호붙여서 저장할거임.   "."+pathArray[pathArray.size-1 이걸 씀으로 .jpg나 .png등으로 저장될거임
-
-                            //**여긴 파이어베이스-문서-가이드-개발-스토리지-파일업로드-(스트림에서업로드) 에서 가져온 코드임. 파일(사진)경로를 받아서 스토리지에 데이터 저장할때 사용함
-                            val stream = FileInputStream(File(pathList[pathCount]))
-
-
-                            var metadata = storageMetadata {
-                                //(문서-스토리지-파일 메타데이터사용-커스텀메타데이터)   //메타데이터를 통해 각 데이터(사진 등)의 인덱스 위치를 알 수 있음
-                                setCustomMetadata(
-                                    "index",
-                                    "" + (contentsList.size - 1)
-                                )     //게시글 사진 스토리지 저장때 쓸 메타데이터 하나 만듬. index가 키값. contentsList의 마지막 인덱스값 넣어줌
-                            }                                                                //키값다음에 오는 거에는 현재위치?를 넣어줘야함
-
-                            var uploadTask = mountainImagesRef.putStream(
-                                stream,
-                                metadata
-                            )  //사진경로와 메타데이터를 인자로 실어서 스토리지주소에 업로드
-                            uploadTask.addOnFailureListener {
-
-                            }.addOnSuccessListener { taskSnapshot ->
-                                //위에서 만든 메타데이터를 통해 정보(데이터?)의 인덱스값 받음
-                                var index =
-                                    Integer.parseInt(taskSnapshot.metadata?.getCustomMetadata("index")!!)  //인덱스값을 얻음
-
-                                //스토리지에 사진경로 올렸고, 다시 스토리지주소를 통해 사진경로(uri)값을 가져오는 작업.
-                                //가져와서 메타데이터 통해 만든 index값에 맞춰서 리스트에 이미지 uri를 저장하면, editText안의 내용과 uri가 순서대로 contentsList에 잘 들어갈거임!!
-                                mountainImagesRef.downloadUrl.addOnSuccessListener {
-                                    successCount--
-                                    contentsList.set(
-                                        index,
-                                        it.toString()
-                                    )         //여기서 it이 uri값임.  contentsList의 index에 맞는 인덱스안에 uri넣음
-                                    if (successCount == 0) {    //게시글에 내가 첨부했던 모든 사진들(pathList)이 스토리지에 업로드되었고, 다시 스토리지에서 uri값 가져와서 contentsList에 모두 추가되었을때
-                                        //완료 로직
-                                        var WriteInfo = PostInfo(
-                                            tilte,
-                                            contentsList,
-                                            //formatList,
-                                            user.uid,
-                                            date
-                                        )  //게시글 객체 하나 생성
-                                        storeupload(
-                                            documentReference,
-                                            WriteInfo
-                                        )  //밑에 만들어둔 함수임. 게시글 객체를 인자로 받아서 게시글을 db에 등록시켜줌. documentReference를 인자로 보내는 이유는
-                                        // db에 있는 게시글들의 uid값이랑 스토리지에 있는 이미지들 uid값이랑 같게 해주는게 찾을때 편해서 그리 해주려고.
-
-                                        Log.e("태그", "storeupload햇을때 contentsList: " + contentsList)
-                                    }
                                 }
+                                pathCount++
                             }
-                            pathCount++
-                        }
-                    }  //여기까지가 자식뷰가 이미지뷰일때
-                    j++
-                }  //작은 repeat문
-                i++
-            }  //큰 repeat문
-            if (successCount == 0) {            //사용자가 게시글에 이미지는 하나도 안넣었을때도 게시글 등록은 해줘야 하므로.
-                var WriteInfo = PostInfo(tilte, contentsList, user.uid, date)  //게시글 객체 하나 생성
-                storeupload(documentReference, WriteInfo)
+                        }  //여기까지가 자식뷰가 이미지뷰일때
+                        j++
+                    }  //작은 repeat문
+                    i++
+                }  //큰 repeat문
+                if (successCount == 0) {            //사용자가 게시글에 이미지는 하나도 안넣었을때도 게시글 등록은 해줘야 하므로.
+                    var WriteInfo = PostInfo(tilte, contentsList, user.uid, date)  //게시글 객체 하나 생성
+                    storeupload(documentReference, WriteInfo)
+                }
+            } else {
+                Toast.makeText(this, "제목을 입력해주세요.", Toast.LENGTH_SHORT).show()
             }
-        } else {
-            Toast.makeText(this, "제목을 입력해주세요.", Toast.LENGTH_SHORT).show()
+        } else {  //사용자가 태그,식당명 등 중에서 선택 안한거 있을때
+            Toast.makeText(this, "컨텐츠 업로드에 필요한 모든 옵션을 선택해주세요.", Toast.LENGTH_SHORT).show()
+            loaderLayout.visibility = View.GONE
         }
     }
-
-
     //컨텐츠 업로드 로직
-    private fun Contents_Upload(){
+    private fun Contents_Upload() {
+        contents = Contents(
+            Usersingleton.kakao_id!!,
+            filename!!,
+            restname!!,
+            adj1_id!!,
+            adj2_id!!,
+            locationtag_id!!,
+            lat!!,
+            lng!!
+        )
+        Log.e("태그", "업로드될 컨텐츠내용: contents.toString():  " + contents.toString())
 
-        if(filename !=null && restname != null){
-            contents  =Contents(
-                Usersingleton.kakao_id!!,
-                filename!!,
-                restname!!,
-                1,
-                1,
-                1,
-                37.54001365000000000,
-                127.06800310000000000
-            )
-            Log.e("태그", "컨텐츠 업로드 통신 contents.toString():  " + contents.toString())
-        }else{
-            Toast.makeText(this, "컨텐츠 업로드에 필요한 모든 옵션을 선택해주세요.", Toast.LENGTH_SHORT).show()
-            finish()
-        }
-
+        //서버에 컨텐츠 업로드 시작
         server.contents_upload_Request(
             contents
         ).enqueue(object : Callback<Contents_response> {
@@ -652,6 +635,8 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
                 t: Throwable
             ) {  //object로 받아옴. 서버에서 받은 object모델과 맞지 않으면 실패함수로 빠짐
                 Log.e("태그", "컨텐츠 업로드 통신 아예실패  ,t.message: " + t.message)
+                loaderLayout.visibility = View.GONE    //로딩화면 보여줌
+                Toast.makeText(this@WritePostActivity, "게시물 업로드 실패", Toast.LENGTH_SHORT).show()
             }
 
             override fun onResponse(
@@ -659,61 +644,25 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
                 response: Response<Contents_response>
             ) {
                 if (response.isSuccessful) {
-
                     Log.e(
                         "태그",
                         "컨텐츠 업로드 통신 성공!!. +response.body()?.content_id: " + response.body()?.content_id
                     )
+                    Toast.makeText(this@WritePostActivity, "게시물 업로드 성공!", Toast.LENGTH_SHORT).show()
+                    loaderLayout.visibility = View.GONE
                 } else {
                     Log.e(
                         "태그",
                         "컨텐츠 업로드 서버접근 성공했지만 리스폰스값 못가져옴.  response.errorBody()?.string(): " + response.errorBody()
                             ?.string()
                     )
+                    Toast.makeText(this@WritePostActivity, "게시물 업로드 실패", Toast.LENGTH_SHORT).show()
+                    loaderLayout.visibility = View.GONE
                 }
+                finish()
             }
         })
-
     }
-
-
-
-
-    //음식사진 인식값 가져오는 api(음식사진인지 판별)
-    private fun getRekognition(){
-
-        server.postpic_rekog_Request(
-            "1639482649907.jpeg", "2013981477"
-        ).enqueue(object : Callback<Rekognition_response> {
-            override fun onFailure(
-                call: Call<Rekognition_response>,
-                t: Throwable
-            ) {  //object로 받아옴. 서버에서 받은 object모델과 맞지 않으면 실패함수로 빠짐
-                Log.e("태그", "getRekognition api 통신 아예실패  ,t.message: " + t.message)
-            }
-
-            override fun onResponse(
-                call: Call<Rekognition_response>,
-                response: Response<Rekognition_response>
-            ) {
-                if (response.isSuccessful) {
-
-                    Log.e(
-                        "태그",
-                        "getRekognition api 통신 성공!!. response.body().rekogData: " + response.body()?.rekogData
-                    )
-                } else {
-                    Log.e(
-                        "태그",
-                        "getRekognition 서버접근 성공했지만 리스폰스값 못가져옴.  response.body().toString(): " + response.body()
-                            .toString()
-                    )
-                }
-            }
-        })
-
-    }
-
 
     //회원이 확인버튼 눌렀을때 회원이 쓴 게시글을 db(클라우드firestore)에 올려주는 코드가진 함수
     private fun storeupload(documentReference: DocumentReference, writeinfo: PostInfo) {
@@ -721,17 +670,15 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
             documentReference.set(it)                //add함수는 자동으로 데이터의 documents에 uid를 암거나 만들어서 넣어줌. 섞이지 않게. 그리고 set은 내가 uid만든거에 넣어주는함수. documentReference변수가 내가 따로 가져온 uid값임
                 .addOnSuccessListener {
                     Log.d(TAG, "DocumentSnapshot successfully written!")
-                    loaderLayout.visibility = View.GONE
 
                     val resultIntent = Intent()
                     resultIntent.putExtra("postinfo", postInfo)
                     setResult(RESULT_OK, resultIntent)
-                    finish()
+                    //finish()
                 }
                 .addOnFailureListener { e ->
                     Log.w(TAG, "Error writing document", e)
                     Toast.makeText(this, "게시물을 등록 실패.", Toast.LENGTH_SHORT).show()
-                    loaderLayout.visibility = View.GONE
                 }
         }
     }
@@ -742,9 +689,7 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
         startActivityForResult(intent, requestCode)
     }
 
-
     //************************taplayout과 뷰페이저 관련 내용******************************
-
 
     override fun onBackPressed() {
         super.onBackPressed()
@@ -758,7 +703,7 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
 
         //프래그먼트로 식당명 데이터 전달
         var bundle = Bundle()
-        bundle.putString("namelist_string", namelist_string)  //식당명들이 모두 모여 string묶음으로 된걸 frag에 보내줌
+        bundle.putString("namelist_string", namelist_string)  //식당명, 위경도 묶음jsonarray가  string묶음으로 된걸 frag에 보내줌
         name_fragment!!.arguments = bundle
 
         //뷰페이저에 다시 프래그먼트들을 붙혀줌. 이때 어댑터에 인자를 하나 추가해서 내가 위에서 bundle넣어서 새로 만든 프래그먼트를 어댑터에 전달해줌
@@ -779,12 +724,32 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
         Log.e("태그", "뷰페이저만들어짐.")
     } //init_viewpager
 
-
-    //프래그먼트에서 식당명(restname) 값을 받아올거임
-    override fun onRestaurantNameSet(name: String) {
-        restname = name
-        Log.e("태그", "프래그먼트에서 고른 식당명 액티비티로 받아옴. restname: " + restname)
+    //name 프래그먼트에서 식당명(restname) 값을 받아올거임
+    override fun onRestaurantNameSet(name: String, latlng:LatLng) {
+            restname = name
+            lat=    latlng.lat        //위도
+            lng =   latlng.lng        //경도
+            Log.e("태그", "프래그먼트에서 고른 식당명 액티비티로 받아옴. restname: " + restname)
+            Log.e("태그", "식당명에 해당하는 좌표값. lat, lng : " + lat + ", "+lng)
     }
+
+    //tag 프래그먼트에서 태그id값(adj1_id, adj2_id, locating_id) 값을 받아올거임
+    override fun onTag1Set(tag_id: Int) {
+        adj1_id = tag_id
+
+        Log.e("태그", "프래그먼트에서 고른 태그1을 액티비티로 받아옴. adj1_id: " + adj1_id)
+    }
+
+    override fun onTag2Set(tag_id: Int) {
+        adj2_id = tag_id
+        Log.e("태그", "프래그먼트에서 고른 태그2를 액티비티로 받아옴. adj2_id: " + adj2_id)
+    }
+
+    override fun onTag3Set(tag_id: Int) {
+        locationtag_id =tag_id
+        Log.e("태그", "프래그먼트에서 고른 태그3를 액티비티로 받아옴. locationtag_id: " + locationtag_id)
+    }
+
 
     //식당명 직접 입력하기 버튼 클릭
     fun showDialog01() {
@@ -816,13 +781,6 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
         })
 
     }
-
-
-
-
-
-
-
 
 
 }

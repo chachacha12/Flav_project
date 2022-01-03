@@ -1,6 +1,7 @@
 package com.example.flav_pof.writepost
 
 import android.app.Dialog
+import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -17,6 +18,7 @@ import com.example.flav_pof.activity.BasicActivity
 import com.example.flav_pof.classes.Tag_response
 import com.example.flav_pof.databinding.FragmentChooseTagBinding
 import com.example.flav_pof.retrofit_service
+import com.tbuonomo.viewpagerdotsindicator.setPaddingVertical
 import kotlinx.android.synthetic.main.dialog_selfname.*
 import kotlinx.android.synthetic.main.dialog_tagchoose.*
 import kotlinx.android.synthetic.main.fragment_choose_name.*
@@ -45,10 +47,36 @@ class Choose_tag_Fragment : Fragment() {
     var Ui_tag1_list = ArrayList<String>()//태그1
     var Ui_tag2_list = ArrayList<String>() //태그2
     var Ui_tag3_list = ArrayList<String>() //장소태그
-
+    var tag_number_check:Int =0   //사용자가 몇번째 태그창을 눌러서 선택한건지 확인용. 태그 텍스트뷰에 setText해줄때 써야함
 
     //태그선택텍스트뷰 클릭시 이 다이얼로그 보여줄거임
     private var dialog_tag:Dialog? = null
+
+    //writepost액티비티(부모액티비티)에 선택한 태그값 3개 데이터를 보내줄 인터페이스
+    var ontagsetListener: OnTagSetListener? = null
+
+    interface OnTagSetListener {
+        fun onTag1Set(tag_id: Int)
+        fun onTag2Set(tag_id: Int)
+        fun onTag3Set(tag_id: Int)
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+
+        //형변환하여 인터페이스 객체를 가져옴. 이제 액티비티에서 구현한 메소드를 이용해 액티비티쪽으로 데이터 보낼수있게됨
+        if (context is OnTagSetListener) {
+            ontagsetListener = context
+        }
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        if (ontagsetListener != null)
+            ontagsetListener = null
+
+    }
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -60,16 +88,19 @@ class Choose_tag_Fragment : Fragment() {
 
         //태그1 클릭시 이벤트처리
         binding?.tag1TextView?.setOnClickListener {
+            tag_number_check = 1
             showDialog_tag(Ui_tag1_list)
         }
 
         //태그2 클릭시 이벤트처리
         binding?.tag2TextView?.setOnClickListener {
+            tag_number_check = 2
             showDialog_tag(Ui_tag2_list)
         }
 
         //태그3 클릭시 이벤트처리
         binding?.tag3TextView?.setOnClickListener {
+            tag_number_check = 3
             showDialog_tag(Ui_tag3_list)
         }
 
@@ -132,10 +163,10 @@ class Choose_tag_Fragment : Fragment() {
         repeat(list.size) {
 
             val tagitem_textView = TextView(activity)  //텍스트뷰 하나 생성
-
+            tagitem_textView.setTextColor(resources.getColor(R.color.colorOrange))  //태그 글씨색
+            tagitem_textView.textSize =  18.0f
+            tagitem_textView.setPaddingVertical(15)  //태그텍스트들 사이의 간격 padding값 조절
             tagitem_textView.text = list[i]
-
-            Log.e("태그", " tagitem_textView.text: " +  tagitem_textView.text)
 
 
             val rprms: LinearLayout.LayoutParams =
@@ -151,8 +182,25 @@ class Choose_tag_Fragment : Fragment() {
             //특정 식당명을 클릭했을시
             tagitem_textView.setOnClickListener {
 
-
-                Toast.makeText(activity, tagitem_textView?.text.toString() + " 선택", Toast.LENGTH_SHORT).show()
+                when(tag_number_check){   //fragment_choose_tag 의 xml에서 몇번째 태그 텍스트뷰에 setText해줄지
+                    1 ->{
+                        tag1_textView.text = tagitem_textView?.text.toString()
+                        var tag_id = tag1_map[tagitem_textView?.text.toString()]  //사용자가 선택한 태그의 string텍스트값으로 map에서 태그 id값 찾음
+                        ontagsetListener?.onTag1Set(tag_id!!)  //액티비티로 태그id 데이터값 전달함
+                    }
+                    2 -> {
+                        tag2_textView.text = tagitem_textView?.text.toString()
+                        var tag_id = tag2_map[tagitem_textView?.text.toString()]  //사용자가 선택한 태그의 string텍스트값으로 map에서 태그 id값 찾음
+                        ontagsetListener?.onTag2Set(tag_id!!)  //액티비티로 태그id 데이터값 전달함
+                    }
+                    3 ->{
+                        tag3_textView.text = tagitem_textView?.text.toString()
+                        var tag_id = tag3_map[tagitem_textView?.text.toString()]  //사용자가 선택한 태그의 string텍스트값으로 map에서 태그 id값 찾음
+                        ontagsetListener?.onTag3Set(tag_id!!)  //액티비티로 태그id 데이터값 전달함
+                    }
+                }
+                //Toast.makeText(activity, tagitem_textView?.text.toString() + " 선택", Toast.LENGTH_SHORT).show()
+                dialog_tag?.dismiss() // 다이얼로그 닫기
             }
         }
     }
