@@ -1,22 +1,22 @@
-package com.example.flav_pof.Adapter
+package com.example.flav_pof.feeds
 
 //GalleryAdapter클래스를 복사해서 좀 바꿔서 써준 어댑터임
 
 import android.app.Activity
 import android.content.Intent
+import android.os.Build
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
+import androidx.annotation.RequiresApi
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.flav_pof.FirebaseHelper
-import com.example.flav_pof.PostInfo
 import com.example.flav_pof.R
-import com.example.flav_pof.activity.PostActivity
 import com.example.flav_pof.writepost.WritePostActivity
-import com.example.flav_pof.listener.OnPostListener
 import com.example.flav_pof.view.ReadContentsVIew
 import kotlinx.android.synthetic.main.item_post.view.*
 import kotlinx.android.synthetic.main.view_post.view.*
@@ -26,7 +26,8 @@ import java.util.*
 //괄호안은 어댑터클래스의 인자들
 class HomeAdapter(
     var activity: Activity,
-    private var myDataset: ArrayList<PostInfo>
+    private var myDataset: ArrayList<Contents>
+   // private var myDataset: ArrayList<PostInfo>
 )  : RecyclerView.Adapter<HomeAdapter.MainViewHolder>() {
 
     //전역
@@ -61,7 +62,6 @@ class HomeAdapter(
             activity.startActivity(intent)
         }
 
-
         //게시글의 toolbar(점3개)버튼을 클릭했을때 효과
         cardView.threePoint_button.setOnClickListener {
             showPopup(it, mainViewHolder.adapterPosition)      //post.xml을 띄워줌. 밑에 있음. 구글에 android menu검색하고 developers사이트들어가서 코드 가져옴
@@ -71,34 +71,37 @@ class HomeAdapter(
     }
 
     fun setOnPostListener(onPostListener: OnPostListener){
-        firebaseHelper.setOnPostListener(onPostListener)
+        //firebaseHelper.setOnPostListener(onPostListener)
     }
 
 
 
     // 여기서 리사이클러뷰의 리스트 하나하나 가리키는 뷰홀더와 내가 주는 데이터(게시글)가 연결되어짐. 즉 리사이클러뷰 화면에 띄워짐
      //액티비티에서 게시글 업데이트 해주려고 mainAdapter.notifyDataSetChanged() 하면 이 함수만 작동함.
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: MainViewHolder, position: Int) {
+        Log.e("태그","피드 만들어주는 홈프래그먼트의 onbindView 시작")
 
         val safePosition: Int = holder.adapterPosition
 
         var cardView = holder.cardView
         var titletextView = cardView.titleTextView
-        var postInfo= myDataset[safePosition]
-        titletextView.text = postInfo.title
+        var contents= myDataset[safePosition]
+        titletextView.text = contents.restname  //컨텐츠의 식당명값을 제목에 넣어줌
+        Log.e("태그","피드 만들어주는 홈프래그먼트의 onbindView안의 contents.restname"+contents.restname)
 
         val readContentsVIew: ReadContentsVIew = cardView.findViewById(R.id.readContentsView)
 
-        var contentsLayout = cardView.contentsLayout  //여기안에 contentsList의 내용들(사진,영상,글) 등을 넣을거임
+        var contentsLayout = cardView.contentsLayout  //여기안에 contentsList의 내용들(사진 ) 등을 넣을거임
 
 
         //이미지, 동영상, 글 등 contents내용들을 담는 뷰들(이미지뷰, 텍스트뷰)만들고 데이터들 그 안에 넣을거임
-        if (contentsLayout.getTag() == null || !contentsLayout.getTag().equals(postInfo)) {     //데이터가 같을수도 있는데 계속 뷰들 다 지웠다 만들고 하는건 낭비라서 이 로직 추가함.(null일땐 처음 앱 실행할때를 위해) 이 로직 없다면 스크롤 내릴때마다 뷰들 삭제되고 생성되고했을거임
-            contentsLayout.setTag(postInfo)
+        if (contentsLayout.getTag() == null || !contentsLayout.getTag().equals(contents)) {     //데이터가 같을수도 있는데 계속 뷰들 다 지웠다 만들고 하는건 낭비라서 이 로직 추가함.(null일땐 처음 앱 실행할때를 위해) 이 로직 없다면 스크롤 내릴때마다 뷰들 삭제되고 생성되고했을거임
+            contentsLayout.setTag(contents)
             contentsLayout.removeAllViews()   //액티비티 onResume()의 notifyDataSetChanged()를 통해 게시글 업데이트 해줄때마다 뷰 다 지우고 새롭게 만들어줄거임
 
             readContentsVIew.setMoreIndex(MORE_INDEX)
-            readContentsVIew.setPostInfo(postInfo)
+            readContentsVIew.setContents(contents)
         }
     }
 
@@ -117,7 +120,7 @@ class HomeAdapter(
                     true
                 }
                 R.id.delete -> {                  //삭제하기 눌렀을때
-                    firebaseHelper.storageDelete(myDataset[position])
+                   // firebaseHelper.storageDelete(myDataset[position])
                     true
                 }
                 else -> false
@@ -129,9 +132,9 @@ class HomeAdapter(
     }
 
 
-    private fun myStartActivity(c: Class<*>, postInfo: PostInfo) {
+    private fun myStartActivity(c: Class<*>, contents: Contents) {
         val intent = Intent(activity, c)
-        intent.putExtra("postInfo", postInfo)
+        intent.putExtra("postInfo", contents)
         activity.startActivity(intent)
     }
 

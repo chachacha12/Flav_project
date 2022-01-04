@@ -65,7 +65,7 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
     var successCount = 0    //게시글에 첨부한 사진이 여러개일수 있으니, 언제 끝나는지 확인해주기 위한 변수
 
     //컨텐츠 업로드 로직 관련 변수
-    lateinit var contents:Contents  //컨텐츠 객체
+    lateinit var contents:ContentsUpload_request  //컨텐츠 객체
     var filename:String? = null  //split해서 filepath에서 filename값 가져오려고.
     var restname:String? = null  //식당명
     var adj1_id: Int? = null  //태그1
@@ -614,7 +614,7 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
     }
     //컨텐츠 업로드 로직
     private fun Contents_Upload() {
-        contents = Contents(
+        contents = ContentsUpload_request(
             Usersingleton.kakao_id!!,
             filename!!,
             restname!!,
@@ -629,9 +629,9 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
         //서버에 컨텐츠 업로드 시작
         server.contents_upload_Request(
             contents
-        ).enqueue(object : Callback<Contents_response> {
+        ).enqueue(object : Callback<ContentsUpload_response> {
             override fun onFailure(
-                call: Call<Contents_response>,
+                call: Call<ContentsUpload_response>,
                 t: Throwable
             ) {  //object로 받아옴. 서버에서 받은 object모델과 맞지 않으면 실패함수로 빠짐
                 Log.e("태그", "컨텐츠 업로드 통신 아예실패  ,t.message: " + t.message)
@@ -640,8 +640,8 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
             }
 
             override fun onResponse(
-                call: Call<Contents_response>,
-                response: Response<Contents_response>
+                call: Call<ContentsUpload_response>,
+                response: Response<ContentsUpload_response>
             ) {
                 if (response.isSuccessful) {
                     Log.e(

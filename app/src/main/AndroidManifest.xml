@@ -39,7 +39,7 @@
             android:name="com.kakao.sdk.AppKey"
             android:value="@string/kakao_app_key"/>
 
-        <activity android:name=".activity.PostActivity">
+        <activity android:name=".feeds.PostActivity">
         </activity>
         <activity android:name=".activity.MainActivity">
         </activity>

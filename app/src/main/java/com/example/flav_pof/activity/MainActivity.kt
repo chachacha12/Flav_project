@@ -14,10 +14,8 @@ import android.util.Base64
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Toast
 import com.example.flav_pof.R
-import com.example.flav_pof.classes.Usersingleton
-import com.example.flav_pof.fragment.HomeFragment
+import com.example.flav_pof.feeds.HomeFragment
 import com.example.flav_pof.fragment.UserInfoFragment
 import com.example.flav_pof.fragment.UserListFragment
 import com.example.flav_pof.fragment.mapFragment
@@ -25,7 +23,6 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
-import com.kakao.sdk.talk.TalkApiClient
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 
@@ -121,7 +118,7 @@ class MainActivity : BasicActivity() {
                     }
                 }
 
-            val homeFragment = HomeFragment()
+            val homeFragment = HomeFragment(server)
             supportFragmentManager.beginTransaction()
                 .replace(com.example.flav_pof.R.id.container, homeFragment)
                 .commit()
@@ -132,7 +129,7 @@ class MainActivity : BasicActivity() {
 
                 when(it.itemId) {
                     com.example.flav_pof.R.id.home -> {
-                        val homeFragment = HomeFragment()
+                        val homeFragment = HomeFragment(server)
                         supportFragmentManager.beginTransaction()
                             .replace(com.example.flav_pof.R.id.container, homeFragment)
                             .commit()

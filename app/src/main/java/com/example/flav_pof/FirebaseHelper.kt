@@ -4,7 +4,8 @@ import android.app.Activity
 import android.util.Log
 import android.util.Patterns
 import android.widget.Toast
-import com.example.flav_pof.listener.OnPostListener
+import com.example.flav_pof.feeds.Contents
+import com.example.flav_pof.feeds.OnPostListener
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 
@@ -15,13 +16,13 @@ class FirebaseHelper(private val activity: Activity) {
     private var onPostListener: OnPostListener? = null
     private var successCount = 0
 
-
+    /*
 
     fun setOnPostListener(onPostListener: OnPostListener?) {
         this.onPostListener = onPostListener
     }
 
-    fun storageDelete(postInfo: PostInfo) {
+    fun storageDelete(postInfo: Contents) {
         val storage = FirebaseStorage.getInstance()
         val storageRef = storage.reference
         val id = postInfo.id
@@ -66,4 +67,6 @@ class FirebaseHelper(private val activity: Activity) {
                 }
         }
     }
+
+     */
 }

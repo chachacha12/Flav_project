@@ -1,7 +1,7 @@
 package com.example.flav_pof.view
 
 import android.content.Context
-import android.graphics.Color
+import android.os.Build
 import android.util.AttributeSet
 import android.util.Patterns
 import android.view.LayoutInflater
@@ -10,9 +10,13 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.annotation.Nullable
+import androidx.annotation.RequiresApi
 import com.bumptech.glide.Glide
-import com.example.flav_pof.PostInfo
+import com.example.flav_pof.feeds.Contents
+import com.google.type.Date
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 
@@ -48,6 +52,57 @@ class ReadContentsVIew : LinearLayout {
         this.moreIndex = moreIndex
     }
 
+
+    //컨텐츠값들 여기서 다 넣어줌
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun setContents(contents: Contents) {
+
+        val createdAtTextView = findViewById<TextView>(com.example.flav_pof.R.id.createAtTextView)
+        createdAtTextView.text = contents.date
+
+
+/*
+        val createdAtTextView = findViewById<TextView>(com.example.flav_pof.R.id.createAtTextView)
+        createdAtTextView.setText(
+            SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(
+                date
+            )
+        )
+
+ */
+        val contentsLayout = findViewById<LinearLayout>(com.example.flav_pof.R.id.contentsLayout)
+        val layoutParams = ViewGroup.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
+
+        val photoUrl = contents.filepath  //컨텐츠에 있는 사진경로값
+
+        if (Patterns.WEB_URL.matcher(photoUrl)
+                .matches() && photoUrl.contains("https://flavbucket.s3.ap-northeast-2.amazonaws.com/")) {
+            val imageView = ImageView(context)
+            imageView.layoutParams = layoutParams
+            imageView.adjustViewBounds = true
+            imageView.scaleType = ImageView.ScaleType.FIT_XY
+            contentsLayout.addView(imageView)
+            Glide.with(this).load(photoUrl).override(1000).thumbnail(0.1f)
+                .into(imageView)
+        }
+
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+    /*
     fun setPostInfo(postInfo: PostInfo) {
         val createdAtTextView = findViewById<TextView>(com.example.flav_pof.R.id.createAtTextView)
         createdAtTextView.setText(
@@ -88,4 +143,6 @@ class ReadContentsVIew : LinearLayout {
             }
         }
     }
+
+     */
 }

@@ -1,4 +1,4 @@
-package com.example.flav_pof.activity
+package com.example.flav_pof.feeds
 
 import android.content.Intent
 import android.os.Bundle
@@ -9,31 +9,31 @@ import android.widget.LinearLayout
 import com.example.flav_pof.FirebaseHelper
 import com.example.flav_pof.PostInfo
 import com.example.flav_pof.R
-import com.example.flav_pof.listener.OnPostListener
+import com.example.flav_pof.activity.BasicActivity
 import com.example.flav_pof.view.ReadContentsVIew
 import com.example.flav_pof.writepost.WritePostActivity
 
 
 class PostActivity : BasicActivity() {
 
-    private var postInfo: PostInfo? = null
+    private var contents: Contents? = null
+    //private var postInfo: PostInfo? = null
     private var firebaseHelper: FirebaseHelper? = null
     private var readContentsVIew: ReadContentsVIew? = null
     private var contentsLayout: LinearLayout? = null
-
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_post)
 
-        postInfo = intent.getSerializableExtra("postInfo") as PostInfo
+        contents = intent.getSerializableExtra("postInfo") as Contents
 
         contentsLayout = findViewById(R.id.contentsLayout)
         readContentsVIew = findViewById(R.id.readContentsView)
 
-        firebaseHelper = FirebaseHelper(this)
-        firebaseHelper!!.setOnPostListener(onPostListener)
+        //firebaseHelper = FirebaseHelper(this)
+       // firebaseHelper!!.setOnPostListener(onPostListener)
         uiUpdate()
     }
 
@@ -46,7 +46,7 @@ class PostActivity : BasicActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
             0 -> if (resultCode == RESULT_OK) {
-                postInfo = data!!.getSerializableExtra("postinfo") as PostInfo
+                contents = data!!.getSerializableExtra("postinfo") as Contents
                 contentsLayout!!.removeAllViews()
                 uiUpdate()
             }
@@ -62,11 +62,11 @@ class PostActivity : BasicActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.getItemId()) {
             R.id.delete -> {
-                firebaseHelper!!.storageDelete(postInfo!!)
+               // firebaseHelper!!.storageDelete(postInfo!!)
                 true
             }
             R.id.modify -> {
-                myStartActivity(WritePostActivity::class.java, postInfo!!)
+                //myStartActivity(WritePostActivity::class.java, postInfo!!)
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -74,7 +74,7 @@ class PostActivity : BasicActivity() {
     }
 
     var onPostListener: OnPostListener = object : OnPostListener {
-        override fun onDelete(postInfo: PostInfo) {
+        override fun onDelete(contents: Contents) {
             Log.e("로그 ", "삭제 성공")
         }
 
@@ -84,13 +84,13 @@ class PostActivity : BasicActivity() {
     }
 
     private fun uiUpdate() {
-        setToolbarTitle(postInfo!!.title)
-        readContentsVIew?.setPostInfo(postInfo!!)
+        setToolbarTitle(contents!!.restname)
+        readContentsVIew?.setContents(contents!!)
     }
 
-    private fun myStartActivity(c: Class<*>, postInfo: PostInfo) {
+    private fun myStartActivity(c: Class<*>, contents: Contents) {
         val intent = Intent(this, c)
-        intent.putExtra("postInfo", postInfo)
+        intent.putExtra("postInfo", contents)
         startActivityForResult(intent, 0)
     }
 
