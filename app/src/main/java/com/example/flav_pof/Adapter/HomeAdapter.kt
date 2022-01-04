@@ -63,7 +63,7 @@ class HomeAdapter(
 
 
         //게시글의 toolbar(점3개)버튼을 클릭했을때 효과
-        cardView.menu.setOnClickListener {
+        cardView.threePoint_button.setOnClickListener {
             showPopup(it, mainViewHolder.adapterPosition)      //post.xml을 띄워줌. 밑에 있음. 구글에 android menu검색하고 developers사이트들어가서 코드 가져옴
         }                                                     //mainViewHolder.adapterPosition을 넣어주는 이유는 사용자가 선택한 특정위치의 게시글을 삭제or수정해야 하기에.
 

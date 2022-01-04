@@ -33,7 +33,6 @@ class HomeFragment : Fragment() {
     private var topScrolled = false
 
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
