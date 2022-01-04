@@ -53,12 +53,12 @@
         android:layout_marginBottom="5dp"
         android:background="#DDDDDD"/>
 
-    <com.example.flav_pof.view.ReadContentsVIew
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/readContentsView">
+        <com.example.flav_pof.view.ReadContentsVIew
+            android:id="@+id/readContentsView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-    </com.example.flav_pof.view.ReadContentsVIew>
+        </com.example.flav_pof.view.ReadContentsVIew>
 
 </LinearLayout>
 

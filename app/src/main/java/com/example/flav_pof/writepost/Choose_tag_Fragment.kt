@@ -2,7 +2,6 @@ package com.example.flav_pof.writepost
 
 import android.app.Dialog
 import android.content.Context
-import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -12,29 +11,23 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import androidx.core.content.ContextCompat
 import com.example.flav_pof.R
-import com.example.flav_pof.activity.BasicActivity
 import com.example.flav_pof.classes.Tag_response
 import com.example.flav_pof.databinding.FragmentChooseTagBinding
 import com.example.flav_pof.retrofit_service
 import com.tbuonomo.viewpagerdotsindicator.setPaddingVertical
-import kotlinx.android.synthetic.main.dialog_selfname.*
 import kotlinx.android.synthetic.main.dialog_tagchoose.*
-import kotlinx.android.synthetic.main.fragment_choose_name.*
 import kotlinx.android.synthetic.main.fragment_choose_tag.*
 import org.json.JSONArray
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-
 class Choose_tag_Fragment : Fragment() {
 
     //뷰바인딩을 함 - xml의 뷰들에 접근하기 위해서
     private var _binding: FragmentChooseTagBinding? = null
     private val binding get() = _binding
-
     //name프래그먼트에서 받은 식당명을 저장해둘 전역변수
     var restaurant_name:String="식당이름을 선택해주세요"  //식당명
 
@@ -51,7 +44,6 @@ class Choose_tag_Fragment : Fragment() {
 
     //태그선택텍스트뷰 클릭시 이 다이얼로그 보여줄거임
     private var dialog_tag:Dialog? = null
-
     //writepost액티비티(부모액티비티)에 선택한 태그값 3개 데이터를 보내줄 인터페이스
     var ontagsetListener: OnTagSetListener? = null
 

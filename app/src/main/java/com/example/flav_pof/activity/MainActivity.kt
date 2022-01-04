@@ -12,6 +12,10 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Base64
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
+import android.widget.Toast
+import com.example.flav_pof.R
 import com.example.flav_pof.classes.Usersingleton
 import com.example.flav_pof.fragment.HomeFragment
 import com.example.flav_pof.fragment.UserInfoFragment
@@ -37,7 +41,7 @@ class MainActivity : BasicActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(com.example.flav_pof.R.layout.activity_main)
-        setToolbarTitle("뿌윙클")
+        setToolbarTitle("      뿌윙클")
 
         //kakaoLoginAct에서 보낸 인텐트를 받아서 로그인한 사용자 정보를 얻는다.
         var intent = intent
@@ -48,15 +52,30 @@ class MainActivity : BasicActivity() {
 
         Log.e("main에서의 카카오", "  strNick: $strNick"+ "  strprofileImg: $strprofileImg"+
             "  strEmail: $strEmail")
-
-
-        
-
-
-
         //getHashKey()
         init()
     }
+
+
+    //툴바 메뉴 버튼을 설정
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.toolbar_item, menu)       // toolbar_item 메뉴를 toolbar 메뉴 버튼으로 설정
+        return true
+    }
+
+    // 툴바 메뉴 버튼이 클릭 됐을 때 콜백
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        // 클릭된 메뉴 아이템의 아이디 마다 when 구절로 클릭시 동작을 설정한다.
+        when(item!!.itemId){
+             R.id.notice_button->{ // 알림창 버튼 클릭 시 이벤트 처리
+                Log.e("태그","알림창 클릭")
+            }
+
+
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
 
 
     //액티비티가 재실행되거나 홈버튼 눌러서 나갔다왔을때 등의 경우에 onCreate말고 이 함수가 실행됨. (이때마다 게시글들 새로고침 해주면될듯)

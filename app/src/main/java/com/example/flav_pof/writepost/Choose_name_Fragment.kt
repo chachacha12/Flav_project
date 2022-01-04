@@ -86,45 +86,51 @@ class Choose_name_Fragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         //식당명리스트 라디오버튼 만들기
-        var jsonArray = JSONArray(namelist)
-        var i = 0;
-        repeat(jsonArray.length()) {
-            val Object = jsonArray.getJSONObject(i) //jsonarray안의 object에 하나하나 접근
 
-            val radioButton = RadioButton(activity)
-            radioButton.setPaddingVertical(10)  //라디오버튼들 사이의 간격 padding값 조절
 
-            radioButton.buttonTintList =
-                activity?.let { it1 -> getColor(it1, R.color.colorFlav) }?.let { it2 ->
-                    ColorStateList.valueOf(
-                        it2
+        if(namelist == "정보없음"){  //exif정보가 없을때
+            Toast.makeText(activity,"주변 음식점 정보가 없습니다. 직접 입력해주세요.", Toast.LENGTH_SHORT).show()
+
+        }else{   //식당명 정보가 있을때  
+            var jsonArray = JSONArray(namelist)
+            var i = 0;
+            repeat(jsonArray.length()) {
+                val Object = jsonArray.getJSONObject(i) //jsonarray안의 object에 하나하나 접근
+
+                val radioButton = RadioButton(activity)
+                radioButton.setPaddingVertical(10)  //라디오버튼들 사이의 간격 padding값 조절
+
+                radioButton.buttonTintList =
+                    activity?.let { it1 -> getColor(it1, R.color.colorFlav) }?.let { it2 ->
+                        ColorStateList.valueOf(
+                            it2
+                        )
+                    }
+
+                radioButton.text = Object.getString("name") //식당명 추출
+                var latlng = LatLng(Object.getString("lat"), Object.getString("lng")) //위경도객체 생성
+
+                latlng_map.put(Object.getString("name"), latlng)  //map에 식당명을 키값, 좌표객체값을 value로 저장
+
+                val rprms: RadioGroup.LayoutParams =
+                    RadioGroup.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT
                     )
+                radiogroup.addView(radioButton, rprms)
+                i++
+                //특정 식당명을 클릭했을시
+                radiogroup.setOnCheckedChangeListener { group, checkedId ->
+                    val select = getView()?.findViewById<RadioButton>(checkedId)  //선택한 라디오버튼
+                    //인터페이스 통해 writepost액티비티에 고른 식당명, 좌표객체 보내줌
+                    onRestaurantNameListener?.onRestaurantNameSet(select?.text.toString(), latlng_map[select?.text.toString()]!! )
+                    fragmentListener?.onCommand(select?.text.toString())  //어떻게 보면 액티비티 객체라고 할 수 있는 fragmentListener을 이용해서 액티비티에 있는 onCommand함수를 실행
+                    Toast.makeText(activity, select?.text.toString() + " 선택", Toast.LENGTH_SHORT).show()
                 }
-
-            radioButton.text = Object.getString("name") //식당명 추출
-            var latlng = LatLng(Object.getString("lat"), Object.getString("lng")) //위경도객체 생성
-
-            latlng_map.put(Object.getString("name"), latlng)  //map에 식당명을 키값, 좌표객체값을 value로 저장
-
-            val rprms: RadioGroup.LayoutParams =
-                RadioGroup.LayoutParams(
-                    ViewGroup.LayoutParams.WRAP_CONTENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT
-                )
-
-            radiogroup.addView(radioButton, rprms)
-            i++
-
-            //특정 식당명을 클릭했을시
-            radiogroup.setOnCheckedChangeListener { group, checkedId ->
-                val select = getView()?.findViewById<RadioButton>(checkedId)  //선택한 라디오버튼
-                //인터페이스 통해 writepost액티비티에 고른 식당명, 좌표객체 보내줌
-                onRestaurantNameListener?.onRestaurantNameSet(select?.text.toString(), latlng_map[select?.text.toString()]!! )
-
-                fragmentListener?.onCommand(select?.text.toString())  //어떻게 보면 액티비티 객체라고 할 수 있는 fragmentListener을 이용해서 액티비티에 있는 onCommand함수를 실행
-                Toast.makeText(activity, select?.text.toString() + " 선택", Toast.LENGTH_SHORT).show()
-            }
+            }  //repaet
         }
+
+
     }
 
     //다른 프래그먼트로 갔다가 다시 이 프래그먼트로 돌아오거나, 뭔가를 사용자가 클릭해서 상호작용할때마다 작동되는 함수인듯?
