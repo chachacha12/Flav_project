@@ -53,6 +53,15 @@ class MainActivity : BasicActivity() {
         init()
     }
 
+    /*
+    //게시물 추가하거나 등등 할때마다 피드 갱신
+    override fun onRestart() {
+        super.onRestart()
+
+        HomeFragment(server).ContentsUpdate()
+        Log.e("태그","메인액티빝의 onRestart실행" )
+    }
+     */
 
     //툴바 메뉴 버튼을 설정
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -67,8 +76,6 @@ class MainActivity : BasicActivity() {
              R.id.notice_button->{ // 알림창 버튼 클릭 시 이벤트 처리
                 Log.e("태그","알림창 클릭")
             }
-
-
         }
         return super.onOptionsItemSelected(item)
     }
@@ -118,7 +125,7 @@ class MainActivity : BasicActivity() {
                     }
                 }
 
-            val homeFragment = HomeFragment(server)
+            var homeFragment = HomeFragment(server)
             supportFragmentManager.beginTransaction()
                 .replace(com.example.flav_pof.R.id.container, homeFragment)
                 .commit()
@@ -128,28 +135,28 @@ class MainActivity : BasicActivity() {
             bottomNavigationView.setOnNavigationItemSelectedListener {
 
                 when(it.itemId) {
-                    com.example.flav_pof.R.id.home -> {
-                        val homeFragment = HomeFragment(server)
+                    R.id.home -> {
+                        var homeFragment = HomeFragment(server)
                         supportFragmentManager.beginTransaction()
                             .replace(com.example.flav_pof.R.id.container, homeFragment)
                             .commit()
                         true
                     }
-                    com.example.flav_pof.R.id.myInfo -> {
+                    R.id.myInfo -> {
                         val userInfoFragment = UserInfoFragment()
                         supportFragmentManager.beginTransaction()
                             .replace(com.example.flav_pof.R.id.container, userInfoFragment)
                             .commit()
                         true
                     }
-                    com.example.flav_pof.R.id.userList -> {
+                   R.id.userList -> {
                         val userListFragment = UserListFragment()
                         supportFragmentManager.beginTransaction()
                             .replace(com.example.flav_pof.R.id.container, userListFragment)
                             .commit()
                         true
                     }
-                    com.example.flav_pof.R.id.map -> {
+                   R.id.map -> {
                         val mapfragment = mapFragment()
                         Log.e("태그", "mapfrag로 replace")
                         supportFragmentManager.beginTransaction()
@@ -168,26 +175,6 @@ class MainActivity : BasicActivity() {
     private fun myStartActivity(c: Class<*>) {
         val intent = Intent(this, c)
         startActivityForResult(intent, 1)
-    }
-
-    //해시키 가져오기 - 카톡sdk와 연동위해서 필요함
-    private fun getHashKey() {
-        var packageInfo: PackageInfo? = null
-        try {
-            packageInfo = packageManager.getPackageInfo(packageName, PackageManager.GET_SIGNATURES)
-        } catch (e: PackageManager.NameNotFoundException) {
-            e.printStackTrace()
-        }
-        if (packageInfo == null) Log.e("KeyHash", "KeyHash:null")
-        for (signature in packageInfo!!.signatures) {
-            try {
-                val md: MessageDigest = MessageDigest.getInstance("SHA")
-                md.update(signature.toByteArray())
-                Log.e("KeyHash", Base64.encodeToString(md.digest(), Base64.DEFAULT))
-            } catch (e: NoSuchAlgorithmException) {
-                Log.e("KeyHash", "Unable to get MessageDigest. signature=$signature", e)
-            }
-        }
     }
 
 

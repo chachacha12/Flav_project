@@ -112,7 +112,6 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
 
     //수정하기버튼눌러서 이 액티비티 온 경우 등엔 게시글의 editText가 원래 수정전 내용으로 차있도록 하게할거임.
     private fun postinit() {
-
         //여기 구문이 +눌러서 게시글 새로 만드는 것 x이고, 수정or삭제하려고 다시 writepostact에 온 경우에 쓰이는 구문임. 기존 내용들 다시 띄워줌
         if (postInfo != null) {   //null이라면 수정하기버튼 누른게 아니라 +버튼눌러서 새로운 게시글 만드려는거임. 즉, postinit()을 안거쳐도됨
             //titletextView.text = postInfo!!.title
@@ -129,11 +128,15 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
                     contentsLayout.addView(contentsItemView)
 
                     contentsItemView.setImage(contents)
+
+                    /*
                     contentsItemView.setOnClickListener {
                         buttonsBackgroundlayout.visibility =
                             View.VISIBLE       //이미지를 삭제or수정하려고 눌렀을때
                         selectedImageView = it as ImageView
                     }
+                     */
+
 
                     contentsItemView.onFocusChangeListener = onFocusChangedListener
 
@@ -262,30 +265,16 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
                 val contentsItemView =
                     ContentsItemView(this)  //이미지와 editText 담는 객체 하나 만듬
 
-
-                if (selectedEditText == null) {
-                    contentsLayout.addView(contentsItemView)
-                    //contents_LinearLayout.addView(contentsItemView)
-                } else {            //내가 포커스 준 editText가 있을때
-                    /*
-                    var i = 0
-                    repeat(contentsLayout.childCount) {
-                        if (contentsLayout.getChildAt(i) == selectedEditText?.parent) {   //이미 onFocusChangeListener가 selectedEditText를 내가 포커스 준 녀석으로 바꿔뒀을거임
-                            contentsLayout.addView(
-                                contentsItemView,
-                                i + 1
-                            )    //내가 선택해서 포커스 가있는 editText 바로 다음에 새로운 객체(이미지, editText, LinearLayout을 멤버로 가진 linearLayout객체임..)를 추가해준다.
-                        }
-                        i++
-                    }
-                     */
-                }
+                contentsLayout.addView(contentsItemView)
 
                 contentsItemView.setImage(path)
+
+                /*
                 contentsItemView.setOnClickListener {
                     buttonsBackgroundlayout.visibility = View.VISIBLE       //이미지를 삭제or수정하려고 눌렀을때
                     selectedImageView = it as ImageView
                 }
+                 */
 
                 contentsItemView.onFocusChangeListener = onFocusChangedListener
 
@@ -336,8 +325,8 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
                 }
                  */
             }
-            1 -> if (resultCode == Activity.RESULT_OK) {    //이미지를 수정하려고 새 이미지를 선택했을때
 
+            1 -> if (resultCode == Activity.RESULT_OK) {    //이미지를 수정하려고 새 이미지를 선택했을때
                 var path = data!!.getStringExtra("profilePath")
                 pathList.set(
                     contentsLayout.indexOfChild(selectedImageView.parent as View) - 1,
@@ -346,16 +335,15 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
                 Glide.with(this).load(path).override(1000)
                     .into(selectedImageView)   //이미지를 수정해줌
             }
+
         }
     }
-
 
     var onClickListener =
         View.OnClickListener { v ->
             when (v.id) {
                 R.id.checkButton2 -> storageUpload()
-               // R.id.image -> myStartActivity(Galleryactivity::class.java, "image", 0)
-               // R.id.video -> myStartActivity(Galleryactivity::class.java, "video", 0)
+                /*
                 R.id.buttonsBackgroundLayout -> if (buttonsBackgroundLayout.visibility === View.VISIBLE) {
                     buttonsBackgroundLayout.visibility = View.GONE
                 }
@@ -400,6 +388,8 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
                     contentsLayout.removeView(selectedView)
                     buttonsBackgroundlayout.visibility = View.GONE
                 }
+                 */
+                 */
             }
         }
 
@@ -522,6 +512,8 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
                                                 var filepath_list =
                                                     response.body()?.filepath?.split('/')
                                                 filename = filepath_list!!.last()  //filename값을 받아옴
+
+
                                                 Log.e(
                                                     "s3업로드 태그",
                                                     "filename: " + filename
@@ -690,7 +682,6 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
     }
 
     //************************taplayout과 뷰페이저 관련 내용******************************
-
     override fun onBackPressed() {
         super.onBackPressed()
         finish()
@@ -779,7 +770,6 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
                 Log.e("태그", "식당명 직접입력으로 restname등록.  restname: " + restname)
             }
         })
-
     }
 
 

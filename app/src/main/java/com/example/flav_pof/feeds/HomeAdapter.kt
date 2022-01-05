@@ -11,6 +11,7 @@ import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
+import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
@@ -90,11 +91,16 @@ class HomeAdapter(
         titletextView.text = contents.restname  //컨텐츠의 식당명값을 제목에 넣어줌
         Log.e("태그","피드 만들어주는 홈프래그먼트의 onbindView안의 contents.restname"+contents.restname)
 
+        //받아온 유저이름, 프로필 넣어주기
+        
+
+        //받아온 지하철역, 거리정보 넣어주기
+        val location_textView = cardView.location_textView
+        location_textView.text = contents.near_station + "에서 "+contents.station_distance
+
+        //게시물 하단의 태그3개 생성일을 채워줄 로직 - readContentsView는 view_post안의 뷰들을 채워줌
         val readContentsVIew: ReadContentsVIew = cardView.findViewById(R.id.readContentsView)
-
         var contentsLayout = cardView.contentsLayout  //여기안에 contentsList의 내용들(사진 ) 등을 넣을거임
-
-
         //이미지, 동영상, 글 등 contents내용들을 담는 뷰들(이미지뷰, 텍스트뷰)만들고 데이터들 그 안에 넣을거임
         if (contentsLayout.getTag() == null || !contentsLayout.getTag().equals(contents)) {     //데이터가 같을수도 있는데 계속 뷰들 다 지웠다 만들고 하는건 낭비라서 이 로직 추가함.(null일땐 처음 앱 실행할때를 위해) 이 로직 없다면 스크롤 내릴때마다 뷰들 삭제되고 생성되고했을거임
             contentsLayout.setTag(contents)

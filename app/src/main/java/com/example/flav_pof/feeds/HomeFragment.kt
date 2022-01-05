@@ -37,7 +37,6 @@ class HomeFragment(var server:retrofit_service) : Fragment() {
     private var firebaseFirestore: FirebaseFirestore? = null
     private var homeAdapter: HomeAdapter? = null
     private var postList: ArrayList<PostInfo>? = null
-    private var updating = false
     private var topScrolled = false
 
 
@@ -63,13 +62,11 @@ class HomeFragment(var server:retrofit_service) : Fragment() {
         homeAdapter = HomeAdapter(requireActivity(), contentsList!!)
         homeAdapter!!.setOnPostListener(onPostListener)
 
-
         recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
         view.findViewById<FloatingActionButton>(R.id.floatingActionButton).setOnClickListener(onClickListener)
-
         recyclerView.setHasFixedSize(true)
         recyclerView.layoutManager = LinearLayoutManager(activity)
-        //recyclerView.adapter = homeAdapter
+        recyclerView.adapter = homeAdapter
 
 
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -83,13 +80,12 @@ class HomeFragment(var server:retrofit_service) : Fragment() {
                     topScrolled = true
                 }
                 if (newState == 0 && topScrolled) {
-                    ContentsUpdate(true)
-
+                    ContentsUpdate()
                     topScrolled = false
                 }
             }
-
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+            /*
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
                 val layoutManager = recyclerView.layoutManager
                 val visibleItemCount = layoutManager!!.childCount
@@ -100,24 +96,22 @@ class HomeFragment(var server:retrofit_service) : Fragment() {
                     (layoutManager as LinearLayoutManager?)!!.findLastVisibleItemPosition()
                 if (totalItemCount - 3 <= lastVisibleItemPosition && !updating) {
                     ContentsUpdate(false)
-
                 }
                 if (0 < firstVisibleItemPosition) {
                     topScrolled = false
                 }
             }
+             */
         })
-
-        ContentsUpdate(false)
-
+        ContentsUpdate()
         return view
     }
+
 
 
     override fun onDetach() {
         super.onDetach()
     }
-
 
     var onClickListener =
         View.OnClickListener { v ->
@@ -141,27 +135,16 @@ class HomeFragment(var server:retrofit_service) : Fragment() {
             homeAdapter!!.notifyDataSetChanged()
             Log.e("로그: ", "삭제 성공")
         }
-
         override fun onModify() {
             Log.e("로그: ", "수정 성공")
         }
     }
 
-
-    private fun ContentsUpdate(clear: Boolean) {
-        updating = true
-        val date: String =
-            if (contentsList!!.size == 0 || clear)
-                Date().toString()
-            else
-                contentsList!![contentsList!!.size - 1].date
-
+    fun ContentsUpdate() {
         Log.e("태그","홈프래그먼트에서 피드 가져올때 Usersingleton.kakao_id: "+Usersingleton.kakao_id)
         //서버로부터 컨텐츠 값 가져오는 로직 + contentslist에 값 넣어주기
         thread_start()
-
     }
-
 
     //플레브 서버로부터 피드 가져오는 로직
     fun getRelevant_Contents_Request() {
@@ -179,7 +162,6 @@ class HomeFragment(var server:retrofit_service) : Fragment() {
                             "관련 컨텐츠 태그",
                             "관련 컨텐츠 / 통신성공" + response.body()?.result.toString()
                         )
-
                         var jsonarray = JSONArray(response.body()?.result)
                         var i = 0
                         repeat(jsonarray.length()) {
@@ -198,7 +180,6 @@ class HomeFragment(var server:retrofit_service) : Fragment() {
                             ))
                             i++
                         } //repeat
-                        //homeAdapter!!.notifyDataSetChanged()
                         Log.e(
                             "관련 컨텐츠 태그",
                             "contentsList" + contentsList.toString()
@@ -213,7 +194,6 @@ class HomeFragment(var server:retrofit_service) : Fragment() {
                         )
                         handler()
                     }
-                    updating = false
                 }
             })
     }
@@ -228,6 +208,7 @@ class HomeFragment(var server:retrofit_service) : Fragment() {
         kotlin.run {
             try {
                 //원하는 자료처리(데이터 로딩 등)
+                contentsList?.clear()  //contentslist값 비워주기
                 getRelevant_Contents_Request()    //서버로부터 피드 컨텐츠 가져옴
                 Log.e("태그", "getRelevant_Contents_Request 성공 . ")
 
@@ -242,7 +223,8 @@ class HomeFragment(var server:retrofit_service) : Fragment() {
         var handler = object : Handler(Looper.getMainLooper()) {
             override fun handleMessage(msg: Message) {
                 Log.e("태그", "피드컨텐츠 다 get한 후에 지금 핸들러 함수 실행")
-                recyclerView.adapter = homeAdapter
+                homeAdapter!!.notifyDataSetChanged()
+                //recyclerView.adapter = homeAdapter
             }
         }
         handler.obtainMessage().sendToTarget()

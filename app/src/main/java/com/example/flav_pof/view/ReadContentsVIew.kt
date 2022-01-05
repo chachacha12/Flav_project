@@ -13,10 +13,9 @@ import androidx.annotation.Nullable
 import androidx.annotation.RequiresApi
 import com.bumptech.glide.Glide
 import com.example.flav_pof.feeds.Contents
-import com.google.type.Date
+import kotlinx.android.synthetic.main.item_post.view.*
 import java.text.SimpleDateFormat
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
+import java.time.Instant
 import java.util.*
 
 
@@ -52,32 +51,37 @@ class ReadContentsVIew : LinearLayout {
         this.moreIndex = moreIndex
     }
 
-
-    //컨텐츠값들 여기서 다 넣어줌
+    //view_post의 컨텐츠값들 여기서 다 넣어줌
     @RequiresApi(Build.VERSION_CODES.O)
     fun setContents(contents: Contents) {
-
+        //받아온 게시물생성일값 넣어주기
         val createdAtTextView = findViewById<TextView>(com.example.flav_pof.R.id.createAtTextView)
-        createdAtTextView.text = contents.date
+        val instant = Instant.parse(contents.date)  //contents.date가 string날짜값임.
+        var date = Date.from(instant)   //기존 string날짜값을 date타입으로 만듬
+        val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm")
+        val cal = Calendar.getInstance()
+        cal.time = date
+        val createdAt: String = simpleDateFormat.format(cal.time)  // 원하는대로 포맷된 string날짜값임
+        createdAtTextView.text = createdAt
+
+        //받아온 태그값 넣어주기
+        val tag1_textView = findViewById<TextView>(com.example.flav_pof.R.id.tag1_textView)
+        val tag2_textView = findViewById<TextView>(com.example.flav_pof.R.id.tag2_textView)
+        val tag3_textView = findViewById<TextView>(com.example.flav_pof.R.id.tag3_textView)
+        tag1_textView.text = "#"+contents.adj1_id.toString()
+        tag2_textView.text = "#"+contents.adj2_id.toString()
+        tag3_textView.text = "#"+contents.locationtag_id.toString()
 
 
-/*
-        val createdAtTextView = findViewById<TextView>(com.example.flav_pof.R.id.createAtTextView)
-        createdAtTextView.setText(
-            SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(
-                date
-            )
-        )
-
- */
+        //이미지넣어줄 부모뷰 세팅
         val contentsLayout = findViewById<LinearLayout>(com.example.flav_pof.R.id.contentsLayout)
         val layoutParams = ViewGroup.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.WRAP_CONTENT
         )
 
+        //받아온 이미지 넣어주기
         val photoUrl = contents.filepath  //컨텐츠에 있는 사진경로값
-
         if (Patterns.WEB_URL.matcher(photoUrl)
                 .matches() && photoUrl.contains("https://flavbucket.s3.ap-northeast-2.amazonaws.com/")) {
             val imageView = ImageView(context)

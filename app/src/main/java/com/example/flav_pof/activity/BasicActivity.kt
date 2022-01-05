@@ -8,17 +8,23 @@ import androidx.annotation.LayoutRes
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import com.example.flav_pof.retrofit_service
+import com.google.gson.GsonBuilder
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import kotlin.properties.Delegates
 
 
 open class BasicActivity : AppCompatActivity() {
 
+    var gson = GsonBuilder()
+        .setDateFormat("E, dd MMMM yyyy HH:mm:ss X")
+        .create()
+
+
     var retrofit = Retrofit.Builder()
         .baseUrl("https://www.flavorus.shop/")
-        .addConverterFactory(GsonConverterFactory.create())
+        .addConverterFactory(GsonConverterFactory.create(gson))
         .build()
+
     var server = retrofit.create(retrofit_service::class.java)  //서버와 만들어둔 인터페이스를 연결시켜줌.
 
     override fun onCreate(savedInstanceState: Bundle?) {

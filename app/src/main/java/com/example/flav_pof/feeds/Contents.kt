@@ -1,6 +1,7 @@
 package com.example.flav_pof.feeds
 
 import java.io.Serializable
+import java.util.*
 
 data class Contents(
     val contents_id: Int,

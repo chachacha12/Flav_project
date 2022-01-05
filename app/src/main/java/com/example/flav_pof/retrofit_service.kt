@@ -55,7 +55,7 @@ interface retrofit_service {
     @GET("app/tag/locationtag")
     fun locationtag_Request(): Call<Tag_response>
 
-    //본인, 본인팔로우친구들 컨텐츠 다 가져오기
+    //본인, 본인팔로우친구들 컨텐츠 다 가져오
     @GET(" app/contents/relevant/{kakao_id}")
     fun get_ReleventsContents_Request(@Path("kakao_id") kakao_id:Int): Call<Result_response>
 
