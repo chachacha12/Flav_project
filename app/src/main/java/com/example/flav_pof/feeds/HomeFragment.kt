@@ -42,6 +42,8 @@ class HomeFragment(var server:retrofit_service) : Fragment() {
 
     //플레브 서버로부터 컨텐츠 받아오기 위한 변수들
     private var contentsList: java.util.ArrayList<Contents>? = null
+    //피드의 컨텐츠들 업데이트될동안 이곳에 새로운 컨텐츠 데이터들 받고 작업 다 끝나면 기존 contentsList에 다시 addall()해줄거임
+    private var update_contentsList: java.util.ArrayList<Contents>? = null
 
     lateinit var recyclerView:RecyclerView  //서버로부터 컨텐츠들 다 가져오는 로직 끝난후에 handler함수에서 만들어줄거임
 
@@ -58,7 +60,8 @@ class HomeFragment(var server:retrofit_service) : Fragment() {
         firebaseFirestore = FirebaseFirestore.getInstance()
         //postList = ArrayList()
        // homeAdapter = HomeAdapter(requireActivity(), postList!!)
-        contentsList = ArrayList()
+        contentsList = ArrayList()  //초기화  - 이거안하면 null에러남
+        update_contentsList = ArrayList()  //초기화
         homeAdapter = HomeAdapter(requireActivity(), contentsList!!)
         homeAdapter!!.setOnPostListener(onPostListener)
 
@@ -70,8 +73,10 @@ class HomeFragment(var server:retrofit_service) : Fragment() {
 
 
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            //맨위에서 스크롤 할때마다 피드 컨텐츠 새로 업데이트 해주는 로직
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
+
                 val layoutManager = recyclerView.layoutManager
                 val firstVisibleItemPosition =
                     (layoutManager as LinearLayoutManager?)!!.findFirstVisibleItemPosition()
@@ -106,7 +111,6 @@ class HomeFragment(var server:retrofit_service) : Fragment() {
         ContentsUpdate()
         return view
     }
-
 
 
     override fun onDetach() {
@@ -167,11 +171,12 @@ class HomeFragment(var server:retrofit_service) : Fragment() {
                         repeat(jsonarray.length()) {
                             val Object = jsonarray.getJSONObject(i)  //각각 하나의 컨텐츠씩 가져옴
                             //contentsList안에 가져오는 컨텐츠들 다 넣어줌
-                            contentsList!!.add( Contents( Object.getInt("id"), Object.getString("date"),
+                            update_contentsList!!.add( Contents( Object.getInt("id"), Object.getString("date"),
                                 Object.getString("filename"),  Object.getString("filepath"),  Object.getString("restname"),
                                 Object.getInt("user_id"),  Object.getInt("adj1_id"),  Object.getInt("adj2_id"),
                                 Object.getInt("locationtag_id"),  Object.getString("lat"), Object.getString("lng"),
-                                Object.getString("near_station"), Object.getString("station_distance")
+                                Object.getString("near_station"), Object.getString("station_distance"), Object.getJSONObject("User"),
+                                Object.getJSONObject("Tag_FirstAdj"), Object.getJSONObject("Tag_SecondAdj"),Object.getJSONObject("Tag_Location")
                             )  )
 
                             Log.e(
@@ -182,9 +187,8 @@ class HomeFragment(var server:retrofit_service) : Fragment() {
                         } //repeat
                         Log.e(
                             "관련 컨텐츠 태그",
-                            "contentsList" + contentsList.toString()
+                            "update_contentsList" + update_contentsList.toString()
                         )
-
                         handler()  //서버통해 데이터 가져오는 거 성공하면 핸들러함수 통해서 다음작업 수행
                     } else {
                         Log.e(
@@ -207,8 +211,8 @@ class HomeFragment(var server:retrofit_service) : Fragment() {
     fun getData() = Runnable {
         kotlin.run {
             try {
+
                 //원하는 자료처리(데이터 로딩 등)
-                contentsList?.clear()  //contentslist값 비워주기
                 getRelevant_Contents_Request()    //서버로부터 피드 컨텐츠 가져옴
                 Log.e("태그", "getRelevant_Contents_Request 성공 . ")
 
@@ -223,6 +227,12 @@ class HomeFragment(var server:retrofit_service) : Fragment() {
         var handler = object : Handler(Looper.getMainLooper()) {
             override fun handleMessage(msg: Message) {
                 Log.e("태그", "피드컨텐츠 다 get한 후에 지금 핸들러 함수 실행")
+
+                contentsList?.clear()  //contentslist값 비워주기
+                //contentslist에다가 새로 받아온 update_contentsList값들을 다 넣어줌
+                update_contentsList?.let { contentsList?.addAll(it) }
+                update_contentsList?.clear()  //피드 업데이트될때 다시 여기로 받아와야 해서 비워줌
+
                 homeAdapter!!.notifyDataSetChanged()
                 //recyclerView.adapter = homeAdapter
             }

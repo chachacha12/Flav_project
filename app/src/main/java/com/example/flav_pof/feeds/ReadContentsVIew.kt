@@ -1,8 +1,9 @@
-package com.example.flav_pof.view
+package com.example.flav_pof.feeds
 
 import android.content.Context
 import android.os.Build
 import android.util.AttributeSet
+import android.util.Log
 import android.util.Patterns
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -12,8 +13,6 @@ import android.widget.TextView
 import androidx.annotation.Nullable
 import androidx.annotation.RequiresApi
 import com.bumptech.glide.Glide
-import com.example.flav_pof.feeds.Contents
-import kotlinx.android.synthetic.main.item_post.view.*
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.util.*
@@ -63,14 +62,18 @@ class ReadContentsVIew : LinearLayout {
         cal.time = date
         val createdAt: String = simpleDateFormat.format(cal.time)  // 원하는대로 포맷된 string날짜값임
         createdAtTextView.text = createdAt
+        Log.e("태그", "포스태액티빗에 띄우기 위해 readcontentsView에서 만든 createdAt: " + createdAt)
 
         //받아온 태그값 넣어주기
         val tag1_textView = findViewById<TextView>(com.example.flav_pof.R.id.tag1_textView)
         val tag2_textView = findViewById<TextView>(com.example.flav_pof.R.id.tag2_textView)
         val tag3_textView = findViewById<TextView>(com.example.flav_pof.R.id.tag3_textView)
-        tag1_textView.text = "#"+contents.adj1_id.toString()
-        tag2_textView.text = "#"+contents.adj2_id.toString()
-        tag3_textView.text = "#"+contents.locationtag_id.toString()
+
+
+        tag1_textView.text = "#"+contents.Tag_FirstAdj.getString("tagname")
+        //jsonobject타입으로 result라는 jsonArray안에 담아져서 오는 인자는 이렇게 처리
+        tag2_textView.text = "#"+contents.Tag_SecondAdj.getString("tagname")
+        tag3_textView.text = "#"+contents.Tag_Location.getString("tagname")
 
 
         //이미지넣어줄 부모뷰 세팅
@@ -98,55 +101,4 @@ class ReadContentsVIew : LinearLayout {
 
 
 
-
-
-
-
-
-
-
-
-    /*
-    fun setPostInfo(postInfo: PostInfo) {
-        val createdAtTextView = findViewById<TextView>(com.example.flav_pof.R.id.createAtTextView)
-        createdAtTextView.setText(
-            SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(
-                postInfo.createdAt
-            )
-        )
-        val contentsLayout = findViewById<LinearLayout>(com.example.flav_pof.R.id.contentsLayout)
-        val layoutParams = ViewGroup.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT
-        )
-        val contentsList = postInfo.contents
-        for (i in 0 until contentsList.size) {
-            if (i == moreIndex) {
-                val textView = TextView(context)
-                textView.layoutParams = layoutParams
-                textView.text = "더보기..."
-                contentsLayout.addView(textView)
-                break
-            }
-            val contents = contentsList[i]
-            if (Patterns.WEB_URL.matcher(contents)
-                    .matches() && contents.contains("https://firebasestorage.googleapis.com/v0/b/flavmvp-9fe0d.appspot.com/o/posts")) {
-                val imageView = ImageView(context)
-                imageView.layoutParams = layoutParams
-                imageView.adjustViewBounds = true
-                imageView.scaleType = ImageView.ScaleType.FIT_XY
-                contentsLayout.addView(imageView)
-                Glide.with(this).load(contents).override(1000).thumbnail(0.1f)
-                    .into(imageView)
-            } else {
-                val textView = TextView(context)
-                textView.layoutParams = layoutParams
-                textView.text = contents
-                textView.setTextColor(Color.rgb(0, 0, 0))
-                contentsLayout.addView(textView)
-            }
-        }
-    }
-
-     */
 }

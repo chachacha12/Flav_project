@@ -1,7 +1,7 @@
 package com.example.flav_pof.feeds
 
+import org.json.JSONObject
 import java.io.Serializable
-import java.util.*
 
 data class Contents(
     val contents_id: Int,
@@ -18,7 +18,16 @@ data class Contents(
     val lat: String,
     val lng: String,
     val near_station: String,
-    val station_distance: String
+    val station_distance: String,
+
+    @Transient
+    var User:JSONObject,
+    @Transient
+    var Tag_FirstAdj:JSONObject,
+    @Transient
+    var Tag_SecondAdj:JSONObject,
+    @Transient
+    var Tag_Location:JSONObject
 
 ) : Serializable {
 

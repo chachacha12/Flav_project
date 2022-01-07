@@ -11,14 +11,13 @@ import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
-import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.flav_pof.FirebaseHelper
 import com.example.flav_pof.R
 import com.example.flav_pof.writepost.WritePostActivity
-import com.example.flav_pof.view.ReadContentsVIew
 import kotlinx.android.synthetic.main.item_post.view.*
 import kotlinx.android.synthetic.main.view_post.view.*
 import java.util.*
@@ -58,8 +57,15 @@ class HomeAdapter(
         //특정 게시글을 눌렀을때 효과
         cardView.setOnClickListener {
             val intent = Intent(activity, PostActivity::class.java)
-
             intent.putExtra("postInfo", myDataset[mainViewHolder.adapterPosition])
+
+            //contents객체의 멤버변수중에 jsonobject타입인 녀석들은 string타입으로 바꿔줘야만 intent로 보낼수있음
+            intent.putExtra("user", myDataset[mainViewHolder.adapterPosition].User.toString())
+            intent.putExtra("tag1", myDataset[mainViewHolder.adapterPosition].Tag_FirstAdj.toString())
+            intent.putExtra("tag2", myDataset[mainViewHolder.adapterPosition].Tag_SecondAdj.toString())
+            intent.putExtra("tag3", myDataset[mainViewHolder.adapterPosition].Tag_Location.toString())
+
+            Log.e("태그", "포스트액티빝에 보내줄 contents객체: "+myDataset[mainViewHolder.adapterPosition])
             activity.startActivity(intent)
         }
 
@@ -92,11 +98,18 @@ class HomeAdapter(
         Log.e("태그","피드 만들어주는 홈프래그먼트의 onbindView안의 contents.restname"+contents.restname)
 
         //받아온 유저이름, 프로필 넣어주기
-        
+        var nameTextView = cardView.nameTextView
+        nameTextView.text = contents.User.getString("username")  //contents.User로 서버로부터 받아온 값이jsonobject라서 getString()~ 이걸 더 추가함
+
+        var profile_photo_imageView = cardView.photoImageVIew
+        var photoUrl = contents.User.getString("profileimg_path")  //프사없으면null이라서 이때처리해주기
+        Glide.with(activity).load(photoUrl).override(500).thumbnail(0.1f)
+            .into(profile_photo_imageView)
 
         //받아온 지하철역, 거리정보 넣어주기
         val location_textView = cardView.location_textView
-        location_textView.text = contents.near_station + "에서 "+contents.station_distance
+        location_textView.text = contents.near_station + "역에서 "+contents.station_distance
+
 
         //게시물 하단의 태그3개 생성일을 채워줄 로직 - readContentsView는 view_post안의 뷰들을 채워줌
         val readContentsVIew: ReadContentsVIew = cardView.findViewById(R.id.readContentsView)

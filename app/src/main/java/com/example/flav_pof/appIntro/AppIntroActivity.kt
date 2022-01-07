@@ -43,11 +43,13 @@ class AppIntroActivity: BasicActivity() {
         window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
         actionBar?.hide()
 
-
         //데이터 배열을 준비
         pageItemList.add(PageItem(R.color.colorOrange, R.drawable.ic_pager_item_1, "안녕하세요!"))
         pageItemList.add(PageItem(R.color.colorBlue, R.drawable.ic_pager_item_2, "두번째 페이지!"))
         pageItemList.add(PageItem(R.color.colorWhite, R.drawable.ic_pager_item_3, "세번째 페이지!"))
+
+
+
 
         //어댑터 객체 생성
         myIntroPagerRecylerAdapter = MyIntroPagerRecyclerAdapter(pageItemList, this)

@@ -57,19 +57,20 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
                 android:background="#ffffff"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
                 <androidx.cardview.widget.CardView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="27dp"
+                    android:layout_height="27dp"
                     app:cardCornerRadius="30dp">
 
                     <ImageView
                         android:id="@+id/photoImageVIew"
-                        android:layout_width="27dp"
-                        android:layout_height="27dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
                         android:adjustViewBounds="true"
                         app:srcCompat="@mipmap/ic_launcher_round" />
                 </androidx.cardview.widget.CardView>
@@ -77,6 +78,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
                     android:background="#ffffff"
                     android:orientation="horizontal">
 
@@ -124,13 +126,13 @@
             android:layout_height="1dp"
             android:background="#ffffff" />
 
-        <com.example.flav_pof.view.ReadContentsVIew
+        <com.example.flav_pof.feeds.ReadContentsVIew
             android:id="@+id/readContentsView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="#ffffff">
 
-        </com.example.flav_pof.view.ReadContentsVIew>
+        </com.example.flav_pof.feeds.ReadContentsVIew>
 
     </LinearLayout>
 
