@@ -13,39 +13,62 @@
         android:layout_height="match_parent"
         android:layout_centerInParent="true"
         />
-    <com.tbuonomo.viewpagerdotsindicator.WormDotsIndicator
+
+    <com.tbuonomo.viewpagerdotsindicator.SpringDotsIndicator
         android:id="@+id/dots_indicator"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:dotsColor="#F1F1F1"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="180dp"
+
+        app:dotsColor="#00aded"
         app:dotsCornerRadius="8dp"
         app:dotsSize="16dp"
         app:dotsSpacing="4dp"
+        app:dotsStrokeColor=" #d4e4f9"
         app:dotsWidthFactor="2.5"
-        app:selectedDotColor="#FFC107"
         app:progressMode="true"
-        android:layout_centerHorizontal="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="60dp"
-        />
+        app:selectedDotColor=" #d4e4f9">
 
-    <ImageView
-        android:id="@+id/next_btn"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:src="@drawable/ic_keyboard_arrow_right_black_24dp"
-        android:textStyle="bold" />
-    <ImageView
+    </com.tbuonomo.viewpagerdotsindicator.SpringDotsIndicator>
+
+    <Button
         android:id="@+id/previous_btn"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:src="@drawable/ic_keyboard_arrow_left_black_24dp"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:textStyle="bold"
-        />
+        android:layout_width="140dp"
+        android:layout_height="46dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="30dp"
+
+        android:layout_marginBottom="80dp"
+        android:background="@drawable/button_round"
+        android:gravity="center"
+        android:lineSpacingExtra="7sp"
+        android:text="이전"
+        android:textColor="#00aded"
+        android:textSize="17sp"
+        android:textStyle="bold" />
+
+    <Button
+        android:id="@+id/next_btn"
+
+        android:layout_width="140dp"
+        android:layout_height="46dp"
+        android:layout_alignParentTop="false"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginRight="30dp"
+        android:layout_marginBottom="80dp"
+        android:background="@drawable/button2_round"
+        android:gravity="center"
+        android:lineSpacingExtra="7sp"
+        android:text="다음"
+        android:textColor="#ffffff"
+        android:textSize="17sp"
+        android:textStyle="bold" />
+
+
 
 
 </RelativeLayout>

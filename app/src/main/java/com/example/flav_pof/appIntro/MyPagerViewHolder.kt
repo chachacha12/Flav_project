@@ -18,7 +18,6 @@ import kotlinx.android.synthetic.main.layout_intro_pager_item.view.*
 class MyPagerViewHolder(itemView:View, var activity: Activity):RecyclerView.ViewHolder(itemView) {  //여기서 itemView가 layout_intro_pager_item 객체임
     private val itemImage = itemView.pager_item_image
     private val itemContent = itemView.pager_item_text
-    private val itemBg = itemView.pager_item_bg
     private var btn = itemView.startbutton  //row파일에 있는 btn임
 
 
@@ -27,8 +26,8 @@ class MyPagerViewHolder(itemView:View, var activity: Activity):RecyclerView.View
         itemImage.setImageResource(pagerItem.imageSrc)
         itemContent.text = pagerItem.content_intro
 
-        //마지막 세번째 페이지에서 시작하기 버튼을 보여줌 - 클릭시 카톡로그인화면으로 다시 이동.
-        if(pagerItem.bgColor == R.color.colorWhite){
+        //마지막 7번째 페이지에서 시작하기 버튼을 보여줌 - 클릭시 카톡로그인화면으로 다시 이동.
+        if(pagerItem.imageSrc == R.drawable.ic_slide_img_07){
             btn.visibility = View.VISIBLE
 
             //시작버튼 클릭시 카카오로그인 화면으로 이동
@@ -44,11 +43,7 @@ class MyPagerViewHolder(itemView:View, var activity: Activity):RecyclerView.View
         }
 
 
-        if(pagerItem.bgColor != R.color.colorWhite)   //배경색이 흰색이 아니면
-        {
-            itemContent.setTextColor(Color.WHITE)  //글자색을 흰색으로 변경경
-        }
-        itemBg.setBackgroundResource(pagerItem.bgColor)
+
     }
 
 }

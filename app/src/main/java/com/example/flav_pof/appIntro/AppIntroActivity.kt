@@ -44,12 +44,13 @@ class AppIntroActivity: BasicActivity() {
         actionBar?.hide()
 
         //데이터 배열을 준비
-        pageItemList.add(PageItem(R.color.colorOrange, R.drawable.ic_pager_item_1, "안녕하세요!"))
-        pageItemList.add(PageItem(R.color.colorBlue, R.drawable.ic_pager_item_2, "두번째 페이지!"))
-        pageItemList.add(PageItem(R.color.colorWhite, R.drawable.ic_pager_item_3, "세번째 페이지!"))
-
-
-
+        pageItemList.add(PageItem(R.color.colorWhite, R.drawable.ic_slide_img_01, "친구들에게만\n맛집을 알려줄 수 있어요"))
+        pageItemList.add(PageItem(R.color.colorWhite, R.drawable.ic_slide_img_02, "올리면 우리가\n맛집 이름을 찾아줘요"))
+        pageItemList.add(PageItem(R.color.colorWhite, R.drawable.ic_slide_img_03, "당신만의 재밌고 창의적인 태그로\n식당의 가치를 밝혀주세요"))
+        pageItemList.add(PageItem(R.color.colorWhite, R.drawable.slide_img_04, "사진 하나, 태그 하나로\n친구들의 마음을 움직여보세요"))
+        pageItemList.add(PageItem(R.color.colorWhite, R.drawable.slide_img_05, "어디에도 없는\n당신만의 맛지도가 생겨요"))
+        pageItemList.add(PageItem(R.color.colorWhite, R.drawable.ic_slide_img_06, "피드와 지도에는\n당신이 믿을 수 있는 사람의 추천만 노출돼요"))
+        pageItemList.add(PageItem(R.color.colorWhite, R.drawable.ic_slide_img_07, "기억하고 싶은\n나만의 맛집을 등록해보세요!"))
 
         //어댑터 객체 생성
         myIntroPagerRecylerAdapter = MyIntroPagerRecyclerAdapter(pageItemList, this)
