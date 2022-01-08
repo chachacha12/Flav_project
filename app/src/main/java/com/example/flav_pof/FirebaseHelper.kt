@@ -4,69 +4,84 @@ import android.app.Activity
 import android.util.Log
 import android.util.Patterns
 import android.widget.Toast
+import com.example.flav_pof.classes.Msg
+import com.example.flav_pof.classes.Usersingleton
 import com.example.flav_pof.feeds.Contents
+import com.example.flav_pof.feeds.HomeAdapter
+import com.example.flav_pof.feeds.HomeFragment
 import com.example.flav_pof.feeds.OnPostListener
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 
-
-//스토리지, 스토어에서 게시물 삭제시켜주는 로직을 책임지는 클래스
-class FirebaseHelper(private val activity: Activity) {
+//홈어댑터의 showPopup에서 이 객체의 메소드 작동시킴
+//스토리지, rds에서 게시물 삭제시켜주는 로직을 책임지는 클래스
+class FirebaseHelper(private val activity: Activity, private val server: retrofit_service) {
     private var onPostListener: OnPostListener? = null
     private var successCount = 0
 
-    /*
 
     fun setOnPostListener(onPostListener: OnPostListener?) {
         this.onPostListener = onPostListener
     }
 
-    fun storageDelete(postInfo: Contents) {
-        val storage = FirebaseStorage.getInstance()
-        val storageRef = storage.reference
-        val id = postInfo.id
-        val contentsList = postInfo.contents
-        for (i in contentsList.indices) {
-            val contents = contentsList[i]
-
-            if (Patterns.WEB_URL.matcher(contents).matches() && contents!!.contains("https://firebasestorage.googleapis.com/v0/b/flavmvp-9fe0d.appspot.com/o/posts")) {
-
-                successCount++
-                var list: List<String> =
-                    contents!!.split("?")  //이미지경로안를 split해서 이미지의 이름을 가져옴. 이미지의 이름을 알기위해
-                var list2: List<String> = list[0].split("%2F")
-                var name = list2[list2.size - 1] //스토리지에 저장된 이미지의 이름(ex. 0.jpg)을 알아냄
-                Log.e("태그","메인엑티비티에서 저장된 이미지 이름인 name값: "+name)
-
-                val desertRef = storageRef.child("posts/" + id + "/" + name)
-                desertRef.delete().addOnSuccessListener {
-                    successCount--
-                    storeDelete(id, postInfo)
-                }.addOnFailureListener {
-                    Log.e("태그","contents: "+ contents)
-                    Toast.makeText(activity, "Error", Toast.LENGTH_SHORT).show()
+    //s3스토리지 삭제로직
+    fun storageDelete(contents: Contents) {
+        successCount++  //삭제로직 시작전에
+        //이미지 s3 삭제로직
+        Log.e("태그", "s3 삭제시 필요한 인자들 Usersingleton.kakao_id, contents.filename : "+Usersingleton.kakao_id+" ,"+contents.filename)
+        server.deleteS3_Request( Usersingleton.kakao_id!!, contents.filename )
+            .enqueue(object : Callback<Msg> {
+                override fun onFailure(call: Call<Msg>, t: Throwable) {
+                    Toast.makeText(activity, "삭제 실패.",Toast.LENGTH_SHORT).show()
+                    Log.e("삭제태그", "s3 삭제실패 - 통신 아예 실패")
                 }
-            }
-        }
-        storeDelete(id, postInfo)
+                override fun onResponse(call: Call<Msg>, response: Response<Msg>) {
+                    if (response.isSuccessful) {
+                        successCount--
+                        storeDelete(contents.contents_id)
+                        Log.e("삭제태그", "s3 삭제성공")
+                    } else {
+                        Toast.makeText(activity, "삭제 실패.",Toast.LENGTH_SHORT).show()
+                        Log.e("삭제태그", "서버 접근했지만 s3 삭제실패: "+response.body()?.msg)
+                    }
+                }
+            })
+        storeDelete(contents.contents_id)
     }
 
-    private fun storeDelete(id: String?, postInfo:PostInfo) {
-        val firebaseFirestore = FirebaseFirestore.getInstance()
+    //rds삭제로직
+    private fun storeDelete(contents_id: Int) {
         if (successCount == 0) {
-            firebaseFirestore.collection("posts").document(id!!)
-                .delete()
-                .addOnSuccessListener {
-                    Toast.makeText(activity, "게시글을 삭제하였습니다.", Toast.LENGTH_SHORT).show()
-                    onPostListener?.onDelete(postInfo)
-                    //postsUpdate();
-                }
-                .addOnFailureListener {
-                    Toast.makeText(activity, "게시글을 삭제하지 못했습니다.", Toast.LENGTH_SHORT).show()
-                }
+            //게시물 삭제로직
+            server.deleteContents_Request( contents_id!!)
+                .enqueue(object : Callback<Msg> {
+                    override fun onFailure(call: Call<Msg>, t: Throwable) {
+                        Toast.makeText(activity, "삭제 실패.",Toast.LENGTH_SHORT).show()
+                        Log.e("삭제태그", "rds 삭제 통신 아예 실패")
+                    }
+                    override fun onResponse(call: Call<Msg>, response: Response<Msg>) {
+                        if (response.isSuccessful) {
+                            Toast.makeText(activity, "게시물을 삭제하였습니다.",Toast.LENGTH_SHORT).show()
+                            Log.e("삭제태그", "rds 삭제성공: "+response.body()?.msg)
+                            //uiUpdate()
+
+                        } else {
+                            Toast.makeText(activity, "DB에서 게시물 삭제 실패",Toast.LENGTH_SHORT).show()
+                            Log.e("삭제태그", "rds 삭제실패: "+response.body()?.msg)
+                        }
+                    }
+                })
         }
+
     }
 
-     */
+
+
+
+
+
 }

@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.flav_pof.FirebaseHelper
 import com.example.flav_pof.R
+import com.example.flav_pof.retrofit_service
 import com.example.flav_pof.writepost.WritePostActivity
 import kotlinx.android.synthetic.main.item_post.view.*
 import kotlinx.android.synthetic.main.view_post.view.*
@@ -26,13 +27,15 @@ import java.util.*
 //괄호안은 어댑터클래스의 인자들
 class HomeAdapter(
     var activity: Activity,
-    private var myDataset: ArrayList<Contents>
-   // private var myDataset: ArrayList<PostInfo>
+    private var myDataset: ArrayList<Contents>,
+    var server:retrofit_service
+
 )  : RecyclerView.Adapter<HomeAdapter.MainViewHolder>() {
 
     //전역
     private var MORE_INDEX = 2
-    private var firebaseHelper = FirebaseHelper(activity)  //firebaseHelper 객체생성
+    //firebaseHelper에서 activity값과 server값을 사용할거라 인자로 보내줌
+    private var firebaseHelper = FirebaseHelper(activity, server)  //firebaseHelper 객체생성
 
 
     //뷰홀더에 텍스트뷰말고 카드뷰를 넣음
@@ -73,12 +76,11 @@ class HomeAdapter(
         cardView.threePoint_button.setOnClickListener {
             showPopup(it, mainViewHolder.adapterPosition)      //post.xml을 띄워줌. 밑에 있음. 구글에 android menu검색하고 developers사이트들어가서 코드 가져옴
         }                                                     //mainViewHolder.adapterPosition을 넣어주는 이유는 사용자가 선택한 특정위치의 게시글을 삭제or수정해야 하기에.
-
         return mainViewHolder
     }
 
     fun setOnPostListener(onPostListener: OnPostListener){
-        //firebaseHelper.setOnPostListener(onPostListener)
+        firebaseHelper.setOnPostListener(onPostListener)
     }
 
 
@@ -124,10 +126,9 @@ class HomeAdapter(
         }
     }
 
-
     override fun getItemCount() = myDataset!!.size
 
-
+    //피드상에서 바로 점세게버튼 중 하나 눌렀을때 동작
    //res안에 menu디렉토리 만든거에서, 그 안의 menu파일을 불러와서 toolbar보여주고, 클릭했을때 이벤트처리해줌  //developers사이트에서 가져온 함수.
     private fun showPopup(v: View, position: Int) {
         val popup = PopupMenu(activity, v)
@@ -139,7 +140,7 @@ class HomeAdapter(
                     true
                 }
                 R.id.delete -> {                  //삭제하기 눌렀을때
-                   // firebaseHelper.storageDelete(myDataset[position])
+                    firebaseHelper.storageDelete(myDataset[position])
                     true
                 }
                 else -> false

@@ -55,9 +55,18 @@ interface retrofit_service {
     @GET("app/tag/locationtag")
     fun locationtag_Request(): Call<Tag_response>
 
-    //본인, 본인팔로우친구들 컨텐츠 다 가져오
+    //본인, 본인팔로우친구들 컨텐츠 다 가져오기
     @GET(" app/contents/relevant/{kakao_id}")
     fun get_ReleventsContents_Request(@Path("kakao_id") kakao_id:Int): Call<Result_response>
+
+    //게시물 rds에서 삭제 요청
+    @DELETE("app/contents/{content_id}")
+    fun deleteContents_Request(@Path("content_id") content_id: Int):Call<Msg>
+
+    //이미지 s3스토리지에서 삭제 요청
+    @DELETE("app/s3/{kakao_id}/{filename}")
+    fun deleteS3_Request(@Path("kakao_id") kakao_id: Int, @Path("filename") filename: String ):Call<Msg>
+
 
 
 }

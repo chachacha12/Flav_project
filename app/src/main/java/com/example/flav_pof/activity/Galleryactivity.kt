@@ -73,9 +73,11 @@ class Galleryactivity : BasicActivity() {
     override fun onBackPressed() {
         super.onBackPressed()
 
+
+
         var intent = Intent(this,  MainActivity::class.java)
         //백스택들 다 지워주는듯
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         startActivity(intent)
     }
 

@@ -17,7 +17,6 @@ import org.json.JSONObject
 class PostActivity : BasicActivity() {
 
     private var contents: Contents? = null
-    //private var postInfo: PostInfo? = null
     private var firebaseHelper: FirebaseHelper? = null
     private var readContentsVIew: ReadContentsVIew? = null
     private var contentsLayout: LinearLayout? = null
@@ -51,8 +50,9 @@ class PostActivity : BasicActivity() {
         contentsLayout = findViewById(R.id.contentsLayout)
         readContentsVIew = findViewById(R.id.readContentsView)
 
-        //firebaseHelper = FirebaseHelper(this)
-       // firebaseHelper!!.setOnPostListener(onPostListener)
+        //게시물 삭제,s3삭제로직 수행하는 객체 초기화
+        firebaseHelper = FirebaseHelper(this,server)
+        firebaseHelper!!.setOnPostListener(onPostListener)
         uiUpdate()
     }
 
@@ -79,11 +79,12 @@ class PostActivity : BasicActivity() {
         menuInflater.inflate(R.menu.post, menu)
         return super.onCreateOptionsMenu(menu)
     }
-
+    //피드에서 게시물 한번 눌러서 postactivity로 와서 점세계버튼 누른경우
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.getItemId()) {
+        return when (item.itemId) {
             R.id.delete -> {
-               // firebaseHelper!!.storageDelete(postInfo!!)
+                firebaseHelper!!.storageDelete(contents!!)
+
                 true
             }
             R.id.modify -> {
@@ -96,7 +97,8 @@ class PostActivity : BasicActivity() {
 
     var onPostListener: OnPostListener = object : OnPostListener {
         override fun onDelete(contents: Contents) {
-            Log.e("로그 ", "삭제 성공")
+            Log.e("로그 ", "onPostListener작동하여 삭제 성공")
+            firebaseHelper!!.storageDelete(contents!!)
         }
 
         override fun onModify() {

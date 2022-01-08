@@ -38,6 +38,14 @@ class KakaoLoginActivity: BasicActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login_kakao)
+
+        //로딩화면보여줌
+        loaderLayout.visibility = View.VISIBLE
+        //나머지 뷰들은 가려줌
+        logo_image.visibility  = View.INVISIBLE
+        login_Text.visibility  = View.INVISIBLE
+        cardView_kakaobtn.visibility  = View.INVISIBLE
+
         setToolbarTitle("카카오 로그인")
 
         //앱소개화면어댑터에서 보낸 인텐트를 받아서 로그인한 사용자 정보를 얻는다.
@@ -73,7 +81,6 @@ class KakaoLoginActivity: BasicActivity() {
 
     //처음 앱 실행하면 토큰 있는지 등등 판별해줌
     fun has_kakaotoken() {
-        loaderLayout.visibility = View.VISIBLE  //로딩화면보여줌
 
         //카카오 토큰 있는지 판별
         if (AuthApiClient.instance.hasToken()) {  //토큰이 있을때
@@ -83,15 +90,23 @@ class KakaoLoginActivity: BasicActivity() {
                         //로그인 필요
                         Toast.makeText(
                             this@KakaoLoginActivity,
-                            "error != null입니다. 로그인해주세요 ",
+                            "토큰에 오류가 있습니다. 로그인해주세요.",
                             Toast.LENGTH_SHORT
                         ).show()
                         loaderLayout.visibility = View.GONE  //로딩화면제거
-                        Log.e("태그", "UpdateKakakotalkUI/    error != null입니다. 로그인해주세요 ")
+                        //나머지 뷰들 다 보여줌
+                        logo_image.visibility  = View.VISIBLE
+                        login_Text.visibility  = View.VISIBLE
+                        cardView_kakaobtn.visibility  = View.VISIBLE
+
                     } else {
                         //기타 다른 토큰 에러
                         Log.e("태그", "UpdateKakakotalkUI/   기타 에러남 ")
                         loaderLayout.visibility = View.GONE  //로딩화면제거
+                        //나머지 뷰들 다 보여줌
+                        logo_image.visibility  = View.VISIBLE
+                        login_Text.visibility  = View.VISIBLE
+                        cardView_kakaobtn.visibility  = View.VISIBLE
                     }
                 } else {  //토큰 이미 존재할때 (필요 시 토큰 갱신됨)
                     Log.e("태그", "has_kakaotoken함수 결과 이미 토큰값 존재. 사용자 정보값 가지고 바로 main으로 이동")
@@ -107,14 +122,16 @@ class KakaoLoginActivity: BasicActivity() {
                 startActivity(i)
             }else{              //소개화면에 갔다가 온 경우
                 //로그인 필요
-                Toast.makeText(this@KakaoLoginActivity, "토큰이 없습니다. 로그인 해주세요", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@KakaoLoginActivity, "로그인 해주세요.", Toast.LENGTH_SHORT).show()
                 Log.e("태그", "UpdateKakakotalkUI/ 앱소개화면엔 갔다왔고,  토큰이 없습니다. 로그인 해주세요")
                 loaderLayout.visibility = View.GONE  //로딩화면제거
+                //나머지 뷰들 다 보여줌
+                logo_image.visibility  = View.VISIBLE
+                login_Text.visibility  = View.VISIBLE
+                cardView_kakaobtn.visibility  = View.VISIBLE
             }
         }
     }
-
-
 
     //사용자가 아예 토큰도 없고 카톡 로그인 안되어있는 상태일때 -사용자 정보 가져와서 main에 넘겨주고 유저객체 만들어서 플레브 서버에 유저 등록.
     fun UserinfoCall_notoken() {
@@ -140,7 +157,8 @@ class KakaoLoginActivity: BasicActivity() {
                 MainAct_Intent.putExtra("name", strNick)  //프로필이름
                 MainAct_Intent.putExtra("profileImg", strprofileImg)  //프로필이미지url
                 MainAct_Intent.putExtra("email", strEmail)  //이메일정보 넘겨줌
-
+                //백스택 값들을 다 지워준다는뜻. 즉 이동후에 뒤로버튼 눌러도 다시 이 액티비티로 안오고 앱종료됨
+                MainAct_Intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
                 thread_start()  // 서버에 위에서 만든 신규유저 등록해주고 main화면으로 이동시키는 작업
                 Log.e(
                     "태그", "UserinfoCall_notoken:  사용자 정보 요청 성공" +
@@ -203,7 +221,7 @@ class KakaoLoginActivity: BasicActivity() {
                 if (response.isSuccessful) {
                     Log.e(
                         "태그",
-                        "통신성공" + ",  msg: " + response.body()?.msg + ",  유저id: " + response.body()?.user_id
+                        "통신성공" + ",  Msg: " + response.body()?.msg + ",  유저id: " + response.body()?.user_id
                     )
                     handler()
                 } else {

@@ -32,6 +32,7 @@
         android:textStyle="bold" />
 
     <androidx.cardview.widget.CardView
+        android:id="@+id/cardView_kakaobtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/login_Text"

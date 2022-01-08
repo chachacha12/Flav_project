@@ -33,18 +33,15 @@ import kotlin.collections.ArrayList
  * A simple [Fragment] subclass.
  */
 class HomeFragment(var server:retrofit_service) : Fragment() {
-    private val TAG = "HomeFragment"
-    private var firebaseFirestore: FirebaseFirestore? = null
-    private var homeAdapter: HomeAdapter? = null
-    private var postList: ArrayList<PostInfo>? = null
-    private var topScrolled = false
 
+    private var homeAdapter: HomeAdapter? = null
+    //private var postList: ArrayList<PostInfo>? = null
+    private var topScrolled = false
 
     //플레브 서버로부터 컨텐츠 받아오기 위한 변수들
     private var contentsList: java.util.ArrayList<Contents>? = null
     //피드의 컨텐츠들 업데이트될동안 이곳에 새로운 컨텐츠 데이터들 받고 작업 다 끝나면 기존 contentsList에 다시 addall()해줄거임
     private var update_contentsList: java.util.ArrayList<Contents>? = null
-
     lateinit var recyclerView:RecyclerView  //서버로부터 컨텐츠들 다 가져오는 로직 끝난후에 handler함수에서 만들어줄거임
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -57,12 +54,10 @@ class HomeFragment(var server:retrofit_service) : Fragment() {
     ): View? {
         val view: View = inflater.inflate(R.layout.fragment_home, container, false)
 
-        firebaseFirestore = FirebaseFirestore.getInstance()
-        //postList = ArrayList()
-       // homeAdapter = HomeAdapter(requireActivity(), postList!!)
         contentsList = ArrayList()  //초기화  - 이거안하면 null에러남
         update_contentsList = ArrayList()  //초기화
-        homeAdapter = HomeAdapter(requireActivity(), contentsList!!)
+
+        homeAdapter = HomeAdapter(requireActivity(), contentsList!!,server)  //어댑터에서도 server통신위해 server를 인자에 넣어줌
         homeAdapter!!.setOnPostListener(onPostListener)
 
         recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
@@ -112,7 +107,6 @@ class HomeFragment(var server:retrofit_service) : Fragment() {
         return view
     }
 
-
     override fun onDetach() {
         super.onDetach()
     }
@@ -121,12 +115,6 @@ class HomeFragment(var server:retrofit_service) : Fragment() {
         View.OnClickListener { v ->
             when (v.id) {
                 R.id.floatingActionButton ->  { myStartActivity(WritePostActivity::class.java)}
-                /*
-                               case R.id.logoutButton:
-                                   FirebaseAuth.getInstance().signOut();
-                                   myStartActivity(SignUpActivity.class);
-                                   break;
-                               */
             }
         }
 
@@ -144,6 +132,13 @@ class HomeFragment(var server:retrofit_service) : Fragment() {
         }
     }
 
+    //게시물 등 업데이트 해줄떄 씀 - 게시물삭제or수정했을때 여기서 게시물 업데이트
+    override fun onResume() {
+        super.onResume()
+
+
+    }
+
     fun ContentsUpdate() {
         Log.e("태그","홈프래그먼트에서 피드 가져올때 Usersingleton.kakao_id: "+Usersingleton.kakao_id)
         //서버로부터 컨텐츠 값 가져오는 로직 + contentslist에 값 넣어주기
@@ -152,6 +147,8 @@ class HomeFragment(var server:retrofit_service) : Fragment() {
 
     //플레브 서버로부터 피드 가져오는 로직
     fun getRelevant_Contents_Request() {
+        update_contentsList = ArrayList()  //초기화
+
         server.get_ReleventsContents_Request(Usersingleton.kakao_id!!)
             .enqueue(object : Callback<Result_response> {
                 override fun onFailure(call: Call<Result_response>, t: Throwable) {
@@ -170,6 +167,7 @@ class HomeFragment(var server:retrofit_service) : Fragment() {
                         var i = 0
                         repeat(jsonarray.length()) {
                             val Object = jsonarray.getJSONObject(i)  //각각 하나의 컨텐츠씩 가져옴
+                            Log.e("관련 컨텐츠 태그", "Object:" + Object)
                             //contentsList안에 가져오는 컨텐츠들 다 넣어줌
                             update_contentsList!!.add( Contents( Object.getInt("id"), Object.getString("date"),
                                 Object.getString("filename"),  Object.getString("filepath"),  Object.getString("restname"),

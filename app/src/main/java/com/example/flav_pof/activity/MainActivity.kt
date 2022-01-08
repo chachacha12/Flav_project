@@ -15,6 +15,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import com.example.flav_pof.R
+import com.example.flav_pof.appIntro.AppIntroActivity
 import com.example.flav_pof.feeds.HomeFragment
 import com.example.flav_pof.fragment.UserInfoFragment
 import com.example.flav_pof.fragment.UserListFragment
@@ -63,6 +64,12 @@ class MainActivity : BasicActivity() {
     }
      */
 
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        finish()
+    }
+
     //툴바 메뉴 버튼을 설정
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.toolbar_item, menu)       // toolbar_item 메뉴를 toolbar 메뉴 버튼으로 설정
@@ -101,75 +108,50 @@ class MainActivity : BasicActivity() {
 
 
     fun init() {
-        val firebaseUser = FirebaseAuth.getInstance().currentUser
-        if (firebaseUser == null) {//만약 현재 유저가 null이면... (즉, 로그인이 아직 안되어있다는 뜻)
-           myStartActivity(SignUpActivity::class.java) //회원가입창 화면으로 이동
 
-        } else {
-            val documentReference =
-                FirebaseFirestore.getInstance().collection("users").document(firebaseUser.uid)
-            documentReference.get()
-                .addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        val document: DocumentSnapshot? = task.result
-                        if (document != null) {
-                            if (document.exists()) {
-                                Log.d(TAG, "DocumentSnapshot data: " + document.data)
-                            } else {
-                                Log.d(TAG, "No such document")
-                               // myStartActivity(UserInitActivity::class.java)
-                            }
-                        }
-                    } else {
-                        Log.d(TAG, "get failed with ", task.exception)
-                    }
+        var homeFragment = HomeFragment(server)
+        supportFragmentManager.beginTransaction()
+            .replace(com.example.flav_pof.R.id.container, homeFragment)
+            .commit()
+
+        //바텀네비게이션탭 선택에 따라 붙혀줄 fragment
+        val bottomNavigationView = findViewById<BottomNavigationView>(com.example.flav_pof.R.id.bottomNavigationView)
+        bottomNavigationView.setOnNavigationItemSelectedListener {
+
+            when(it.itemId) {
+                R.id.home -> {
+                    var homeFragment = HomeFragment(server)
+                    supportFragmentManager.beginTransaction()
+                        .replace(com.example.flav_pof.R.id.container, homeFragment)
+                        .commit()
+                    true
                 }
-
-            var homeFragment = HomeFragment(server)
-            supportFragmentManager.beginTransaction()
-                .replace(com.example.flav_pof.R.id.container, homeFragment)
-                .commit()
-
-            //바텀네비게이션탭 선택에 따라 붙혀줄 fragment
-            val bottomNavigationView = findViewById<BottomNavigationView>(com.example.flav_pof.R.id.bottomNavigationView)
-            bottomNavigationView.setOnNavigationItemSelectedListener {
-
-                when(it.itemId) {
-                    R.id.home -> {
-                        var homeFragment = HomeFragment(server)
-                        supportFragmentManager.beginTransaction()
-                            .replace(com.example.flav_pof.R.id.container, homeFragment)
-                            .commit()
-                        true
-                    }
-                    R.id.myInfo -> {
-                        val userInfoFragment = UserInfoFragment()
-                        supportFragmentManager.beginTransaction()
-                            .replace(com.example.flav_pof.R.id.container, userInfoFragment)
-                            .commit()
-                        true
-                    }
-                   R.id.userList -> {
-                        val userListFragment = UserListFragment()
-                        supportFragmentManager.beginTransaction()
-                            .replace(com.example.flav_pof.R.id.container, userListFragment)
-                            .commit()
-                        true
-                    }
-                   R.id.map -> {
-                        val mapfragment = mapFragment()
-                        Log.e("태그", "mapfrag로 replace")
-                        supportFragmentManager.beginTransaction()
-                            .replace(com.example.flav_pof.R.id.container, mapfragment)
-                            .commit()
-                        true
-                    }
-                    else ->
-                        true
+                R.id.myInfo -> {
+                    val userInfoFragment = UserInfoFragment()
+                    supportFragmentManager.beginTransaction()
+                        .replace(com.example.flav_pof.R.id.container, userInfoFragment)
+                        .commit()
+                    true
                 }
-            }//setOnNavigationItemSelectedListener
-
-        }//else
+                R.id.userList -> {
+                    val userListFragment = UserListFragment()
+                    supportFragmentManager.beginTransaction()
+                        .replace(com.example.flav_pof.R.id.container, userListFragment)
+                        .commit()
+                    true
+                }
+                R.id.map -> {
+                    val mapfragment = mapFragment()
+                    Log.e("태그", "mapfrag로 replace")
+                    supportFragmentManager.beginTransaction()
+                        .replace(com.example.flav_pof.R.id.container, mapfragment)
+                        .commit()
+                    true
+                }
+                else ->
+                    true
+            }
+        }//setOnNavigationItemSelectedListener
     }  //init
 
     private fun myStartActivity(c: Class<*>) {
