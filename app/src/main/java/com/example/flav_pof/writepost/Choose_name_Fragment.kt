@@ -87,11 +87,9 @@ class Choose_name_Fragment : Fragment() {
 
         //식당명리스트 라디오버튼 만들기
 
+        if(namelist == "정보없음") {  //exif정보가 없을때
 
-        if(namelist == "정보없음"){  //exif정보가 없을때
-            Toast.makeText(activity,"주변 음식점 정보가 없습니다. 직접 입력해주세요.", Toast.LENGTH_SHORT).show()
-
-        }else{   //식당명 정보가 있을때  
+        }else{   //식당명 정보가 있을때
             var jsonArray = JSONArray(namelist)
             var i = 0;
             repeat(jsonArray.length()) {

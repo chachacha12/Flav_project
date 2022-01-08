@@ -34,6 +34,7 @@ import com.google.firebase.storage.ktx.storage
 import com.google.firebase.storage.ktx.storageMetadata
 import kotlinx.android.synthetic.main.activity_write_post.*
 import kotlinx.android.synthetic.main.dialog_selfname.*
+import kotlinx.android.synthetic.main.fragment_choose_tag.*
 import kotlinx.android.synthetic.main.view_loader.*
 import okhttp3.MediaType
 import okhttp3.MultipartBody
@@ -58,12 +59,9 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
 
     private lateinit var selectedImageView: ImageView //사용자가 게시글에 올린 이미지 삭제or수정하려고 선택했을때 그 이미지를 이 전역변수에 저장해둘거임. 삭제하기 편하게.
 
-    var pathCount = 0     //게시글에 첨부된 사진이 몇개인지 알기위해서
-    var successCount = 0    //게시글에 첨부한 사진이 여러개일수 있으니, 언제 끝나는지 확인해주기 위한 변수
 
-    //수정하기 버튼 눌러서 여기 왔을때 수정할 게시물을 받아줄 변수
+    //수정하기 버튼 눌러서 여기 왔을때 수정할 게시물을 받아줄 변수임
     var Modify_contentsinfo:Contents? = null
-
 
     //컨텐츠 업로드 로직 관련 변수
     lateinit var contents:ContentsUpload_request  //컨텐츠 객체
@@ -72,11 +70,11 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
     var adj1_id: Int? = null  //태그1
     var adj2_id:Int? =null  //태그2
     var locationtag_id:Int? =null  //태그 장소명사
-     var lat:String?  = null //위도
-     var lng:String?  = null //경도
+    var lat:String?  = null //위도
+    var lng:String?  = null //경도
 
     //식당명선택 프래그먼트 관련 변수
-    lateinit var namelist_string:String   //인텐트통해서 갤러리에서 사진 선택시에 (식당명리스트 + 위경도) jsonarray이 string으로 날라왔고, 프래그먼트로 다시 보내줄거임. 프래그먼트에선 이걸 다시 jsonarray만든 후 이용해야함
+    var namelist_string:String = "정보없음"   //인텐트통해서 갤러리에서 사진 선택시에 (식당명리스트 + 위경도) jsonarray이 string으로 날라왔고, 프래그먼트로 다시 보내줄거임. 프래그먼트에선 이걸 다시 jsonarray만든 후 이용해야함
     private var dilaog01:Dialog? = null  //식당명 직접입렵시 필요한 다이얼로그 객체
 
     //tabLayout에 붙을 텍스트들
@@ -93,6 +91,11 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
         Modify_contentsinfo =
             (intent.getSerializableExtra("postInfo") as? Contents)  //MainActivity에서 게시글 수정버튼을 눌러서 보낸 인텐트에 실린 값(수정하고자하는 게시물 객체)를 받음. 인텐트를 받을땐 getIntent() 또는 Intent 이용.
         //getSerializable은 보내는, 받는 데이터가 내가 만든 클래스의 객체일때 사용함.
+
+        Log.e(
+            "writepost 태그",
+            "방금막 writepost로 왔을때 Modify_contentsinfo " + Modify_contentsinfo
+        )
 
         Log.e(
             "writepost 태그",
@@ -113,58 +116,22 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
     private fun postinit() {
         //여기 구문이 +눌러서 게시글 새로 만드는 것 x이고, 수정or삭제하려고 다시 writepostact에 온 경우에 쓰이는 구문임. 기존 내용들 다시 띄워줌
         if (Modify_contentsinfo != null) {   //null이라면 수정하기버튼 누른게 아니라 +버튼눌러서 새로운 게시글 만드려는거임. 즉, postinit()을 안거쳐도됨
-
             //게시물 작성창의 태그, 식당명 등을 다시 채워줌
+            path = Modify_contentsinfo!!.filepath
+            namelist_string = Modify_contentsinfo!!.restname
+
+            val contentsItemView = ContentsItemView(this)
+            contentsLayout.addView(contentsItemView)
+            contentsItemView.setImage(path)
+            init_viewpager()
+
             /*
             contentsItemView.setOnClickListener {
-                buttonsBackgroundlayout.visibility =
-                    View.VISIBLE       //이미지를 삭제or수정하려고 눌렀을때
-                selectedImageView = it as ImageView
+            buttonsBackgroundlayout.visibility =
+                View.VISIBLE       //이미지를 삭제or수정하려고 눌렀을때
+            selectedImageView = it as ImageView
             }
              */
-
-
-            /*
-            //이제 contents 내용들 삥삥 돌면서 기존 이미지랑 EditText들을 넣어주면됨
-            var contentsList = Modify_contentsinfo!!.contents
-            for (i in contentsList.indices) {
-                var contents = contentsList.get(i)
-                if (Patterns.WEB_URL.matcher(contents)
-                        .matches() && contents!!.contains("https://firebasestorage.googleapis.com/v0/b/flavmvp-9fe0d.appspot.com/o/posts")
-                ) {        //올바른 url형식인지 판별, 즉 이미지or영상인지 // Patterns.WEB_URL.matcher().matches() 이 구문은 matcher안의 문자열이 올바른 url형식인지 판단해서 true나 false반환함
-                    pathList.add(contents)
-
-                    val contentsItemView = ContentsItemView(this)
-                    contentsLayout.addView(contentsItemView)
-
-                    contentsItemView.setImage(contents)
-
-                    /*
-                    contentsItemView.setOnClickListener {
-                        buttonsBackgroundlayout.visibility =
-                            View.VISIBLE       //이미지를 삭제or수정하려고 눌렀을때
-                        selectedImageView = it as ImageView
-                    }
-                     */
-
-                    contentsItemView.onFocusChangeListener = onFocusChangedListener
-
-                    if (i < contentsList.size - 1) {   //처음에 이 게시글 만들때 이미지 붙여놓고 밑에 같이 생성되었던 editText안에 글을 써두었다면.
-                        var nextContents = contentsList.get(i + 1)
-                        if (!Patterns.WEB_URL.matcher(nextContents)
-                                .matches() || !nextContents!!.contains(
-                                "https://firebasestorage.googleapis.com/v0/b/flavmvp-9fe0d.appspot.com/o/posts"
-                            )
-                        ) { //다음 contents가 이미지나 영상이 아닐경우에만
-                            //contentsItemView.setText(nextContents)  //editTEXT에다가 수정전에 작성했던 내용을 넣어줌
-                        }
-                    }
-                } else if (i == 0) {  //i가 0인데 url형식이 아니라면 첫번째 editTEXT가 있다는 것임.
-                    //contentsEditText.setText(contents)   //첫 editText에다가 수정전, 기존에 있던 내용을 넣어줌
-                }
-            } //for
-             */
-
         }else{             // +버튼눌러서 아예 새 게시물 만드려는 상황일때
             Create_newpost()
         }
@@ -274,9 +241,6 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
                     selectedImageView = it as ImageView
                 }
 
-
-               // contentsItemView.onFocusChangeListener = onFocusChangedListener
-
                 Log.e("태그", "식당이름 텍스트뷰 생성")
                 // 주변 음식점 이름을 텍스트뷰로 각각 생성해줌
 
@@ -284,6 +248,11 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
                 namelist_string =
                     data!!.getStringExtra("restaurant_name_list")  //주변식당명리스트(string으로 되어있는)가 인텐트에 실려서 날아옴
 
+                //exif정보가 없는 사진이면 바로종료
+                if(namelist_string =="정보없음"){
+                    Toast.makeText(this, "해당 사진은 위치정보가 없습니다. 기본 카메라로 찍은 사진을 선택하세요.", Toast.LENGTH_SHORT).show()
+                    finish()
+                }
                 init_viewpager()  //위에서 받은 식당명을 가지고 뷰페이저를 만들어줌.. 프래그먼트 2개 만들고 어댑터 붙히고 등등해서
 
                 /*
@@ -344,10 +313,6 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
                     myStartActivity(Galleryactivity::class.java, "image", 1)
                     buttonsBackgroundLayout.visibility = View.GONE
                 }
-                R.id.videoModify -> {
-                    myStartActivity(Galleryactivity::class.java, "video", 1)
-                    buttonsBackgroundLayout.visibility = View.GONE
-                }
                 R.id.delete -> {
                     var selectedView =
                         selectedImageView.parent as View   // .parent 또는 getParent()를 하면 그 뷰의 부모 뷰(linearLayout 등)가 선택되어진다.  //removeView()안에는 뷰가 와야하는데 레이아웃이 와버려서 에러뜸. 그러므로 as를 통해 뷰로 형변환 해줌
@@ -395,7 +360,7 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
 
      */
 
-    private fun storageUpload()   //사용자가 확인버튼 누르면 실행시킬 함수 -게시글 작성한걸 파이어베이스에 등록(업데이트)해줌   (이미지 삭제, 수정 했을땐, 그 이미지를 db,스토리지에서 지우는 작업을 지우는 즉시 했음. 메인액티비티에서. 그래서 여기선 db, 스토리지에 등록만 해줌됨 )
+    private fun storageUpload()   //사용자가 확인버튼 누르면 실행시킬 함수 -게시글 작성한걸 aws서버에 등록(업데이트)해줌   (이미지 삭제, 수정 했을땐, 그 이미지를 db,스토리지에서 지우는 작업을 지우는 즉시 했음. 메인액티비티에서. 그래서 여기선 db, 스토리지에 등록만 해줌됨 )
     {
         //만약 사용자가 태그, 식당명 등을 선택안했으면 플레브서버, 파베 다 저장안됨
         if (restname != null && adj1_id != null && adj2_id != null && locationtag_id != null && lat != null && lng != null) {
@@ -536,9 +501,13 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
         tag_fragment = Choose_tag_Fragment()
 
         //프래그먼트로 식당명 데이터 전달
-        var bundle = Bundle()
-        bundle.putString("namelist_string", namelist_string)  //식당명, 위경도 묶음jsonarray가  string묶음으로 된걸 frag에 보내줌
-        name_fragment!!.arguments = bundle
+        if(namelist_string == "") {  //게시물 수정하기 눌러서 온 경우엔 null임
+
+        }else{
+            var bundle = Bundle()
+            bundle.putString("namelist_string", namelist_string)  //식당명, 위경도 묶음jsonarray가  string묶음으로 된걸 frag에 보내줌
+            name_fragment!!.arguments = bundle
+        }
 
         //뷰페이저에 다시 프래그먼트들을 붙혀줌. 이때 어댑터에 인자를 하나 추가해서 내가 위에서 bundle넣어서 새로 만든 프래그먼트를 어댑터에 전달해줌
         viewpager2.adapter = Name_Tag_Viewpager_Adapter(

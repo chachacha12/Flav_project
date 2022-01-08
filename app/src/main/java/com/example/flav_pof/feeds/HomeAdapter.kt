@@ -136,7 +136,9 @@ class HomeAdapter(
 
             return@setOnMenuItemClickListener when (it.itemId) {
                 R.id.modify -> {                    //수정하기 눌렀을때
+                    /*
                     myStartActivity(WritePostActivity::class.java, myDataset[position])
+                     */
                     true
                 }
                 R.id.delete -> {                  //삭제하기 눌렀을때
