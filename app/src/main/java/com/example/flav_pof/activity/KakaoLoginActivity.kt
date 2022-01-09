@@ -13,6 +13,7 @@ import com.example.flav_pof.appIntro.AppIntroActivity
 import com.example.flav_pof.classes.Users
 import com.example.flav_pof.classes.Users_request
 import com.example.flav_pof.classes.Usersingleton
+import com.example.flav_pof.feeds.MainActivity
 import com.kakao.sdk.auth.AuthApiClient
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.common.model.KakaoSdkError

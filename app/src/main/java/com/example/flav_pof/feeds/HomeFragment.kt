@@ -1,5 +1,6 @@
 package com.example.flav_pof.feeds
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
@@ -19,6 +20,7 @@ import com.example.flav_pof.R
 import com.example.flav_pof.classes.Msg
 import com.example.flav_pof.classes.Result_response
 import com.example.flav_pof.classes.Usersingleton
+import com.example.flav_pof.googlemap.home_map_Listener
 import com.example.flav_pof.retrofit_service
 import com.example.flav_pof.writepost.WritePostActivity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -39,7 +41,6 @@ import kotlin.collections.ArrayList
 class HomeFragment(var server:retrofit_service) : Fragment() {
 
     private var homeAdapter: HomeAdapter? = null
-    //private var postList: ArrayList<PostInfo>? = null
     private var topScrolled = false
 
     //플레브 서버로부터 컨텐츠 받아오기 위한 변수들
@@ -48,6 +49,9 @@ class HomeFragment(var server:retrofit_service) : Fragment() {
     private var update_contentsList: java.util.ArrayList<Contents>? = null
     lateinit var recyclerView:RecyclerView  //서버로부터 컨텐츠들 다 가져오는 로직 끝난후에 handler함수에서 만들어줄거임
     lateinit var loaderLayout:RelativeLayout  //전역으로둬야 모든 함수에서 쓸수있어서
+
+    //이 프래그먼트의 컨텐츠값들을 mapfragment에 주기위해 만든 인터페이스 객체
+    var homeMapListener:home_map_Listener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -115,6 +119,21 @@ class HomeFragment(var server:retrofit_service) : Fragment() {
         loaderLayout.visibility = View.GONE  //로딩화면
         return view
     }
+
+    //mapfragment에 contents데이터를 주기위한 작업
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if(context is home_map_Listener){ ///액티비티가 home_map_Listener타입이라면
+            homeMapListener = context //액티비티를 대입해서 map리스너 초기화
+        }
+    }
+    override fun onDetach() {
+        super.onDetach()
+        if(homeMapListener != null)
+            homeMapListener = null
+    }
+
+
 
     //게시물 등 업데이트 해줄떄 씀 - 게시물삭제or수정했을때 여기서 게시물 업데이트
     override fun onResume() {
@@ -282,9 +301,11 @@ class HomeFragment(var server:retrofit_service) : Fragment() {
                 //contentslist에다가 새로 받아온 update_contentsList값들을 다 넣어줌
                 update_contentsList?.let { contentsList?.addAll(it) }
                 update_contentsList?.clear()  //피드 업데이트될때 다시 여기로 받아와야 해서 비워줌
-
                 homeAdapter!!.notifyDataSetChanged()
-                //recyclerView.adapter = homeAdapter
+
+                //인터페이스객체를 통해 액티비티에 있는 onCommand함수 실행-> 최종적으론 mapfragment에 데이터 전달할거임
+                homeMapListener?.onCommand(contentsList!!)
+                Log.e("태그","홈프래그먼트에서 액티비티로 컨텐츠리스트 줌")
             }
         }
         handler.obtainMessage().sendToTarget()

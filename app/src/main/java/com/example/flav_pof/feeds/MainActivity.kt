@@ -1,4 +1,4 @@
-package com.example.flav_pof.activity
+package com.example.flav_pof.feeds
 
 //로그인해서 들어왔을때 창임. 여기서 로그아웃 가능하게 할거임
 //클라우드firestore 데이터베이스를 통해서 로그인된 계정이 db에 있는지, db에서 데이터 읽어와서 확인함.
@@ -6,40 +6,33 @@ package com.example.flav_pof.activity
 //이 앱은 파이어베이스를 기반으로해서 만듬. (파이어베이스는 서버리스인 db임. 이 db가 서버역할도 하는 것)
 // 파이어베이스-문서-가이드-개발(인증(앱에 파이어베이스연결, 신규사용자가입 등 기능), cloud firestore(db에 저장된 회원정보 읽거나 추가 기능), storage() 등을 이용)
 
-import android.content.ContentValues.TAG
 import android.content.Intent
-import android.content.pm.PackageInfo
-import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Base64
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
-import androidx.fragment.app.commit
 import com.example.flav_pof.R
-import com.example.flav_pof.appIntro.AppIntroActivity
-import com.example.flav_pof.classes.MyFragmentFactory
-import com.example.flav_pof.feeds.HomeFragment
+import com.example.flav_pof.activity.BasicActivity
 import com.example.flav_pof.fragment.UserInfoFragment
 import com.example.flav_pof.fragment.UserListFragment
-import com.example.flav_pof.fragment.mapFragment
+import com.example.flav_pof.googlemap.home_map_Listener
+import com.example.flav_pof.googlemap.mapFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.android.synthetic.main.view_loader.*
-import java.security.MessageDigest
-import java.security.NoSuchAlgorithmException
+import java.util.ArrayList
 
 
-class MainActivity : BasicActivity() {
+class MainActivity : BasicActivity(), home_map_Listener {
     //전역으로 해둔 이유는 여러함수 안에서 불러와서 쓰고 싶기에. 등등
     private val TAG = "MainActivity"
     var strNick: String? = null
     var strprofileImg: String? = null
     var strEmail: String? = null
     var userId: Int? = null  //회원정보
+
+    var mapfragment:mapFragment = mapFragment()
+    var homeFragment:HomeFragment? =null
+    var userInfoFragment:UserInfoFragment? =null
+    var userListFragment:UserListFragment? =null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -130,31 +123,31 @@ class MainActivity : BasicActivity() {
 
             when(it.itemId) {
                 R.id.home -> {
-                    var homeFragment = HomeFragment(server)
+                     homeFragment = HomeFragment(server)
                     supportFragmentManager.beginTransaction()
                         .replace(com.example.flav_pof.R.id.container, homeFragment)
                         .commit()
                     true
                 }
                 R.id.myInfo -> {
-                    val userInfoFragment = UserInfoFragment()
+                    userInfoFragment = UserInfoFragment()
                     supportFragmentManager.beginTransaction()
-                        .replace(com.example.flav_pof.R.id.container, userInfoFragment)
+                        .replace(com.example.flav_pof.R.id.container, userInfoFragment!!)
                         .commit()
                     true
                 }
                 R.id.userList -> {
-                    val userListFragment = UserListFragment()
+                     userListFragment = UserListFragment()
                     supportFragmentManager.beginTransaction()
-                        .replace(com.example.flav_pof.R.id.container, userListFragment)
+                        .replace(com.example.flav_pof.R.id.container, userListFragment!!)
                         .commit()
                     true
                 }
                 R.id.map -> {
-                    val mapfragment = mapFragment()
+                    //mapfragment = mapFragment()
                     Log.e("태그", "mapfrag로 replace")
                     supportFragmentManager.beginTransaction()
-                        .replace(com.example.flav_pof.R.id.container, mapfragment)
+                        .replace(com.example.flav_pof.R.id.container, mapfragment!!)
                         .commit()
                     true
                 }
@@ -169,6 +162,11 @@ class MainActivity : BasicActivity() {
         startActivityForResult(intent, 1)
     }
 
+    //home_map_fragment를 상속받아서 implement해준 함수임. home과 map프래그먼트 사이 데이터 통신에 이용.
+    override fun onCommand(map_contentsList: ArrayList<Contents>) {
+        mapfragment?.display(map_contentsList)
+        Log.e("태그","메인액티비티에서 onCommand함수 실행해서 컨텐츠리스트 mapfragment에 전달")
+    }
 
 
 }

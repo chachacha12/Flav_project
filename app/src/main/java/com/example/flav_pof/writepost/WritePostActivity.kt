@@ -11,44 +11,26 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
-import android.util.Patterns
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import com.bumptech.glide.Glide
-import com.example.flav_pof.PostInfo
 import com.example.flav_pof.R
 import com.example.flav_pof.activity.BasicActivity
 import com.example.flav_pof.activity.Galleryactivity
-import com.example.flav_pof.activity.MainActivity
 import com.example.flav_pof.classes.*
 import com.example.flav_pof.feeds.Contents
 import com.example.flav_pof.view.ContentsItemView
 import com.google.android.material.tabs.TabLayoutMediator
-import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.firestore.DocumentReference
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.StorageReference
-import com.google.firebase.storage.ktx.storage
-import com.google.firebase.storage.ktx.storageMetadata
 import kotlinx.android.synthetic.main.activity_write_post.*
 import kotlinx.android.synthetic.main.dialog_selfname.*
-import kotlinx.android.synthetic.main.fragment_choose_tag.*
 import kotlinx.android.synthetic.main.view_loader.*
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
-import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.io.File
-import java.io.FileInputStream
-import java.net.URLConnection
-import java.util.*
-import kotlin.collections.ArrayList
 
 //OnRestaurantNameListener인터페이스는 name프래그먼트와 통신에 사용, fragmentListener는 프래그먼트끼리 통신에 사용
 //OnTagSetListener 인터페이스는 tag프래그먼트와 통신에 사용

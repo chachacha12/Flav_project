@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.flav_pof.Adapter.GalleryAdapter
 import com.example.flav_pof.R
+import com.example.flav_pof.feeds.MainActivity
 
 
 class Galleryactivity : BasicActivity() {
