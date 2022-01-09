@@ -8,7 +8,6 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.LinearLayout
 import androidx.annotation.RequiresApi
-import com.example.flav_pof.FirebaseHelper
 import com.example.flav_pof.R
 import com.example.flav_pof.activity.BasicActivity
 import org.json.JSONObject
@@ -17,7 +16,6 @@ import org.json.JSONObject
 class PostActivity : BasicActivity() {
 
     private var contents: Contents? = null
-    private var firebaseHelper: FirebaseHelper? = null
     private var readContentsVIew: ReadContentsVIew? = null
     private var contentsLayout: LinearLayout? = null
 
@@ -51,8 +49,6 @@ class PostActivity : BasicActivity() {
         readContentsVIew = findViewById(R.id.readContentsView)
 
         //게시물 삭제,s3삭제로직 수행하는 객체 초기화
-        firebaseHelper = FirebaseHelper(this,server)
-        firebaseHelper!!.setOnPostListener(onPostListener)
         uiUpdate()
     }
 
@@ -83,7 +79,6 @@ class PostActivity : BasicActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.delete -> {
-                firebaseHelper!!.storageDelete(contents!!)
 
                 true
             }
@@ -96,9 +91,8 @@ class PostActivity : BasicActivity() {
     }
 
     var onPostListener: OnPostListener = object : OnPostListener {
-        override fun onDelete(contents: Contents) {
+        override fun onDelete(position: Int) {
             Log.e("로그 ", "onPostListener작동하여 삭제 성공")
-            firebaseHelper!!.storageDelete(contents!!)
         }
 
         override fun onModify() {

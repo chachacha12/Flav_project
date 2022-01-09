@@ -7,6 +7,7 @@ import android.os.Looper
 import android.os.Message
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
@@ -17,6 +18,7 @@ import com.example.flav_pof.activity.BasicActivity
 import com.example.flav_pof.classes.LatLng
 import com.example.flav_pof.retrofit_service
 import kotlinx.android.synthetic.main.item_gallery.view.*
+import kotlinx.android.synthetic.main.view_loader.*
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -50,6 +52,7 @@ class GalleryAdapter(var activity: Activity, private val myDataset: ArrayList<St
 
         val galleryViewHolder = GalleryViewHolder(cardView)  //밑의 setOnClickListener에서 사용자가 선택한 특정뷰의 위치값 알아야해서 여기서 뷰홀더객체생성
         cardView.setOnClickListener {                //사용자가 갤러리에서 특정 사진을 클릭해서 선택했을때
+            activity.loaderLayout.visibility = View.VISIBLE //갤러리 액티비티객체를 통해 로딩화면 xml보여줌
             //레트로핏 post image 업로드
             var imageFile = File(myDataset!![galleryViewHolder.adapterPosition])
             Log.e("태그", "이미지 uri: " + myDataset!![galleryViewHolder.adapterPosition])
@@ -64,6 +67,7 @@ class GalleryAdapter(var activity: Activity, private val myDataset: ArrayList<St
             resultIntent.putExtra("profilePath", myDataset!![galleryViewHolder.adapterPosition])  //돌려보낼 인텐트에 값 넣어줌. 여기선 이미지가 저장된 경로를 보냄
             thread_start()
         }
+
         return galleryViewHolder
     }
 
@@ -144,6 +148,7 @@ class GalleryAdapter(var activity: Activity, private val myDataset: ArrayList<St
                     resultIntent.putExtra("default_lng",default_lng ) //사진의 디폴트 경도값 보내줌
                 }
                 activity.setResult(Activity.RESULT_OK, resultIntent)   //onActivityResult함수로 인텐트 보냄.
+                activity.loaderLayout.visibility = View.GONE //갤러리 액티비티객체를 통해 로딩화면 xml보여줌
                 activity.finish()  //갤러리액티비티 닫아줌
             }
         }

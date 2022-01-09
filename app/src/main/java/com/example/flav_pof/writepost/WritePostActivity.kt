@@ -352,8 +352,6 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
                             var filepath_list =
                                 response.body()?.filepath?.split('/')
                             filename = filepath_list!!.last()  //filename값을 받아옴
-
-
                             Log.e(
                                 "s3업로드 태그",
                                 "filename: " + filename

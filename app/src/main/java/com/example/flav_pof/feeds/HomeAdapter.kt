@@ -15,10 +15,8 @@ import androidx.annotation.RequiresApi
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.flav_pof.FirebaseHelper
 import com.example.flav_pof.R
 import com.example.flav_pof.retrofit_service
-import com.example.flav_pof.writepost.WritePostActivity
 import kotlinx.android.synthetic.main.item_post.view.*
 import kotlinx.android.synthetic.main.view_post.view.*
 import java.util.*
@@ -28,15 +26,14 @@ import java.util.*
 class HomeAdapter(
     var activity: Activity,
     private var myDataset: ArrayList<Contents>,
-    var server:retrofit_service
+    var server:retrofit_service,
+    var onPostListener: OnPostListener
 
 )  : RecyclerView.Adapter<HomeAdapter.MainViewHolder>() {
 
     //전역
     private var MORE_INDEX = 2
     //firebaseHelper에서 activity값과 server값을 사용할거라 인자로 보내줌
-    private var firebaseHelper = FirebaseHelper(activity, server)  //firebaseHelper 객체생성
-
 
     //뷰홀더에 텍스트뷰말고 카드뷰를 넣음
     class MainViewHolder(val cardView: CardView) : RecyclerView.ViewHolder(cardView)
@@ -78,11 +75,6 @@ class HomeAdapter(
         }                                                     //mainViewHolder.adapterPosition을 넣어주는 이유는 사용자가 선택한 특정위치의 게시글을 삭제or수정해야 하기에.
         return mainViewHolder
     }
-
-    fun setOnPostListener(onPostListener: OnPostListener){
-        firebaseHelper.setOnPostListener(onPostListener)
-    }
-
 
 
     // 여기서 리사이클러뷰의 리스트 하나하나 가리키는 뷰홀더와 내가 주는 데이터(게시글)가 연결되어짐. 즉 리사이클러뷰 화면에 띄워짐
@@ -138,8 +130,8 @@ class HomeAdapter(
                     true
                 }
                 R.id.delete -> {                  //삭제하기 눌렀을때
-                    firebaseHelper.storageDelete(myDataset[position])
-
+                   // firebaseHelper.storageDelete(myDataset[position])
+                    onPostListener.onDelete(position)  //인터페이스를 통해 홈프래그먼트에서 삭제로직 작동시킬거임
 
                     true
                 }

@@ -10,11 +10,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.RelativeLayout
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.flav_pof.PostInfo
 import com.example.flav_pof.R
+import com.example.flav_pof.classes.Msg
 import com.example.flav_pof.classes.Result_response
 import com.example.flav_pof.classes.Usersingleton
 import com.example.flav_pof.retrofit_service
@@ -64,8 +66,7 @@ class HomeFragment(var server:retrofit_service) : Fragment() {
         contentsList = ArrayList()  //초기화  - 이거안하면 null에러남
         update_contentsList = ArrayList()  //초기화
 
-        homeAdapter = HomeAdapter(requireActivity(), contentsList!!,server)  //어댑터에서도 server통신위해 server를 인자에 넣어줌
-        homeAdapter!!.setOnPostListener(onPostListener)
+        homeAdapter = HomeAdapter(requireActivity(), contentsList!!,server, onPostListener)  //어댑터에서도 server통신위해 server를 인자에 넣어줌
 
         recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
         view.findViewById<FloatingActionButton>(R.id.floatingActionButton).setOnClickListener(onClickListener)
@@ -73,12 +74,11 @@ class HomeFragment(var server:retrofit_service) : Fragment() {
         recyclerView.layoutManager = LinearLayoutManager(activity)
         recyclerView.adapter = homeAdapter
 
-
-        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+        /*
+         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             //맨위에서 스크롤 할때마다 피드 컨텐츠 새로 업데이트 해주는 로직
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
-
                 val layoutManager = recyclerView.layoutManager
                 val firstVisibleItemPosition =
                     (layoutManager as LinearLayoutManager?)!!.findFirstVisibleItemPosition()
@@ -88,6 +88,7 @@ class HomeFragment(var server:retrofit_service) : Fragment() {
                 }
                 if (newState == 0 && topScrolled) {
                     ContentsUpdate()
+                    Log.e("ContentsUpdate태그", "위로 스크롤해서 -- ContentsUpdate진행 ")
                     topScrolled = false
                 }
             }
@@ -110,12 +111,17 @@ class HomeFragment(var server:retrofit_service) : Fragment() {
             }
              */
         })
-        ContentsUpdate()
+         */
+        loaderLayout.visibility = View.GONE  //로딩화면
         return view
     }
 
-    override fun onDetach() {
-        super.onDetach()
+    //게시물 등 업데이트 해줄떄 씀 - 게시물삭제or수정했을때 여기서 게시물 업데이트
+    override fun onResume() {
+        super.onResume()
+        Log.e("태그", "homefragment에서 onResume이 실행됨")
+        ContentsUpdate()
+        Log.e("ContentsUpdate태그", "onResume -- ContentsUpdate진행 ")
     }
 
     var onClickListener =
@@ -125,23 +131,78 @@ class HomeFragment(var server:retrofit_service) : Fragment() {
             }
         }
 
+    //게시물 삭제에 필요한 전역변수들
+    private var successCount = 0
+    private var choosen_contents_id = 0
+    private var choosen_filename =""
+
     //firebasehelper 클래스 안쓰고이 안에서 게시물 삭제로직 다 짤거임. 그래야 업데이트하기 편해서
     var onPostListener: OnPostListener = object : OnPostListener {
         //override fun onDelete(postInfo: PostInfo)
-        override fun onDelete(contents: Contents) {
-            contentsList!!.remove(contents)
-            homeAdapter!!.notifyDataSetChanged()
-            Log.e("로그: ", "삭제 성공")
+        override fun onDelete(position: Int) {
+            //s3와 rds삭제로직
+            choosen_contents_id = contentsList?.get(position)?.contents_id!!  //사용자가 선택한 게시물의 id값
+            choosen_filename = contentsList?.get(position)?.filename.toString()  //사용자가 선택한 게시물의 id값
+
+            storageDelete(choosen_filename!!)  //s3삭제로직
         }
         override fun onModify() {
             Log.e("로그: ", "수정 성공")
         }
     }
 
-    //게시물 등 업데이트 해줄떄 씀 - 게시물삭제or수정했을때 여기서 게시물 업데이트
-    override fun onResume() {
-        super.onResume()
+    //s3스토리지 삭제로직
+    fun storageDelete(filename: String) {
+        successCount++  //삭제로직 시작전에
+        //이미지 s3 삭제로직
+        Log.e("태그", "s3 삭제시 필요한 인자들 Usersingleton.kakao_id, contents.filename : "+Usersingleton.kakao_id+" ,"+choosen_filename)
+        server.deleteS3_Request( Usersingleton.kakao_id!!, filename)
+            .enqueue(object : Callback<Msg> {
+                override fun onFailure(call: Call<Msg>, t: Throwable) {
+                    Toast.makeText(activity, "삭제 실패.", Toast.LENGTH_SHORT).show()
+                    Log.e("삭제태그", "s3 삭제실패 - 통신 아예 실패")
+                }
+                override fun onResponse(call: Call<Msg>, response: Response<Msg>) {
+                    if (response.isSuccessful) {
+                        successCount--
+                        storeDelete(choosen_contents_id)
+                        Log.e("삭제태그", "s3 삭제성공")
+                    } else {
+                        Toast.makeText(activity, "삭제 실패.", Toast.LENGTH_SHORT).show()
+                        Log.e("삭제태그", "서버 접근했지만 s3 삭제실패: "+response.body()?.msg)
+                    }
+                }
+            })
+        storeDelete(choosen_contents_id)
     }
+
+    //rds삭제로직
+    private fun storeDelete(contents_id: Int) {
+        if (successCount == 0) {
+            //게시물 삭제로직
+            server.deleteContents_Request( contents_id!!)
+                .enqueue(object : Callback<Msg> {
+                    override fun onFailure(call: Call<Msg>, t: Throwable) {
+                        Toast.makeText(activity, "삭제 실패.", Toast.LENGTH_SHORT).show()
+                        Log.e("삭제태그", "rds 삭제 통신 아예 실패")
+                    }
+                    override fun onResponse(call: Call<Msg>, response: Response<Msg>) {
+                        if (response.isSuccessful) {
+                            Toast.makeText(activity, "게시물을 삭제하였습니다.", Toast.LENGTH_SHORT).show()
+                            Log.e("삭제태그", "rds 삭제성공: ")
+                            ContentsUpdate()  //피드 업데이트 로직
+                            Log.e("ContentsUpdate태그", "게시물 삭제해서 --ContentsUpdate진행 ")
+
+                        } else {
+                            Toast.makeText(activity, "DB에서 게시물 삭제 실패", Toast.LENGTH_SHORT).show()
+                            Log.e("삭제태그", "rds 삭제실패: "+response.body()?.msg)
+                        }
+                    }
+                })
+        }
+
+    }
+
 
     fun ContentsUpdate() {
         Log.e("태그","홈프래그먼트에서 피드 가져올때 Usersingleton.kakao_id: "+Usersingleton.kakao_id)
@@ -217,7 +278,6 @@ class HomeFragment(var server:retrofit_service) : Fragment() {
         var handler = object : Handler(Looper.getMainLooper()) {
             override fun handleMessage(msg: Message) {
                 Log.e("태그", "피드컨텐츠 다 get한 후에 지금 핸들러 함수 실행")
-                loaderLayout.visibility = View.GONE  //로딩화면
                 contentsList?.clear()  //contentslist값 비워주기
                 //contentslist에다가 새로 받아온 update_contentsList값들을 다 넣어줌
                 update_contentsList?.let { contentsList?.addAll(it) }
@@ -229,7 +289,6 @@ class HomeFragment(var server:retrofit_service) : Fragment() {
         }
         handler.obtainMessage().sendToTarget()
     }
-
 
 
     private fun myStartActivity(c: Class<*>) {
