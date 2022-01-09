@@ -9,6 +9,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.RelativeLayout
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -21,6 +22,7 @@ import com.example.flav_pof.writepost.WritePostActivity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import kotlinx.android.synthetic.main.view_loader.*
 import org.json.JSONArray
 import retrofit2.Call
 import retrofit2.Callback
@@ -43,6 +45,7 @@ class HomeFragment(var server:retrofit_service) : Fragment() {
     //피드의 컨텐츠들 업데이트될동안 이곳에 새로운 컨텐츠 데이터들 받고 작업 다 끝나면 기존 contentsList에 다시 addall()해줄거임
     private var update_contentsList: java.util.ArrayList<Contents>? = null
     lateinit var recyclerView:RecyclerView  //서버로부터 컨텐츠들 다 가져오는 로직 끝난후에 handler함수에서 만들어줄거임
+    lateinit var loaderLayout:RelativeLayout  //전역으로둬야 모든 함수에서 쓸수있어서
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,6 +56,10 @@ class HomeFragment(var server:retrofit_service) : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view: View = inflater.inflate(R.layout.fragment_home, container, false)
+
+        //로딩화면뷰 초기화
+        loaderLayout = view.findViewById<RelativeLayout>(R.id.loaderLayout)
+        loaderLayout.visibility = View.VISIBLE  //로딩화면
 
         contentsList = ArrayList()  //초기화  - 이거안하면 null에러남
         update_contentsList = ArrayList()  //초기화
@@ -118,12 +125,11 @@ class HomeFragment(var server:retrofit_service) : Fragment() {
             }
         }
 
+    //firebasehelper 클래스 안쓰고이 안에서 게시물 삭제로직 다 짤거임. 그래야 업데이트하기 편해서
     var onPostListener: OnPostListener = object : OnPostListener {
         //override fun onDelete(postInfo: PostInfo)
         override fun onDelete(contents: Contents) {
-            //postList!!.remove(postInfo)
             contentsList!!.remove(contents)
-
             homeAdapter!!.notifyDataSetChanged()
             Log.e("로그: ", "삭제 성공")
         }
@@ -135,8 +141,6 @@ class HomeFragment(var server:retrofit_service) : Fragment() {
     //게시물 등 업데이트 해줄떄 씀 - 게시물삭제or수정했을때 여기서 게시물 업데이트
     override fun onResume() {
         super.onResume()
-
-
     }
 
     fun ContentsUpdate() {
@@ -161,13 +165,11 @@ class HomeFragment(var server:retrofit_service) : Fragment() {
                     if (response.isSuccessful) {
                         Log.e(
                             "관련 컨텐츠 태그",
-                            "관련 컨텐츠 / 통신성공" + response.body()?.result.toString()
-                        )
+                            " 통신성공 - 피드에 컨텐츠 채워줌 ")
                         var jsonarray = JSONArray(response.body()?.result)
                         var i = 0
                         repeat(jsonarray.length()) {
                             val Object = jsonarray.getJSONObject(i)  //각각 하나의 컨텐츠씩 가져옴
-                            Log.e("관련 컨텐츠 태그", "Object:" + Object)
                             //contentsList안에 가져오는 컨텐츠들 다 넣어줌
                             update_contentsList!!.add( Contents( Object.getInt("id"), Object.getString("date"),
                                 Object.getString("filename"),  Object.getString("filepath"),  Object.getString("restname"),
@@ -176,17 +178,8 @@ class HomeFragment(var server:retrofit_service) : Fragment() {
                                 Object.getString("near_station"), Object.getString("station_distance"), Object.getJSONObject("User"),
                                 Object.getJSONObject("Tag_FirstAdj"), Object.getJSONObject("Tag_SecondAdj"),Object.getJSONObject("Tag_Location")
                             )  )
-
-                            Log.e(
-                                "관련 컨텐츠 태그",
-                                "Object.getString으로.. 반복문안의 restname: " + Object.getString("restname"
-                            ))
                             i++
                         } //repeat
-                        Log.e(
-                            "관련 컨텐츠 태그",
-                            "update_contentsList" + update_contentsList.toString()
-                        )
                         handler()  //서버통해 데이터 가져오는 거 성공하면 핸들러함수 통해서 다음작업 수행
                     } else {
                         Log.e(
@@ -199,7 +192,6 @@ class HomeFragment(var server:retrofit_service) : Fragment() {
                 }
             })
     }
-
     private fun thread_start() {
         var thread = Thread(null, getData()) //스레드 생성후 스레드에서 작업할 함수 지정(getDATA)
         thread.start()
@@ -225,7 +217,7 @@ class HomeFragment(var server:retrofit_service) : Fragment() {
         var handler = object : Handler(Looper.getMainLooper()) {
             override fun handleMessage(msg: Message) {
                 Log.e("태그", "피드컨텐츠 다 get한 후에 지금 핸들러 함수 실행")
-
+                loaderLayout.visibility = View.GONE  //로딩화면
                 contentsList?.clear()  //contentslist값 비워주기
                 //contentslist에다가 새로 받아온 update_contentsList값들을 다 넣어줌
                 update_contentsList?.let { contentsList?.addAll(it) }

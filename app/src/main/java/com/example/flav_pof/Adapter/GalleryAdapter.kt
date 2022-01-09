@@ -21,6 +21,7 @@ import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import org.json.JSONArray
+import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -28,15 +29,14 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.File
 
-
 class GalleryAdapter(var activity: Activity, private val myDataset: ArrayList<String?>?,  var server:retrofit_service) :     //어댑터클래스의 인자 3개, 어댑터클래스엔 basicactivity상속 안되있으므로 액티비티에서 server를 가져옴
     RecyclerView.Adapter<GalleryAdapter.GalleryViewHolder>() {
 
-
+    lateinit var default_lat:String  //선택한 사진의 EXIF 위도 정보를 저장. 이 변수를 writepostAct에 보낼거임
+    lateinit var default_lng:String
     lateinit var name_list:JSONArray  //주변식당이름을 서버로부터 받아와서 저장해줄 전역변수. 이 변수를 writepostAct에 보낼거임
     var resultIntent = Intent()  //writepostactivity로 데이터 실어서 보내줄 인텐트
     lateinit var file:MultipartBody.Part  //이미지파일 담을 곳
-
 
     class GalleryViewHolder(val cardView: CardView) : RecyclerView.ViewHolder(cardView)   //뷰홀더에 텍스트뷰말고 카드뷰를 넣음
 
@@ -80,13 +80,14 @@ class GalleryAdapter(var activity: Activity, private val myDataset: ArrayList<St
     }
 
     fun RESTAURANT_NAME_API_REPUEST(){
+
         server.getAllrestaurant_Request(file).enqueue(object : Callback<Name> {
             override fun onFailure(call: Call<Name>, t: Throwable) {
                 Log.e("태그", "서버 통신 아예 실패" + t.message)
             }
             override fun onResponse(call: Call<Name>, response: Response<Name>) {
                 if (response.isSuccessful) {
-                    Log.e("태그", "통신성공" + response.body()?.result)
+                    //Log.e("태그", "갤러리어댑터에서 식당정보리스트 통신성공" + response.body()?.result)
                     handler()  //서버통해 데이터 가져오는 거 성공하면 핸들러함수 통해서 식당이름리스트 데이터 담아서 writepostactivity이동
                 } else {
                     Log.e(
@@ -95,9 +96,16 @@ class GalleryAdapter(var activity: Activity, private val myDataset: ArrayList<St
                     handler()
                 }
                 //response값(주변 식당들 이름)을 writepost액티비티에 전달을 위해
-                 var jsonArray = JSONArray(response.body()?.result)  //서버로부터 주변음식점이름을 List<Any>타입으로 받아옴. 그걸 jsonarray로 만듬
-                 name_list = jsonArray//주변 음식점정보 jsonarray를 name_list변수에 저장
-                Log.e("태그", "(jsonarray상태인) name_list: "+ name_list)
+
+
+                //서버로부터 사진의 위경도정보를 받아옴.   디폴트 위경도값 string을 각각 저장
+                default_lat = response.body()?.default_lat.toString()!!
+                default_lng = response.body()?.default_lng.toString()!!
+                Log.e("태그", "(String상태인)default_lat,  default_lng: "+ default_lat+", "+default_lng)
+
+                //서버로부터 주변음식점이름을 List<Any>타입으로 받아옴. 그걸 jsonarray로 만듬
+                var jsonArray = JSONArray(response.body()?.result)
+                 name_list = jsonArray
             }
         })
     }
@@ -126,10 +134,14 @@ class GalleryAdapter(var activity: Activity, private val myDataset: ArrayList<St
         var handler = object: Handler(Looper.getMainLooper()){
             override fun handleMessage(msg: Message) {
 
-                if(name_list.length()==0){  //exif정보 없는 사진이거나.. 서버에 데이터 없는 사진일경우 등등
-                    resultIntent.putExtra("restaurant_name_list","정보없음")  //주변식당이름 정보도 보내줌
+                if(name_list.length()==0 ){  //exif정보 없는 사진이거나.. 서버에 데이터 없는 사진일경우 등등
+                    Log.e("태그","exif정보없는 사진이 들어옴")
+                    resultIntent.putExtra("restaurant_name_list","정보없음")  //"정보없음"이라는 string을 보내줌
+
                 }else{
-                    resultIntent.putExtra("restaurant_name_list",name_list.toString() )  //주변식당이름 정보도 보내줌
+                    resultIntent.putExtra("restaurant_name_list",name_list.toString() )  //주변식당이름, 위경도 정보 보내줌
+                    resultIntent.putExtra("default_lat",default_lat ) //사진의 디폴트 위도값 보내줌
+                    resultIntent.putExtra("default_lng",default_lng ) //사진의 디폴트 경도값 보내줌
                 }
                 activity.setResult(Activity.RESULT_OK, resultIntent)   //onActivityResult함수로 인텐트 보냄.
                 activity.finish()  //갤러리액티비티 닫아줌

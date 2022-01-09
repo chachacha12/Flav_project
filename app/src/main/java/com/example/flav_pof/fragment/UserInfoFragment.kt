@@ -35,7 +35,7 @@ class UserInfoFragment : Fragment() {
         val addressTextView = view.findViewById<TextView>(R.id.addressTextView)
 
         val documentReference = FirebaseFirestore.getInstance().collection("users").document(
-            FirebaseAuth.getInstance().currentUser!!.uid
+          //  FirebaseAuth.getInstance().currentUser!!.uid
         )
 
 

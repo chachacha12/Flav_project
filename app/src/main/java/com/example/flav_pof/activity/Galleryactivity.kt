@@ -30,7 +30,6 @@ class Galleryactivity : BasicActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-
         //상태표시줄(배터리, 시간) 숨겨주는 로직
         window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
         actionBar?.hide()
@@ -72,8 +71,6 @@ class Galleryactivity : BasicActivity() {
     //갤러리에서 뒤로버튼 클릭시 피드화면으로 돌아오고 피드화면에서 백버튼 클릭시 다시 이 갤러리나 WRITEpost로 돌아오지 않게 하기
     override fun onBackPressed() {
         super.onBackPressed()
-
-
 
         var intent = Intent(this,  MainActivity::class.java)
         //백스택들 다 지워주는듯

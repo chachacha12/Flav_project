@@ -20,6 +20,7 @@ import com.example.flav_pof.PostInfo
 import com.example.flav_pof.R
 import com.example.flav_pof.activity.BasicActivity
 import com.example.flav_pof.activity.Galleryactivity
+import com.example.flav_pof.activity.MainActivity
 import com.example.flav_pof.classes.*
 import com.example.flav_pof.feeds.Contents
 import com.example.flav_pof.view.ContentsItemView
@@ -39,6 +40,7 @@ import kotlinx.android.synthetic.main.view_loader.*
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -53,12 +55,9 @@ import kotlin.collections.ArrayList
 class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantNameListener, FragmentListener, Choose_tag_Fragment.OnTagSetListener {
 
     private var path:String?=""  //갤러리에서 받아온 사진의 경로를 여기 저장해줄거임
-   // private var pathList = ArrayList<String>()       //게시글에 넣은 사진이미지들의 경로들 여기에 저장해서 리스트로 만들거임
     private lateinit var buttonsBackgroundlayout: RelativeLayout     //게시글에 있는 이미지or 이 레이아웃 자체를 눌렀을때 이미지 수정 및 삭제하는 기능을 위한 레이아웃객체 전역으로둠
-     lateinit var file: MultipartBody.Part  //s3 스토리지에 업로드할 이미지파일 담을 곳
-
+    lateinit var file: MultipartBody.Part  //s3 스토리지에 업로드할 이미지파일 담을 곳
     private lateinit var selectedImageView: ImageView //사용자가 게시글에 올린 이미지 삭제or수정하려고 선택했을때 그 이미지를 이 전역변수에 저장해둘거임. 삭제하기 편하게.
-
 
     //수정하기 버튼 눌러서 여기 왔을때 수정할 게시물을 받아줄 변수임
     var Modify_contentsinfo:Contents? = null
@@ -73,8 +72,11 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
     var lat:String?  = null //위도
     var lng:String?  = null //경도
 
-    //식당명선택 프래그먼트 관련 변수
-    var namelist_string:String = "정보없음"   //인텐트통해서 갤러리에서 사진 선택시에 (식당명리스트 + 위경도) jsonarray이 string으로 날라왔고, 프래그먼트로 다시 보내줄거임. 프래그먼트에선 이걸 다시 jsonarray만든 후 이용해야함
+    //인텐트통해서 갤러리에서 사진 선택시에 (식당명리스트 + 위경도) jsonarray이 string으로 날라왔고, 프래그먼트로 다시 보내줄거임. 프래그먼트에선 이걸 다시 jsonarray만든 후 이용해야함
+    var namelist_string:String = "정보없음"
+    //갤러리어댑터에서 namelist_string과 함께 날라오는 디폴트 사진 위치값임. 식당명 직접선택때는 위경도값에 이 값 넣어줄거임
+    var default_lat:String = "정보없음"  //선택한 사진의 EXIF 위도 정보를 저장. 이 변수를 writepostAct에 보낼거임
+    var default_lng:String = "정보없음"
     private var dilaog01:Dialog? = null  //식당명 직접입렵시 필요한 다이얼로그 객체
 
     //tabLayout에 붙을 텍스트들
@@ -91,11 +93,6 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
         Modify_contentsinfo =
             (intent.getSerializableExtra("postInfo") as? Contents)  //MainActivity에서 게시글 수정버튼을 눌러서 보낸 인텐트에 실린 값(수정하고자하는 게시물 객체)를 받음. 인텐트를 받을땐 getIntent() 또는 Intent 이용.
         //getSerializable은 보내는, 받는 데이터가 내가 만든 클래스의 객체일때 사용함.
-
-        Log.e(
-            "writepost 태그",
-            "방금막 writepost로 왔을때 Modify_contentsinfo " + Modify_contentsinfo
-        )
 
         Log.e(
             "writepost 태그",
@@ -190,29 +187,13 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
         // 1. 이미 저장해서 존재하던 게시물 이미지 수정하기 2. +버튼 눌러서 저장안된 새 게시물 작성중에 이미지 수정하기
         //->2가지 경우로 나누는 이유는 아직 파베 스토리지에 저장안된 이미지인 경우엔 postInfo.id값이 없기 때문에 밑의 지우기로직때 에러뜸. 그니까 예외처리해주기
         delete.setOnClickListener {
-            /*
-            //name은 path임. 이미지경로
-            if (name.contains("/")) {   //+버튼눌러서 서버 스토리지에 아직 저장안된 이미지를 삭제하려 할떄 : 이미지 경로값에 슬래쉬 있어서 이 조건문 포함
-                Toast.makeText(this, "파일을 삭제하였습니다.", Toast.LENGTH_SHORT).show()
-            } else {
-                //서버 스토리지에 이미 저장된 이미지를 삭제해주려 할때
 
-            }
-
-             */
-            /*
-            //스토리지에서도 삭제됐으니(저장되어 있는 상태였다면)  이제 pathList에서 해당 이미지를 삭제함  // indexOfChild를 써서 contentsLayout의 몇번째 뷰인지 알아냄  //첫번째 editText가 무조건 있으니까 마이너스 1 해줌
-            pathList.removeAt(contentsLayout.indexOfChild(selectedView) - 1)
-            contentsLayout.removeView(selectedView)
-            buttonsBackgroundlayout.visibility = View.GONE
-             */
         }  //delete
     }  //init
 
 
     //식당이름 arrayList가 전달됨
     // 이미지가 저장된 파일경로가 string값으로 여기로 인텐트 통해서 전달됨 / 사용자가 갤러리에서 카드뷰사진 하나 선택했을때
-    //이미지뷰와 editTextView가 동적으로 하나씩 계속 생성되도록함.
     override fun onActivityResult(
         requestCode: Int,
         resultCode: Int,
@@ -223,7 +204,7 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
             //갤러리에서 이미지 가지고 여기로 옴
             0 -> if (resultCode == Activity.RESULT_OK) {          //requestCode가 0일땐 갤러리에서 선택한 사진을 게시글에 붙여줌
                 path = data!!.getStringExtra("profilePath")  //데이터(파일)을 받아서 저장
-                Log.e("태그", "이미지 경로: " + path)
+                Log.e("태그", "갤러리어댑터에서 Writepost로 들어온 이미지 경로: " + path)
 
                 val layoutParams = ViewGroup.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
@@ -241,63 +222,31 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
                     selectedImageView = it as ImageView
                 }
 
-                Log.e("태그", "식당이름 텍스트뷰 생성")
-                // 주변 음식점 이름을 텍스트뷰로 각각 생성해줌
-
                 //intent에  jsonarray를 string값으로 바꿔서 날렸고, 그 string값을 받음. 프래그먼트로 날려준후 다시 jsonarray객체로 만들거임
                 namelist_string =
                     data!!.getStringExtra("restaurant_name_list")  //주변식당명리스트(string으로 되어있는)가 인텐트에 실려서 날아옴
-
                 //exif정보가 없는 사진이면 바로종료
                 if(namelist_string =="정보없음"){
                     Toast.makeText(this, "해당 사진은 위치정보가 없습니다. 기본 카메라로 찍은 사진을 선택하세요.", Toast.LENGTH_SHORT).show()
+                    Log.e("태그", "writepost에 정보없음 식당리스트가 와서 바로 writepost 바로 finish")
                     finish()
                 }
+
+                //사진의 디폴트 위경도값을 갤러리어댑터로부터 가져옴
+               // default_lat = data!!.getStringExtra("default_lat")
+              //  default_lng = data!!.getStringExtra("default_lng")
+              //  Log.e("태그","갤러리어댑터에서 날라온 디폴트 위경도값 writepost에서 받음default_lat, default_lng: "+default_lat+", "+default_lng)
+
                 init_viewpager()  //위에서 받은 식당명을 가지고 뷰페이저를 만들어줌.. 프래그먼트 2개 만들고 어댑터 붙히고 등등해서
 
-                /*
-                if (namelist_string == "정보없음") {  //exif정보 없는 사진 등이 들어왔을때
-                    Toast.makeText(
-                        this,
-                        "위치데이터가 사진에 없습니다.",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                } else {  //주변 식당명 정보가 제대로 들어왔을때
-                    var jsonArray = JSONArray(namelist_string)
-                    var i = 0;
-                    repeat(jsonArray.length()) {
-                        val Object = jsonArray.getJSONObject(i) //jsonarray안의 object에 하나하나 접근
-                        val textView = TextView(this)   //새로운 텍스트뷰를 하나를 이 액티비티xml에 생성함
-                        textView.layoutParams = layoutParams
-                        textView.text = Object.getString("name") //식당명 추출
-
-                        contentsItemView.addtextView(textView)  //식당명 텍스트뷰를 하나씩 contentsItemView객체의 text_LinearLayout멤버안에 addview해줌
-                        i++
-                        textView.setOnClickListener {  //특정 음식점이름 선택했을때 이벤트
-                            Toast.makeText(
-                                this,
-                                textView.text.toString() + "를 선택하셨습니다.",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            textView.setTextColor(Color.GREEN)
-                            titletextView.text = textView.text.toString()   //이미지 아래에 생성되는 editText에 식당명 삽입해줌
-                            Log.e(
-                                "태그",
-                                "restname선택: " + textView.text.toString()
-                            )
-                            restname = textView.text.toString()
-                        }
-                    }
-                }
-                 */
             }
-
+            /*
             1 -> if (resultCode == Activity.RESULT_OK) {    //이미지를 수정하려고 새 이미지를 선택했을때
                  path = data!!.getStringExtra("profilePath")
                  Glide.with(this).load(path).override(1000)
                     .into(selectedImageView)   //이미지를 수정해줌
             }
-
+             */
         }
     }
 
@@ -362,7 +311,7 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
 
     private fun storageUpload()   //사용자가 확인버튼 누르면 실행시킬 함수 -게시글 작성한걸 aws서버에 등록(업데이트)해줌   (이미지 삭제, 수정 했을땐, 그 이미지를 db,스토리지에서 지우는 작업을 지우는 즉시 했음. 메인액티비티에서. 그래서 여기선 db, 스토리지에 등록만 해줌됨 )
     {
-        //만약 사용자가 태그, 식당명 등을 선택안했으면 플레브서버, 파베 다 저장안됨
+        //만약 사용자가 태그, 식당명 등을 선택안했으면 플레브서버 다 저장안됨
         if (restname != null && adj1_id != null && adj2_id != null && locationtag_id != null && lat != null && lng != null) {
             loaderLayout.visibility = View.VISIBLE
 
@@ -370,7 +319,6 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
                 contentsLayout.getChildAt(0) as LinearLayout    //즉 이건 contentsItemView객체 하나임
 
             val view = linearLayout.getChildAt(0)  //이미지뷰를 가져옴
-            Log.e("태그", "ImageView: " + view)
 
             //플레브 서버 aws s3에 이미지 업로드 작업
             //레트로핏 post image 업로드
@@ -463,7 +411,7 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
                 if (response.isSuccessful) {
                     Log.e(
                         "태그",
-                        "컨텐츠 업로드 통신 성공!!. +response.body()?.content_id: " + response.body()?.content_id
+                        "컨텐츠 업로드 통신 성공!!"
                     )
                     Toast.makeText(this@WritePostActivity, "게시물 업로드 성공!", Toast.LENGTH_SHORT).show()
                     loaderLayout.visibility = View.GONE
@@ -527,30 +475,30 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
         Log.e("태그", "뷰페이저만들어짐.")
     } //init_viewpager
 
-    //name 프래그먼트에서 식당명(restname) 값을 받아올거임
+    //name 프래그먼트에서 식당명(restname), 위경도 값을 받아올거임
     override fun onRestaurantNameSet(name: String, latlng:LatLng) {
             restname = name
             lat=    latlng.lat        //위도
             lng =   latlng.lng        //경도
-            Log.e("태그", "프래그먼트에서 고른 식당명 액티비티로 받아옴. restname: " + restname)
-            Log.e("태그", "식당명에 해당하는 좌표값. lat, lng : " + lat + ", "+lng)
+           // Log.e("태그", "프래그먼트에서 고른 식당명 액티비티로 받아옴")
+          //  Log.e("태그", "식당명에 해당하는 좌표값. lat, lng : " + lat + ", "+lng)
     }
 
     //tag 프래그먼트에서 태그id값(adj1_id, adj2_id, locating_id) 값을 받아올거임
     override fun onTag1Set(tag_id: Int) {
         adj1_id = tag_id
 
-        Log.e("태그", "프래그먼트에서 고른 태그1을 액티비티로 받아옴. adj1_id: " + adj1_id)
+      //  Log.e("태그", "프래그먼트에서 고른 태그1을 액티비티로 받아옴. adj1_id: " + adj1_id)
     }
 
     override fun onTag2Set(tag_id: Int) {
         adj2_id = tag_id
-        Log.e("태그", "프래그먼트에서 고른 태그2를 액티비티로 받아옴. adj2_id: " + adj2_id)
+      //  Log.e("태그", "프래그먼트에서 고른 태그2를 액티비티로 받아옴. adj2_id: " + adj2_id)
     }
 
     override fun onTag3Set(tag_id: Int) {
         locationtag_id =tag_id
-        Log.e("태그", "프래그먼트에서 고른 태그3를 액티비티로 받아옴. locationtag_id: " + locationtag_id)
+      //  Log.e("태그", "프래그먼트에서 고른 태그3를 액티비티로 받아옴. locationtag_id: " + locationtag_id)
     }
 
 
@@ -575,7 +523,12 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
             }else{
                 restname = dilaog01?.selfname_editText?.text.toString()
 
-                tag_fragment?.self_name(restname!!)  //태그프로먼트 객체통해서 태그프래그먼트안의 함수실행 - 태그프래그에 식당명을 전달해줌
+                //위경도값은 디폴트 위경도값으로 넣어줄거임 - 식당명 직접 선택의 경우
+                lat = default_lat
+                lng = default_lng
+                Log.e("태그", "식당명 직접입력으로 위경도값 디폴트로 설정 lat,lng : " + lat+", "+lng)
+
+                tag_fragment?.self_name(restname!!)  //태그프래그먼트 객체통해서 태그프래그먼트안의 함수실행 - 태그프래그에 식당명을 전달해줌
 
                 Toast.makeText(this,restname+" 식당명으로 등록!",Toast.LENGTH_SHORT).show()
                 dilaog01?.dismiss() // 다이얼로그 닫기

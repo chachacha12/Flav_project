@@ -23,7 +23,6 @@ class FirebaseHelper(private val activity: Activity, private val server: retrofi
     private var onPostListener: OnPostListener? = null
     private var successCount = 0
 
-
     fun setOnPostListener(onPostListener: OnPostListener?) {
         this.onPostListener = onPostListener
     }

@@ -23,4 +23,10 @@
         android:clickable="true"
         android:src="@drawable/ic_add_black_24dp" />
 
+    <include
+        layout="@layout/view_loader"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
+
 </RelativeLayout>

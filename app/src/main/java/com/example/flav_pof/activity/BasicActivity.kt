@@ -25,8 +25,9 @@ open class BasicActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED //화면의 가로세로 관련 문제 해결을 위해..
-
     }
+
+
 
     //모든 액티비티에 툴바를 달아주기 위해 basicact에서 달아줌
     override fun setContentView(@LayoutRes layoutResID: Int) {

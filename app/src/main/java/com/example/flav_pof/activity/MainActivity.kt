@@ -6,6 +6,7 @@ package com.example.flav_pof.activity
 //이 앱은 파이어베이스를 기반으로해서 만듬. (파이어베이스는 서버리스인 db임. 이 db가 서버역할도 하는 것)
 // 파이어베이스-문서-가이드-개발(인증(앱에 파이어베이스연결, 신규사용자가입 등 기능), cloud firestore(db에 저장된 회원정보 읽거나 추가 기능), storage() 등을 이용)
 
+import android.content.ContentValues.TAG
 import android.content.Intent
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
@@ -14,8 +15,11 @@ import android.util.Base64
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import androidx.fragment.app.commit
 import com.example.flav_pof.R
 import com.example.flav_pof.appIntro.AppIntroActivity
+import com.example.flav_pof.classes.MyFragmentFactory
 import com.example.flav_pof.feeds.HomeFragment
 import com.example.flav_pof.fragment.UserInfoFragment
 import com.example.flav_pof.fragment.UserListFragment
@@ -24,6 +28,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.android.synthetic.main.view_loader.*
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 
@@ -48,21 +53,18 @@ class MainActivity : BasicActivity() {
         strprofileImg= intent.getStringExtra("profileImg")
         strEmail= intent.getStringExtra("email")
 
-        Log.e("main에서의 카카오", "  strNick: $strNick"+ "  strprofileImg: $strprofileImg"+
+        Log.e("태그", "main에서의 카카오,   strNick: $strNick"+ "  strprofileImg: $strprofileImg"+
             "  strEmail: $strEmail")
         //getHashKey()
         init()
     }
 
-    /*
+
     //게시물 추가하거나 등등 할때마다 피드 갱신
     override fun onRestart() {
         super.onRestart()
-
-        HomeFragment(server).ContentsUpdate()
         Log.e("태그","메인액티빝의 onRestart실행" )
     }
-     */
 
 
     override fun onBackPressed() {
@@ -109,9 +111,17 @@ class MainActivity : BasicActivity() {
 
     fun init() {
 
+        /*
+        val homefragment = supportFragmentManager.fragmentFactory.instantiate(classLoader, HomeFragment::class.java.name)
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.container, homefragment)
+            .commit()
+        Log.e("태그","메인액티비티에서 fragmentfactory써서 homefragment를 commit")
+         */
+
         var homeFragment = HomeFragment(server)
         supportFragmentManager.beginTransaction()
-            .replace(com.example.flav_pof.R.id.container, homeFragment)
+            .replace(R.id.container, homeFragment)
             .commit()
 
         //바텀네비게이션탭 선택에 따라 붙혀줄 fragment

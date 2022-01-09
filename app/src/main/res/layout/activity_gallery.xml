@@ -35,4 +35,10 @@
         android:layout_below="@id/recyclerView"
         android:text="사진선택" />
 
+    <include
+        layout="@layout/view_loader"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
+
 </RelativeLayout>
