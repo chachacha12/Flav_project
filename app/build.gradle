@@ -44,6 +44,9 @@ android {
 
 dependencies {
 
+    //SlidingUpPanel 라이브러리 - 아래에서 위로 올라오는 슬라이드뷰
+    implementation 'com.github.hannesa2:AndroidSlidingUpPanel:3.5.0'
+
     //앱소개화면에서 뷰페이저2를 사용해서 슬라이드기능 넣기위해
     implementation("androidx.viewpager2:viewpager2:1.0.0")
     //뷰페이저에서 애니메이션 기능을 위해 깃허브에서 특정 라이브러리 가져옴 - 인디케이터 애니메이션 오픈소스
@@ -56,7 +59,6 @@ dependencies {
     implementation "com.kakao.sdk:v2-story:2.8.3" // 카카오스토리
     implementation "com.kakao.sdk:v2-link:2.8.3" // 메시지(카카오링크)
     implementation "com.kakao.sdk:v2-navi:2.8.3" // 카카오내비
-
 
     //구글맵관련 라이브러리
     implementation 'com.google.android.gms:play-services-maps:18.0.0'

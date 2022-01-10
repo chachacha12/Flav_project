@@ -5,7 +5,6 @@ buildscript {
     repositories {
         google()
         jcenter()
-        
     }
     dependencies {
         //classpath 'com.amplifyframework:amplify-tools-gradle-plugin:1.0.2'
@@ -28,11 +27,11 @@ allprojects {
     repositories {
         google()
         jcenter()
-
         /*카카오 로그인 - 이 작업을 해줘야 gradle(app)쪽에 implement한 라이브러리를 다운받는 소통창구가 여기임*/
         maven { url 'https://devrepo.kakao.com/nexus/content/groups/public/'}
-
+        maven { url 'https://jitpack.io' }
     }
+
 }
 
 //apply plugin: 'com.amplifyframework.amplifytools'

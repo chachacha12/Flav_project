@@ -6,6 +6,8 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.os.Build
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.util.Log
@@ -14,10 +16,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.core.graphics.scale
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.example.flav_pof.R
+import com.example.flav_pof.databinding.FragmentMapBinding
 import com.example.flav_pof.feeds.Contents
 import com.google.android.gms.maps.CameraUpdate
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -27,7 +32,12 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import kotlinx.android.synthetic.main.fragment_map.*
+import java.text.SimpleDateFormat
+import java.time.Instant
+import java.util.*
+import kotlin.collections.ArrayList
 
 
 /**
@@ -37,26 +47,57 @@ class mapFragment : Fragment(), OnMapReadyCallback {
 
     //Homefragment에서 넘어온 컨텐츠리스트값 받는 전역변수. 이 프래그먼트가 만들어지기전에 이 변수는 날아오는 데이터받아야해서 지금 초기화
    var MapContentsList:ArrayList<Contents> = ArrayList()
-
     private lateinit var mMap:GoogleMap  //onMapReady에서 초기화 해줄 구글맵
     lateinit var marker_root_view:View  //마커의 배경
-    lateinit var tv_marker:ImageView  //마커
-    lateinit var textView:TextView  //마커
+    private lateinit var tv_marker:ImageView  //마커 이미지
+    lateinit var textView:TextView  //마커 이미지위에 뜨는 유저네임
+    lateinit var slidePanel:SlidingUpPanelLayout  //슬라이드업파넬레이아웃
+    //마커좌표값을 key로 contents값을 value로 하는 map. 유저가 마커정보클릭시 슬라이드뷰에 컨텐츠내용 채워주기 위한 변수
+    var markerpos_contents_map = mutableMapOf<LatLng, Contents>()
 
+    //뷰바인딩을 함 - xml의 뷰들에 접근하기 위해서
+    private var _binding: FragmentMapBinding? = null
+    private val binding get() = _binding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setCustomMarkerView()
     }
 
+
+    // 슬라이드업파넬레이아웃 이벤트 리스너
+    inner class PanelEventListener : SlidingUpPanelLayout.PanelSlideListener {
+        // 패널이 슬라이드 중일 때
+        override fun onPanelSlide(panel: View?, slideOffset: Float) {
+           // binding.tvSlideOffset.text = slideOffset.toString()
+            Log.e("태그", "패널 슬라이드")
+        }
+
+        // 패널의 상태가 변했을 때
+        override fun onPanelStateChanged(panel: View?, previousState: SlidingUpPanelLayout.PanelState?, newState: SlidingUpPanelLayout.PanelState?) {
+            if (newState == SlidingUpPanelLayout.PanelState.COLLAPSED) {
+                Log.e("태그", "열기")
+               // binding.btnToggle.text = "열기"
+            } else if (newState == SlidingUpPanelLayout.PanelState.EXPANDED) {
+                //binding.btnToggle.text = "닫기"
+                Log.e("태그", "닫기")
+            }
+        }
+    }
+
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view: View = inflater.inflate(R.layout.fragment_map, container, false)
-         //초기화
+        _binding = FragmentMapBinding.inflate(inflater, container,false)
+        val view = binding?.root
 
-        // Inflate the layout for this fragment
+        //binding?.slideRelativelayout?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        binding?.slideRelativelayout?.  setBackgroundColor(Color.TRANSPARENT )
+
+        slidePanel = binding?.SlideUpPannerLayout!!   //fragment_map.xml의 가장 최상단 레이아웃을 가져옴
+        slidePanel.addPanelSlideListener(PanelEventListener()) //슬라이드업파넬 이벤트 리스너 추가
         return view
     }
 
@@ -69,6 +110,11 @@ class mapFragment : Fragment(), OnMapReadyCallback {
         super.onStop()
         mapView.onStop()
     }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding=null
+    }
+
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
@@ -86,17 +132,19 @@ class mapFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
-
     //map 로딩이 완료되었을때 호출되는 함수.  좌표설정, 마커등을 달아줌
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onMapReady(map: GoogleMap) {
         Log.e("태그", "onMapReady 시작")
 
         mMap = map
-        var photourl: String? = null
+        var photourl: String?
         var pos:LatLng
-        var restaurant_name: String? =null  //식당명
+        var restaurant_name: String?   //식당명
         var lat: String?    //위도
         var lng: String?  //경도
+        var near_station:String?
+        var distance:String?
 
         var i=0
         repeat(MapContentsList.size){
@@ -104,11 +152,14 @@ class mapFragment : Fragment(), OnMapReadyCallback {
             restaurant_name = MapContentsList[i].restname
             lat = MapContentsList[i].lat
             lng = MapContentsList[i].lng
+            near_station = MapContentsList[i].near_station
+            distance= MapContentsList[i].station_distance
 
             pos = LatLng(lat!!.toDouble(), lng!!.toDouble())  //좌표값 객체
             photourl = MapContentsList[i].User.getString("profileimg_path")  //프사 가져옴
             Log.e("태그", "mapfragment에서 받아온 유저프사photourl:  " + photourl)
             var username: String = MapContentsList[i].User.getString("username")  //유저이름가져옴
+
 
             if (photourl != "null") {    //프사가 있을때
                 Log.e("태그", "mapfragmenT 프사가 있을때")
@@ -122,7 +173,7 @@ class mapFragment : Fragment(), OnMapReadyCallback {
 
             markerOptions.position(pos)
             markerOptions.title(restaurant_name)
-            markerOptions.snippet(username)
+            markerOptions.snippet(near_station+"역에서 "+distance)
             //마커 아이콘을 커스텀마커로 바꿔줌
             markerOptions.icon(
                 BitmapDescriptorFactory.fromBitmap(
@@ -133,6 +184,8 @@ class mapFragment : Fragment(), OnMapReadyCallback {
                 )
             )
             mMap.addMarker(markerOptions)
+            //map의 키로 마커좌표값, value로 해당 좌표의 컨텐츠값을 넣어줌
+            markerpos_contents_map.put(markerOptions.position, MapContentsList[i])
             i++
         }
 
@@ -145,16 +198,57 @@ class mapFragment : Fragment(), OnMapReadyCallback {
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(lastpos, 10F))
         mMap.animateCamera(CameraUpdateFactory.zoomTo(13F))
 
-        /*
-        //마커가 클릭되었을때
-        mMap.setOnMarkerClickListener {
-            //선택된 마커가 map의 중심에 오도록 이동 -
-            val center: CameraUpdate = CameraUpdateFactory.newLatLng(it.position)
-            mMap.animateCamera(center)
-            true
-        }
+        //정보창 클릭 이벤트
+        mMap.setOnInfoWindowClickListener {
+            //fragment_map.xml의 슬라이드뷰들에 선택한 마커에 맞는 값 삽입
+            //선택한 마커 좌표값을 통해 map에서 해당 contents값 가져옴
+            var contents = markerpos_contents_map.get(it.position)!!
+            //프사사진 삽입
+            var face_photoUrl = contents.User.getString("profileimg_path")  //프사없으면 "null"값이옴. string임.
+            Glide.with(requireActivity()).load(face_photoUrl).override(500).thumbnail(0.1f)
+                .into(binding?.photoImageVIew!!)
+            binding?.titleTextView?.text  =  contents.restname //식당명
+            binding?.nameTextView?.text   =  contents.User.getString("username") //유저네임
+            binding?.locationTextView?.text  =  contents.near_station+"역에서 "+contents.station_distance
+            binding?.titleTextView?.text  =  contents.restname //식당명
+            binding?.nameTextView?.text   =  contents.User.getString("username") //유저네임
+            //음식사진 삽입
+            var food_photoUrl = contents.filepath
+            Glide.with(requireActivity()).load(food_photoUrl).override(500).thumbnail(0.1f)
+                .into(binding?.foodImageView!!)
+            //태그삽입
+            binding?.tag1TextView?.text = "#"+contents.Tag_FirstAdj.getString("tagname")
+            binding?.tag2TextView?.text = "#"+contents.Tag_SecondAdj.getString("tagname")
+            binding?.tag3TextView?.text =  "#"+contents.Tag_Location.getString("tagname")
 
-         */
+            //게시물생성일값 삽입
+            val instant = Instant.parse(contents.date)  //contents.date가 string날짜값임.
+            val date = Date.from(instant)   //기존 string날짜값을 date타입으로 만듬
+            val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm")
+            val cal = Calendar.getInstance()
+            cal.time = date
+            val createdAt: String = simpleDateFormat.format(cal.time)  // 원하는대로 포맷된 string날짜값임
+            binding?.createdAtTextView?.text = createdAt
+
+            //패널 열고 닫기
+            val state = slidePanel.panelState
+            // 닫힌 상태일 경우 열기
+            if (state == SlidingUpPanelLayout.PanelState.COLLAPSED) {
+                slidePanel.panelState = SlidingUpPanelLayout.PanelState.ANCHORED
+            }
+            // 열린 상태일 경우 닫기
+            else if (state == SlidingUpPanelLayout.PanelState.EXPANDED) {
+                slidePanel.panelState = SlidingUpPanelLayout.PanelState.COLLAPSED
+
+                //Toast.makeText(activity, "클릭", Toast.LENGTH_SHORT).show()
+            }
+
+            //사용자가 cancel_button눌렀을때
+            binding!!.cancelButton.setOnClickListener {
+                slidePanel.panelState = SlidingUpPanelLayout.PanelState.COLLAPSED
+            }
+
+        }
     } //OnMapReady
 
 
