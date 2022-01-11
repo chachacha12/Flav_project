@@ -1,5 +1,6 @@
 package com.example.flav_pof.profileInfo
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
@@ -9,43 +10,105 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.flav_pof.R
 import com.example.flav_pof.classes.UserInfo
+import com.example.flav_pof.databinding.FragmentMapBinding
+import com.example.flav_pof.databinding.FragmentUserListBinding
 import com.google.firebase.firestore.FirebaseFirestore
 import com.kakao.sdk.talk.TalkApiClient
+import com.sothree.slidinguppanel.SlidingUpPanelLayout
+import kotlinx.android.synthetic.main.fragment_map.*
 
 
-//카카오톡 팔로우, 팔로잉 친구목록 보여줌
+//내 프로필 정보와 함께, 팔로우 팔로하는  친구목록 보여주는, 메인액티비티에 부착되는 3번째 프래그먼트
 class UserListFragment : Fragment() {
+    private val TAG = "userListFragemnt태그"
+    //뷰바인딩을 함 - xml의 뷰들에 접근하기 위해서
+    private var _binding: FragmentUserListBinding? = null
+    private val binding get() = _binding!!
+    lateinit var slidePanel:SlidingUpPanelLayout  //슬라이드업파넬레이아웃
 
-    private val TAG = "HomeFragment"
-    private var firebaseFirestore: FirebaseFirestore? = null
     private var userListAdapter: UserListAdapter? = null
     private var userList: ArrayList<UserInfo>? = null
     private var updating = false
     private var topScrolled = false
 
+    // 슬라이드업파넬레이아웃 이벤트 리스너
+    inner class PanelEventListener : SlidingUpPanelLayout.PanelSlideListener {
+        // 패널이 슬라이드 중일 때
+        override fun onPanelSlide(panel: View?, slideOffset: Float) {
+            // binding.tvSlideOffset.text = slideOffset.toString()
+            Log.e("태그", "패널 슬라이드")
+        }
+
+        // 패널의 상태가 변했을 때
+        override fun onPanelStateChanged(panel: View?, previousState: SlidingUpPanelLayout.PanelState?, newState: SlidingUpPanelLayout.PanelState?) {
+            if (newState == SlidingUpPanelLayout.PanelState.COLLAPSED) {
+                Log.e("태그", "열기")
+                // binding.btnToggle.text = "열기"
+            } else if (newState == SlidingUpPanelLayout.PanelState.EXPANDED) {
+                //binding.btnToggle.text = "닫기"
+                Log.e("태그", "닫기")
+            }
+        }
+    }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        _binding = FragmentUserListBinding.inflate(inflater, container,false)
+        val view = binding.root
 
-        val view: View = inflater.inflate(R.layout.fragment_user_list, container, false)
 
-        userList = ArrayList()
-        userListAdapter = UserListAdapter(requireActivity(), userList!!)
+        slidePanel = binding?.SlideUpPannerLayout!!   //fragment_map.xml의 가장 최상단 레이아웃을 가져옴
+        slidePanel.addPanelSlideListener(PanelEventListener()) //슬라이드업파넬 이벤트 리스너 추가
 
-        /*
-        val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
-        recyclerView.setHasFixedSize(true)
-        recyclerView.layoutManager = LinearLayoutManager(activity)
-        recyclerView.adapter = userListAdapter
+        //친구찾기 버튼 눌렀을때
+        binding.friendsLookButton.setOnClickListener {
+            //리사이클러뷰 만들고 카톡친구가져오기 로직 진행.
+            userList = ArrayList()
+            userListAdapter = UserListAdapter(requireActivity(), userList!!)
+            val recyclerView = binding.recyclerView
+            recyclerView.setHasFixedSize(true)
+            recyclerView.layoutManager = LinearLayoutManager(requireActivity())
+            recyclerView.adapter = userListAdapter
+            thread_start()
 
-        thread_start()
-         */
-
+            //패널 열고 닫기
+            val state = slidePanel.panelState
+            // 닫힌 상태일 경우 열기
+            if (state == SlidingUpPanelLayout.PanelState.COLLAPSED) {
+                slidePanel.panelState = SlidingUpPanelLayout.PanelState.ANCHORED
+            }
+            // 열린 상태일 경우 닫기
+            else if (state == SlidingUpPanelLayout.PanelState.EXPANDED) {
+                slidePanel.panelState = SlidingUpPanelLayout.PanelState.COLLAPSED
+                //Toast.makeText(activity, "클릭", Toast.LENGTH_SHORT).show()
+            }
+        }
         return view
+    }  //onCreateView
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding=null
+    }
+
+
+
+    override fun onStart() {
+        super.onStart()
+        (activity as AppCompatActivity?)!!.supportActionBar!!.hide()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        (activity as AppCompatActivity?)!!.supportActionBar!!.show()
     }
 
     private fun postsUpdate() {
@@ -55,7 +118,6 @@ class UserListFragment : Fragment() {
                 Log.e(TAG, "카카오톡 친구 목록 가져오기 실패", error)
             } else if (friends != null) {
                 Log.i(TAG, "카카오톡 친구 목록 가져오기 성공 \n${friends.elements?.joinToString("\n")}")
-
                 // userList!!.clear()
                 var i = 0
                 repeat(friends.elements?.size!!) {
@@ -70,7 +132,6 @@ class UserListFragment : Fragment() {
                 Log.e(TAG, "userList:  " + userList.toString())
                 handler()
                 Log.e(TAG, "유저리스트가져오기 성공!  핸들러 실행하여 리사이클러뷰 notifiy ")
-
                 // 친구의 UUID 로 메시지 보내기 가능
             }
         }
@@ -105,8 +166,4 @@ class UserListFragment : Fragment() {
     }
 
 
-    private fun myStartActivity(c: Class<*>) {
-        val intent = Intent(activity, c)
-        startActivityForResult(intent, 0)
-    }
 }

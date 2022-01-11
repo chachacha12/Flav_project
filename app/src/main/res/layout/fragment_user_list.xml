@@ -1,152 +1,228 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-
-
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<com.sothree.slidinguppanel.SlidingUpPanelLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/RelativeLayout"
+    android:background="#00FFFFFF"
+    app:umanoShadowHeight="0dp"
+    app:umanoOverlay="true"
+    android:id="@+id/SlideUpPannerLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF">
+    android:gravity="bottom"
+    app:umanoDragView="@id/slide_Relativelayout"
+    app:umanoPanelHeight="0dp">         <!--처음에 슬라이드 되기전에 패널의 높이를 조절  0dp이면 아예 밑에 안보임 -->
 
 
+    <!--SlidingUpPanelLayout의 첫번째 뷰 -->
     <RelativeLayout
-        android:id="@+id/relative_first"
+        android:id="@+id/RelativeLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="21dp"
-        android:layout_marginTop="30dp"
-        android:layout_marginRight="21dp">
+        android:layout_height="match_parent"
+        android:background="#FFFFFF">
 
-        <LinearLayout
-            android:id="@+id/LinearLayout_friendsAdd"
+        <RelativeLayout
+            android:id="@+id/relative_first"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_marginLeft="21dp"
+            android:layout_marginTop="30dp"
+            android:layout_marginRight="21dp"
+            android:layout_marginBottom="10dp">
 
-            <Button
-                android:id="@+id/friendsLook_button"
-                android:layout_width="31dp"
-                android:layout_height="25dp"
-                android:background="@drawable/ic_ico_flow_plus" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/LinearLayout_profilephoto"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/LinearLayout_friendsAdd"
-            android:gravity="center"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:id="@+id/profile_imageView"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                app:srcCompat="@drawable/ic_account_circle_black_24dp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/LinearLayout_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/LinearLayout_profilephoto"
-            android:layout_marginBottom="10dp"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/textView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
-                android:lineSpacingExtra="6sp"
-                android:textColor="#616161"
-                android:textSize="16sp"
-                android:textStyle="normal"
-                tools:text="이름" />
-
-            <TextView
-                android:id="@+id/name_TextView"
+            <LinearLayout
+                android:id="@+id/LinearLayout_friendsAdd"
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:layout_gravity="center_vertical"
-                android:background="@drawable/name_text_round"
-                android:gravity="center_vertical"
-                android:lineSpacingExtra="6sp"
+                android:layout_height="wrap_content"
+                android:gravity="right"
+                android:orientation="horizontal">
 
-                android:text="  홍길동"
-                android:textColor="#333333"
-                android:textSize="16sp"
-                android:textStyle="normal" />
-        </LinearLayout>
+                <Button
+                    android:id="@+id/friendsLook_button"
+                    android:layout_width="25dp"
+                    android:layout_height="20dp"
+                    android:background="@drawable/ic_ico_flow_plus" />
+            </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/LinearLayout_email"
+            <LinearLayout
+                android:id="@+id/LinearLayout_profilephoto"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/LinearLayout_friendsAdd"
+                android:layout_marginTop="5dp"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/profile_imageView"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    app:srcCompat="@drawable/ic_account_circle_black_24dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/LinearLayout_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/LinearLayout_profilephoto"
+                android:layout_marginBottom="5dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/textView"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_gravity="center_vertical"
+                    android:gravity="center_vertical"
+                    android:lineSpacingExtra="6sp"
+
+                    android:text="이름"
+                    android:textColor="#616161"
+                    android:textSize="14sp"
+                    android:textStyle="normal" />
+
+                <TextView
+                    android:id="@+id/name_TextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_gravity="center_vertical"
+                    android:background="@drawable/name_text_round"
+                    android:gravity="center_vertical"
+                    android:lineSpacingExtra="6sp"
+
+                    android:text="  홍길동"
+                    android:textColor="#333333"
+                    android:textSize="16sp"
+                    android:textStyle="normal" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/LinearLayout_email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/LinearLayout_name"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/textView2"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_gravity="center_vertical"
+                    android:gravity="center_vertical"
+
+                    android:lineSpacingExtra="6sp"
+                    android:text="이메일"
+                    android:textColor="#616161"
+                    android:textSize="14sp"
+                    android:textStyle="normal" />
+
+                <TextView
+                    android:id="@+id/email_TextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_gravity="center_vertical"
+                    android:background="@drawable/name_text_round"
+                    android:gravity="center_vertical"
+
+                    android:lineSpacingExtra="6sp"
+                    android:text="aaa@gmail.com"
+                    android:textColor="#333333"
+                    android:textSize="16sp"
+                    android:textStyle="normal" />
+            </LinearLayout>
+        </RelativeLayout>
+        <RelativeLayout
+            android:id="@+id/relative_seconds"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/LinearLayout_name"
-            android:orientation="vertical">
+            android:layout_below="@id/relative_first"
+            android:layout_marginTop="10dp">
 
-            <TextView
-                android:id="@+id/textView2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
-                android:lineSpacingExtra="6sp"
-                android:textColor="#616161"
-                android:textSize="16sp"
-                android:textStyle="normal"
-                tools:text="이메일" />
-
-            <TextView
-                android:id="@+id/email_TextView"
+            <LinearLayout
+                android:id="@+id/viewpager_linearLayout"
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:layout_gravity="center_vertical"
-                android:background="@drawable/name_text_round"
-                android:gravity="center_vertical"
+                android:layout_height="500dp"
+                android:background="#FFFFFF"
+                android:orientation="vertical">
 
-                android:lineSpacingExtra="6sp"
-                android:text="aaa@gmail.com"
-                android:textColor="#333333"
-                android:textSize="16sp"
-                android:textStyle="normal" />
-        </LinearLayout>
+                <com.google.android.material.tabs.TabLayout
+                    android:id="@+id/tabLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:background="#00aded">
 
+                </com.google.android.material.tabs.TabLayout>
+
+                <androidx.viewpager2.widget.ViewPager2
+                    android:id="@+id/viewpager2"
+                    android:layout_width="match_parent"
+                    android:layout_height="300dp"
+                    android:background="#ffffff" />
+            </LinearLayout>
+        </RelativeLayout>
+    </RelativeLayout>
+    <!--SlidingUpPanelLayout의 첫번째 뷰 끝 -->
+
+
+    <!--SlidingUpPanelLayout의 두번째 뷰 -->
+    <RelativeLayout
+        android:id="@+id/slide_Relativelayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/transparent"
+        android:orientation="vertical">    <!--슬라이드 했을때 나오는 뷰의 길이-->
+
+        <RelativeLayout
+            android:id="@+id/relativeLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/cardview_light_background">
+
+            <LinearLayout
+                android:id="@+id/LinearLayout_first"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/cardview_light_background"
+                android:orientation="horizontal"
+                android:padding="10dp">
+
+                <TextView
+                    android:id="@+id/textView6"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:lineSpacingExtra="9sp"
+                    android:textColor="#222222"
+                    android:textSize="18sp"
+                    android:textStyle="normal"
+                    tools:text="친구찾기" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@id/LinearLayout_first"
+                android:orientation="vertical">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+            </LinearLayout>
+        </RelativeLayout>
     </RelativeLayout>
 
-    <RelativeLayout
-        android:id="@+id/relative_seconds"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/relative_first">
-
-        <LinearLayout
-            android:id="@+id/viewpager_linearLayout"
-            android:layout_width="match_parent"
-            android:layout_height="500dp"
-            android:background="#FFFFFF"
-            android:orientation="vertical">
-
-            <com.google.android.material.tabs.TabLayout
-                android:id="@+id/tabLayout"
-                android:layout_width="match_parent"
-                android:layout_height="30dp"
-                android:background="#00aded">
-
-            </com.google.android.material.tabs.TabLayout>
-
-            <androidx.viewpager2.widget.ViewPager2
-                android:id="@+id/viewpager2"
-                android:layout_width="match_parent"
-                android:layout_height="300dp"
-                android:background="#ffffff" />
-        </LinearLayout>
-    </RelativeLayout>
 
 
-</RelativeLayout>
+
+
+    <!--SlidingUpPanelLayout의 두번째 뷰 끝 -->
+
+</com.sothree.slidinguppanel.SlidingUpPanelLayout>
+
+
+
+
+
 
 

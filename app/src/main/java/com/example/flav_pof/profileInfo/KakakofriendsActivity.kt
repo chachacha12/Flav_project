@@ -14,6 +14,7 @@ import com.example.flav_pof.classes.UserInfo
 import com.google.firebase.firestore.FirebaseFirestore
 import com.kakao.sdk.talk.TalkApiClient
 
+//친구추가 버튼 눌러서 들어갔을때 보여지는 액티비티. 카톡 친구목록 보여줌
 class KakakofriendsActivity : AppCompatActivity() {
 
     private val TAG = "HomeFragment"

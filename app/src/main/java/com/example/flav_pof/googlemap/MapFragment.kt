@@ -58,7 +58,6 @@ class mapFragment : Fragment(), OnMapReadyCallback {
         super.onCreate(savedInstanceState)
         setCustomMarkerView()
 
-       // (activity as AppCompatActivity?)!!.supportActionBar!!.hide() //툴바 숨기기
     }
 
 
@@ -94,7 +93,6 @@ class mapFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -124,7 +122,6 @@ class mapFragment : Fragment(), OnMapReadyCallback {
     //액티비티가 처음 생성될때 실행되는 함수
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-
         if(mapView != null)
         {
             mapView.onCreate(savedInstanceState)

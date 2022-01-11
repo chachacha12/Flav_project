@@ -6,6 +6,7 @@ package com.example.flav_pof.feeds
 //이 앱은 파이어베이스를 기반으로해서 만듬. (파이어베이스는 서버리스인 db임. 이 db가 서버역할도 하는 것)
 // 파이어베이스-문서-가이드-개발(인증(앱에 파이어베이스연결, 신규사용자가입 등 기능), cloud firestore(db에 저장된 회원정보 읽거나 추가 기능), storage() 등을 이용)
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -13,12 +14,12 @@ import android.view.Menu
 import android.view.MenuItem
 import com.example.flav_pof.R
 import com.example.flav_pof.activity.BasicActivity
-import com.example.flav_pof.profileInfo.UserInfoFragment
-import com.example.flav_pof.profileInfo.UserListFragment
 import com.example.flav_pof.googlemap.home_map_Listener
 import com.example.flav_pof.googlemap.mapFragment
+import com.example.flav_pof.profileInfo.UserListFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import java.util.ArrayList
+import java.lang.System.exit
+import java.util.*
 
 
 class MainActivity : BasicActivity(), home_map_Listener {
@@ -31,7 +32,6 @@ class MainActivity : BasicActivity(), home_map_Listener {
 
     var mapfragment:mapFragment = mapFragment()
     var homeFragment:HomeFragment? =null
-    var userInfoFragment: UserInfoFragment? =null
     var userListFragment: UserListFragment? =null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,23 +46,39 @@ class MainActivity : BasicActivity(), home_map_Listener {
         strprofileImg= intent.getStringExtra("profileImg")
         strEmail= intent.getStringExtra("email")
 
-        Log.e("태그", "main에서의 카카오,   strNick: $strNick"+ "  strprofileImg: $strprofileImg"+
-            "  strEmail: $strEmail")
+        Log.e(
+            "태그", "main에서의 카카오,   strNick: $strNick" + "  strprofileImg: $strprofileImg" +
+                    "  strEmail: $strEmail"
+        )
         //getHashKey()
         init()
     }
 
 
+
     //게시물 추가하거나 등등 할때마다 피드 갱신
     override fun onRestart() {
         super.onRestart()
-        Log.e("태그","메인액티빝의 onRestart실행" )
+        Log.e("태그", "메인액티빝의 onRestart실행")
     }
 
 
     override fun onBackPressed() {
-        super.onBackPressed()
-        finish()
+        var builder = AlertDialog.Builder(this)
+        builder.setMessage("앱을 종료하시겠습니까?")
+        builder.setCancelable(false) // 다이얼로그 화면 밖 터치 방지
+
+        builder.setPositiveButton(
+            "예"
+        ) { dialog, which ->  super.onBackPressed()}
+        builder.setNegativeButton(
+            "아니요"
+        ) { dialog, which -> }
+
+        builder.setNeutralButton(
+            "취소"
+        ) { dialog, which -> }
+        builder.show() // 다이얼로그 보이기
     }
 
     //툴바 메뉴 버튼을 설정
@@ -75,8 +91,8 @@ class MainActivity : BasicActivity(), home_map_Listener {
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         // 클릭된 메뉴 아이템의 아이디 마다 when 구절로 클릭시 동작을 설정한다.
         when(item!!.itemId){
-             R.id.notice_button->{ // 알림창 버튼 클릭 시 이벤트 처리
-                Log.e("태그","알림창 클릭")
+            R.id.notice_button -> { // 알림창 버튼 클릭 시 이벤트 처리
+                Log.e("태그", "알림창 클릭")
             }
         }
         return super.onOptionsItemSelected(item)
@@ -123,7 +139,7 @@ class MainActivity : BasicActivity(), home_map_Listener {
 
             when(it.itemId) {
                 R.id.home -> {
-                     homeFragment = HomeFragment(server)
+                    homeFragment = HomeFragment(server)
                     supportFragmentManager.beginTransaction()
                         .replace(com.example.flav_pof.R.id.container, homeFragment!!)
                         .commit()
@@ -138,8 +154,8 @@ class MainActivity : BasicActivity(), home_map_Listener {
                     true
                 }
                 R.id.userList -> {
-                     userListFragment = UserListFragment()
-                     supportFragmentManager.beginTransaction()
+                    userListFragment = UserListFragment()
+                    supportFragmentManager.beginTransaction()
                         .replace(com.example.flav_pof.R.id.container, userListFragment!!)
                         .commit()
                     true
@@ -158,7 +174,7 @@ class MainActivity : BasicActivity(), home_map_Listener {
     //home_map_fragment를 상속받아서 implement해준 함수임. home과 map프래그먼트 사이 데이터 통신에 이용.
     override fun onCommand(map_contentsList: ArrayList<Contents>) {
         mapfragment?.display(map_contentsList)
-        Log.e("태그","메인액티비티에서 onCommand함수 실행해서 컨텐츠리스트 mapfragment에 전달")
+        Log.e("태그", "메인액티비티에서 onCommand함수 실행해서 컨텐츠리스트 mapfragment에 전달")
     }
 
 
