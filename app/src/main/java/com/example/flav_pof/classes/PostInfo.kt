@@ -1,4 +1,4 @@
-package com.example.flav_pof
+package com.example.flav_pof.classes
 
 import java.io.Serializable
 import java.util.*

@@ -19,7 +19,7 @@ import android.widget.RelativeLayout
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import com.bumptech.glide.Glide
-import com.example.flav_pof.UserInfo
+import com.example.flav_pof.classes.UserInfo
 import com.example.flav_pof.R
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth

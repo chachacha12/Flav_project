@@ -15,7 +15,6 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.flav_pof.PostInfo
 import com.example.flav_pof.R
 import com.example.flav_pof.classes.Msg
 import com.example.flav_pof.classes.Result_response
@@ -24,14 +23,10 @@ import com.example.flav_pof.googlemap.home_map_Listener
 import com.example.flav_pof.retrofit_service
 import com.example.flav_pof.writepost.WritePostActivity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
-import kotlinx.android.synthetic.main.view_loader.*
 import org.json.JSONArray
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.util.*
 import kotlin.collections.ArrayList
 
 

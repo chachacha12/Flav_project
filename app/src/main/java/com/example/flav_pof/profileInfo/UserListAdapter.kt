@@ -1,8 +1,6 @@
-package com.example.flav_pof.Adapter
+package com.example.flav_pof.profileInfo
 
-import android.R
 import android.app.Activity
-import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -10,8 +8,7 @@ import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.request.target.Target
-import com.example.flav_pof.UserInfo
+import com.example.flav_pof.classes.UserInfo
 
 
 class UserListAdapter(

@@ -13,8 +13,8 @@ import android.view.Menu
 import android.view.MenuItem
 import com.example.flav_pof.R
 import com.example.flav_pof.activity.BasicActivity
-import com.example.flav_pof.fragment.UserInfoFragment
-import com.example.flav_pof.fragment.UserListFragment
+import com.example.flav_pof.profileInfo.UserInfoFragment
+import com.example.flav_pof.profileInfo.UserListFragment
 import com.example.flav_pof.googlemap.home_map_Listener
 import com.example.flav_pof.googlemap.mapFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -31,8 +31,8 @@ class MainActivity : BasicActivity(), home_map_Listener {
 
     var mapfragment:mapFragment = mapFragment()
     var homeFragment:HomeFragment? =null
-    var userInfoFragment:UserInfoFragment? =null
-    var userListFragment:UserListFragment? =null
+    var userInfoFragment: UserInfoFragment? =null
+    var userListFragment: UserListFragment? =null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -112,9 +112,9 @@ class MainActivity : BasicActivity(), home_map_Listener {
         Log.e("태그","메인액티비티에서 fragmentfactory써서 homefragment를 commit")
          */
 
-        var homeFragment = HomeFragment(server)
+         homeFragment = HomeFragment(server)
         supportFragmentManager.beginTransaction()
-            .replace(R.id.container, homeFragment)
+            .replace(R.id.container, homeFragment!!)
             .commit()
 
         //바텀네비게이션탭 선택에 따라 붙혀줄 fragment
@@ -125,21 +125,7 @@ class MainActivity : BasicActivity(), home_map_Listener {
                 R.id.home -> {
                      homeFragment = HomeFragment(server)
                     supportFragmentManager.beginTransaction()
-                        .replace(com.example.flav_pof.R.id.container, homeFragment)
-                        .commit()
-                    true
-                }
-                R.id.myInfo -> {
-                    userInfoFragment = UserInfoFragment()
-                    supportFragmentManager.beginTransaction()
-                        .replace(com.example.flav_pof.R.id.container, userInfoFragment!!)
-                        .commit()
-                    true
-                }
-                R.id.userList -> {
-                     userListFragment = UserListFragment()
-                    supportFragmentManager.beginTransaction()
-                        .replace(com.example.flav_pof.R.id.container, userListFragment!!)
+                        .replace(com.example.flav_pof.R.id.container, homeFragment!!)
                         .commit()
                     true
                 }
@@ -148,6 +134,13 @@ class MainActivity : BasicActivity(), home_map_Listener {
                     Log.e("태그", "mapfrag로 replace")
                     supportFragmentManager.beginTransaction()
                         .replace(com.example.flav_pof.R.id.container, mapfragment!!)
+                        .commit()
+                    true
+                }
+                R.id.userList -> {
+                     userListFragment = UserListFragment()
+                     supportFragmentManager.beginTransaction()
+                        .replace(com.example.flav_pof.R.id.container, userListFragment!!)
                         .commit()
                     true
                 }

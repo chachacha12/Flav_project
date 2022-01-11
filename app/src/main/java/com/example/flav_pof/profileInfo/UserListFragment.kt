@@ -1,4 +1,4 @@
-package com.example.flav_pof.fragment
+package com.example.flav_pof.profileInfo
 
 import android.content.Intent
 import android.os.Bundle
@@ -10,18 +10,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.example.flav_pof.Adapter.UserListAdapter
 import com.example.flav_pof.R
-import com.example.flav_pof.UserInfo
+import com.example.flav_pof.classes.UserInfo
 import com.google.firebase.firestore.FirebaseFirestore
 import com.kakao.sdk.talk.TalkApiClient
 
 
-/**
- * A simple [Fragment] subclass.
- */
+//카카오톡 팔로우, 팔로잉 친구목록 보여줌
 class UserListFragment : Fragment() {
 
     private val TAG = "HomeFragment"
@@ -41,13 +36,14 @@ class UserListFragment : Fragment() {
         userList = ArrayList()
         userListAdapter = UserListAdapter(requireActivity(), userList!!)
 
+        /*
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
-
         recyclerView.setHasFixedSize(true)
         recyclerView.layoutManager = LinearLayoutManager(activity)
         recyclerView.adapter = userListAdapter
 
         thread_start()
+         */
 
         return view
     }

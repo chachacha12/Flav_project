@@ -6,7 +6,6 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.util.DisplayMetrics
@@ -16,21 +15,19 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.scale
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.example.flav_pof.R
 import com.example.flav_pof.databinding.FragmentMapBinding
 import com.example.flav_pof.feeds.Contents
-import com.google.android.gms.maps.CameraUpdate
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import kotlinx.android.synthetic.main.fragment_map.*
@@ -38,7 +35,6 @@ import java.text.SimpleDateFormat
 import java.time.Instant
 import java.util.*
 import kotlin.collections.ArrayList
-
 
 /**
  * A simple [Fragment] subclass.
@@ -54,7 +50,6 @@ class mapFragment : Fragment(), OnMapReadyCallback {
     lateinit var slidePanel:SlidingUpPanelLayout  //슬라이드업파넬레이아웃
     //마커좌표값을 key로 contents값을 value로 하는 map. 유저가 마커정보클릭시 슬라이드뷰에 컨텐츠내용 채워주기 위한 변수
     var markerpos_contents_map = mutableMapOf<LatLng, Contents>()
-
     //뷰바인딩을 함 - xml의 뷰들에 접근하기 위해서
     private var _binding: FragmentMapBinding? = null
     private val binding get() = _binding
@@ -62,8 +57,22 @@ class mapFragment : Fragment(), OnMapReadyCallback {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setCustomMarkerView()
+
+       // (activity as AppCompatActivity?)!!.supportActionBar!!.hide() //툴바 숨기기
     }
 
+
+    override fun onStart() {
+        super.onStart()
+        mapView.onStart()
+       (activity as AppCompatActivity?)!!.supportActionBar!!.hide()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        mapView.onStop()
+       (activity as AppCompatActivity?)!!.supportActionBar!!.show()
+    }
 
     // 슬라이드업파넬레이아웃 이벤트 리스너
     inner class PanelEventListener : SlidingUpPanelLayout.PanelSlideListener {
@@ -101,15 +110,6 @@ class mapFragment : Fragment(), OnMapReadyCallback {
         return view
     }
 
-    override fun onStart() {
-        super.onStart()
-        mapView.onStart()
-    }
-
-    override fun onStop() {
-        super.onStop()
-        mapView.onStop()
-    }
     override fun onDestroyView() {
         super.onDestroyView()
         _binding=null

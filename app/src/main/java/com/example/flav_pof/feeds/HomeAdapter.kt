@@ -96,9 +96,15 @@ class HomeAdapter(
         nameTextView.text = contents.User.getString("username")  //contents.User로 서버로부터 받아온 값이jsonobject라서 getString()~ 이걸 더 추가함
 
         var profile_photo_imageView = cardView.photoImageVIew
-        var photoUrl = contents.User.getString("profileimg_path")  //프사없으면null이라서 이때처리해주기
-        Glide.with(activity).load(photoUrl).override(500).thumbnail(0.1f)
-            .into(profile_photo_imageView)
+        var photoUrl = contents.User.getString("profileimg_path")  //프사없으면"null"이라서 이때처리해주기
+
+       if(photoUrl == "null"){  //프사없을땐 기본이미지로
+           profile_photo_imageView.setImageResource(R.drawable.ic_account_circle_black_24dp)
+       }else{
+           Glide.with(activity).load(photoUrl).override(500).thumbnail(0.1f)
+               .into(profile_photo_imageView)
+       }
+
 
         //받아온 지하철역, 거리정보 넣어주기
         val location_textView = cardView.location_textView

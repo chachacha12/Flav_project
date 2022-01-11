@@ -3,10 +3,13 @@ package com.example.flav_pof.activity    //부모클래스(액티비티)임
 //다른 액티비티들 만들고 클래스이름옆 : 에다가 BasicActivity쓰면 상속됨
 
 import android.content.pm.ActivityInfo
+import android.graphics.Color
 import android.os.Bundle
 import androidx.annotation.LayoutRes
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
+import com.example.flav_pof.R
 import com.example.flav_pof.retrofit_service
 import com.google.gson.GsonBuilder
 import retrofit2.Retrofit
@@ -22,17 +25,17 @@ open class BasicActivity : AppCompatActivity() {
 
     var server = retrofit.create(retrofit_service::class.java)  //서버와 만들어둔 인터페이스를 연결시켜줌.
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED //화면의 가로세로 관련 문제 해결을 위해..
     }
-
 
 
     //모든 액티비티에 툴바를 달아주기 위해 basicact에서 달아줌
     override fun setContentView(@LayoutRes layoutResID: Int) {
         super.setContentView(layoutResID)
-
         val myToolbar = findViewById<androidx.appcompat.widget.Toolbar>(com.example.flav_pof.R.id.toolbar)
         setSupportActionBar(myToolbar)
     }
@@ -43,5 +46,14 @@ open class BasicActivity : AppCompatActivity() {
             actionBar.setTitle(title)
         }
     }
+
+    //툴바색 변경
+    open fun setToolbarbackground(color: Color?) {
+        val actionBar: ActionBar? = supportActionBar
+        if (actionBar != null) {
+        }
+    }
+
+
 
 }

@@ -1,4 +1,4 @@
-package com.example.flav_pof     //회원 한명의 4가지 정보들을 담고있는 객체를 하나씩 생성하는 클래스
+package com.example.flav_pof.classes     //회원 한명의 4가지 정보들을 담고있는 객체를 하나씩 생성하는 클래스
 
 data class UserInfo(val name:String, val profileimage:String){
 

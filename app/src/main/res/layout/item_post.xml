@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="5dp"
+    android:layout_marginTop="10dp"
     app:cardBackgroundColor="#ffffff"
     app:cardCornerRadius="10dp">
 
@@ -12,23 +12,25 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#ffffff"
-        android:orientation="vertical"
-        android:padding="10dp">
+        android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="#ffffff"
             android:gravity="center_vertical"
-            android:orientation="vertical"
-            android:padding="5dp">
+            android:orientation="vertical">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="3dp"
+                android:layout_marginRight="15dp"
                 android:background="#ffffff"
                 android:gravity="right"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:padding="3dp">
 
                 <TextView
                     android:id="@+id/titleTextView"
@@ -40,7 +42,7 @@
                     android:lineSpacingExtra="9sp"
                     android:text="타이틀"
                     android:textColor="#222222"
-                    android:textSize="18sp"
+                    android:textSize="20sp"
                     android:textStyle="bold" />
 
                 <ImageView
@@ -57,10 +59,13 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
                 android:layout_marginTop="5dp"
+                android:layout_marginRight="15dp"
                 android:background="#ffffff"
                 android:gravity="center_vertical"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:padding="3dp">
 
                 <androidx.cardview.widget.CardView
                     android:layout_width="27dp"
@@ -122,9 +127,9 @@
         </LinearLayout>
 
         <RelativeLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#ffffff"/>
+            android:background="#ffffff" />
 
         <com.example.flav_pof.feeds.ReadContentsVIew
             android:id="@+id/readContentsView"
