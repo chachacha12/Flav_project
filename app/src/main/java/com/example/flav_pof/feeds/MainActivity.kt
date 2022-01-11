@@ -37,7 +37,7 @@ class MainActivity : BasicActivity(), home_map_Listener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(com.example.flav_pof.R.layout.activity_main)
-        setToolbarTitle("      뿌윙클")
+        setToolbarTitle("  foowinkle")
 
         //kakaoLoginAct에서 보낸 인텐트를 받아서 로그인한 사용자 정보를 얻는다.
         var intent = intent

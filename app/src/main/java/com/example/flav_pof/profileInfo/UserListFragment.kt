@@ -15,8 +15,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.flav_pof.R
 import com.example.flav_pof.classes.UserInfo
+import com.example.flav_pof.classes.Usersingleton
 import com.example.flav_pof.databinding.FragmentMapBinding
 import com.example.flav_pof.databinding.FragmentUserListBinding
 import com.google.firebase.firestore.FirebaseFirestore
@@ -64,6 +66,7 @@ class UserListFragment : Fragment() {
         _binding = FragmentUserListBinding.inflate(inflater, container,false)
         val view = binding.root
 
+        setprofileInfo()  //사용자 본인의 프로필정보를 singleton객체에서 가져와 삽입해줌
 
         slidePanel = binding?.SlideUpPannerLayout!!   //fragment_map.xml의 가장 최상단 레이아웃을 가져옴
         slidePanel.addPanelSlideListener(PanelEventListener()) //슬라이드업파넬 이벤트 리스너 추가
@@ -78,7 +81,6 @@ class UserListFragment : Fragment() {
             recyclerView.layoutManager = LinearLayoutManager(requireActivity())
             recyclerView.adapter = userListAdapter
             thread_start()
-
             //패널 열고 닫기
             val state = slidePanel.panelState
             // 닫힌 상태일 경우 열기
@@ -91,8 +93,23 @@ class UserListFragment : Fragment() {
                 //Toast.makeText(activity, "클릭", Toast.LENGTH_SHORT).show()
             }
         }
+
+        //슬라이드 열린거 내려주는 버튼
+        binding.pulldownButton.setOnClickListener {
+            slidePanel.panelState = SlidingUpPanelLayout.PanelState.COLLAPSED //슬라이드 닫음
+        }
+
         return view
     }  //onCreateView
+
+    //사용자 본인의 프로필 정보 세팅
+    fun setprofileInfo(){
+        binding.nameTextView.text = "  "+Usersingleton.username
+        binding.emailTextView.text ="  "+Usersingleton.userEmail
+        Glide.with(requireActivity()).load(Usersingleton.profilepath).override(500).thumbnail(0.1f)
+            .into( binding.profileImageView)
+        Log.e("태그","유저프로필 세팅 binding.nameTextView.text: "+Usersingleton.username)
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()

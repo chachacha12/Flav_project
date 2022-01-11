@@ -149,6 +149,12 @@ class KakaoLoginActivity: BasicActivity() {
                 this.user = Users(strEmail, strNick, kakao_token, strkakaoid) //유저객체 하나 생성
 
                 Usersingleton.kakao_id = user.id!!.toInt()  //유저 싱글톤에 있는 회원번호 전역변수를 초기화
+                Usersingleton.username = user.kakaoAccount?.profile?.nickname.toString()
+                Usersingleton.userEmail = user.kakaoAccount?.email.toString()
+                Usersingleton.profilepath = user.kakaoAccount?.profile?.thumbnailImageUrl.toString()
+                Log.e("싱글톤태그","usersingleton.username: "+Usersingleton.username)
+
+
 
                 Log.e("카카오로그인화면 태그", "아예 첫 실행일때 user_id값 초기화 성공: " + Usersingleton.kakao_id)
 
@@ -186,6 +192,11 @@ class KakaoLoginActivity: BasicActivity() {
                 strkakaoid = user.id!!.toString()
 
                 Usersingleton.kakao_id = user.id!!.toInt()  //유저 싱글톤에 있는 회원번호 전역변수를 초기화
+                Usersingleton.username = user.kakaoAccount?.profile?.nickname.toString()
+                Usersingleton.userEmail = user.kakaoAccount?.email.toString()
+                Usersingleton.profilepath = user.kakaoAccount?.profile?.thumbnailImageUrl.toString()
+                Log.e("싱글톤태그","usersingleton.username: "+Usersingleton.username)
+
 
                 Log.e("카카오로그인화면 태그", "토큰있고 로그인되있을때 user_id값 초기화 성공: " + Usersingleton.kakao_id)
 
