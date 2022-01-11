@@ -31,23 +31,42 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
             android:padding="10dp">
 
             <TextView
                 android:id="@+id/nameTextView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                tools:text="김철수"
-                android:textColor="#000000"
-                android:textSize="20sp"
-                android:textStyle="bold" />
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:lineSpacingExtra="6sp"
+                android:textColor="#333333"
+                android:textSize="18sp"
+                android:textStyle="normal"
+                tools:text="은정완" />
 
-            <TextView
-                android:id="@+id/addressTextView"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                tools:text="경기도" />
+                android:layout_height="30dp"
+                android:gravity="center|right"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/FriendAdd_button"
+                    android:layout_width="75dp"
+                    android:layout_height="28dp"
+
+                    android:background="@drawable/button_round"
+                    android:gravity="center"
+                    android:lineSpacingExtra="6sp"
+                    android:text="친구추가"
+                    android:textColor="#00aded"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+
+                />
+            </LinearLayout>
+
         </LinearLayout>
 
     </LinearLayout>
