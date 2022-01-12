@@ -154,7 +154,7 @@ class MainActivity : BasicActivity(), home_map_Listener {
                     true
                 }
                 R.id.userList -> {
-                    userListFragment = UserListFragment()
+                    userListFragment = UserListFragment(server)
                     supportFragmentManager.beginTransaction()
                         .replace(com.example.flav_pof.R.id.container, userListFragment!!)
                         .commit()

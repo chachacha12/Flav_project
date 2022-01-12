@@ -1,7 +1,5 @@
 package com.example.flav_pof.profileInfo
 
-import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -10,25 +8,20 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.flav_pof.R
-import com.example.flav_pof.classes.UserInfo
 import com.example.flav_pof.classes.Usersingleton
-import com.example.flav_pof.databinding.FragmentMapBinding
 import com.example.flav_pof.databinding.FragmentUserListBinding
-import com.google.firebase.firestore.FirebaseFirestore
+import com.example.flav_pof.retrofit_service
+import com.google.android.material.tabs.TabLayoutMediator
 import com.kakao.sdk.talk.TalkApiClient
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
-import kotlinx.android.synthetic.main.fragment_map.*
 
 
 //내 프로필 정보와 함께, 팔로우 팔로하는  친구목록 보여주는, 메인액티비티에 부착되는 3번째 프래그먼트
-class UserListFragment : Fragment() {
+class UserListFragment(var server: retrofit_service) : Fragment() {
     private val TAG = "userListFragemnt태그"
     //뷰바인딩을 함 - xml의 뷰들에 접근하기 위해서
     private var _binding: FragmentUserListBinding? = null
@@ -37,8 +30,13 @@ class UserListFragment : Fragment() {
 
     private var userListAdapter: UserListAdapter? = null
     private var userList: ArrayList<UserInfo>? = null
-    private var updating = false
-    private var topScrolled = false
+
+    //tabLayout에 붙을 텍스트들
+    var textArray = arrayListOf("팔로워", "팔로잉")
+    //이 프래그먼트에 붙힐 프래그먼트 2개를 만들어줌
+    var follower_fragment: FollowerFragment? =null
+    var following_fragment: FollowingFragment? = null
+
 
     // 슬라이드업파넬레이아웃 이벤트 리스너
     inner class PanelEventListener : SlidingUpPanelLayout.PanelSlideListener {
@@ -47,7 +45,6 @@ class UserListFragment : Fragment() {
             // binding.tvSlideOffset.text = slideOffset.toString()
             Log.e("태그", "패널 슬라이드")
         }
-
         // 패널의 상태가 변했을 때
         override fun onPanelStateChanged(panel: View?, previousState: SlidingUpPanelLayout.PanelState?, newState: SlidingUpPanelLayout.PanelState?) {
             if (newState == SlidingUpPanelLayout.PanelState.COLLAPSED) {
@@ -68,6 +65,8 @@ class UserListFragment : Fragment() {
 
         setprofileInfo()  //사용자 본인의 프로필정보를 singleton객체에서 가져와 삽입해줌
 
+        init_viewpager()  //팔로잉, 팔로워 정보를 서버로부터 가져와서 띄워줌
+
         slidePanel = binding?.SlideUpPannerLayout!!   //fragment_map.xml의 가장 최상단 레이아웃을 가져옴
         slidePanel.addPanelSlideListener(PanelEventListener()) //슬라이드업파넬 이벤트 리스너 추가
 
@@ -75,7 +74,7 @@ class UserListFragment : Fragment() {
         binding.friendsLookButton.setOnClickListener {
             //리사이클러뷰 만들고 카톡친구가져오기 로직 진행.
             userList = ArrayList()
-            userListAdapter = UserListAdapter(requireActivity(), userList!!)
+            userListAdapter = UserListAdapter(requireActivity(), userList!!, server)
             val recyclerView = binding.recyclerView
             recyclerView.setHasFixedSize(true)
             recyclerView.layoutManager = LinearLayoutManager(requireActivity())
@@ -87,20 +86,51 @@ class UserListFragment : Fragment() {
             if (state == SlidingUpPanelLayout.PanelState.COLLAPSED) {
                 slidePanel.panelState = SlidingUpPanelLayout.PanelState.ANCHORED
             }
-            // 열린 상태일 경우 닫기
-            else if (state == SlidingUpPanelLayout.PanelState.EXPANDED) {
-                slidePanel.panelState = SlidingUpPanelLayout.PanelState.COLLAPSED
-                //Toast.makeText(activity, "클릭", Toast.LENGTH_SHORT).show()
-            }
         }
-
         //슬라이드 열린거 내려주는 버튼
         binding.pulldownButton.setOnClickListener {
-            slidePanel.panelState = SlidingUpPanelLayout.PanelState.COLLAPSED //슬라이드 닫음
+            val state = slidePanel.panelState
+            // 열린 상태일 경우 닫기
+            if (state == SlidingUpPanelLayout.PanelState.EXPANDED) {
+                slidePanel.panelState = SlidingUpPanelLayout.PanelState.COLLAPSED
+            }
         }
-
         return view
     }  //onCreateView
+
+    //팔로잉, 팔로워 정보를 서버로부터 가져와서 띄워줌
+    fun init_viewpager(){
+        //프래그먼트들 여기서 초기화
+        follower_fragment = FollowerFragment()
+        following_fragment = FollowingFragment()
+
+        /*
+        //프래그먼트로 식당명 데이터 전달
+        if(namelist_string == "") {  //게시물 수정하기 눌러서 온 경우엔 null임
+
+        }else{
+            var bundle = Bundle()
+            bundle.putString("namelist_string", namelist_string)  //식당명, 위경도 묶음jsonarray가  string묶음으로 된걸 frag에 보내줌
+            name_fragment!!.arguments = bundle
+        }
+
+         */
+
+        //뷰페이저에 다시 프래그먼트들을 붙혀줌. 이때 어댑터에 인자를 하나 추가해서 내가 위에서 bundle넣어서 새로 만든 프래그먼트를 어댑터에 전달해줌
+        binding.viewpager2.adapter = follower_following_Viewpager_Adapter(
+            requireActivity(),
+            follower_fragment,
+            following_fragment
+        )
+
+        //뷰페이저2객체를 슬라이딩 할때마다 tab의 위치도 바뀌어야함. 그 둘을 동기화 해주는 클래스인 TabLayoutMediator을 이용해줌.
+        TabLayoutMediator(binding.tabLayout, binding.viewpager2){ tab, position -> tab.text = textArray[position]
+        }.attach()
+
+       // tag_fragment?.gettag1(server)  //태그 프래그먼트 객체통해 서버로부터 태그1값 가져오기
+        Log.e("태그", "뷰페이저만들어짐.")
+    }
+
 
     //사용자 본인의 프로필 정보 세팅
     fun setprofileInfo(){
@@ -141,14 +171,15 @@ class UserListFragment : Fragment() {
                     userList!!.add(
                         UserInfo(
                             friends.elements?.get(i)?.profileNickname!!,
-                            friends.elements?.get(i)?.profileThumbnailImage!!
+                            friends.elements?.get(i)?.profileThumbnailImage!!,
+                            friends.elements?.get(i)?.id.toString()
                         )
                     )
                     i++
                 }
                 Log.e(TAG, "userList:  " + userList.toString())
                 handler()
-                Log.e(TAG, "유저리스트가져오기 성공!  핸들러 실행하여 리사이클러뷰 notifiy ")
+                Log.e(TAG, "카톡 친구목록 가져오기 성공!  핸들러 실행하여 리사이클러뷰 notifiy ")
                 // 친구의 UUID 로 메시지 보내기 가능
             }
         }

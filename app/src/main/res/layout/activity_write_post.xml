@@ -11,11 +11,9 @@
         android:id="@+id/top_LinearLayout"
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:layout_margin="15dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="15dp"
         android:background="#ffffff"
         android:orientation="horizontal">
 
@@ -48,11 +46,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/top_LinearLayout"
-        android:layout_margin="15dp"
-        android:layout_marginStart="10dp"
+        android:layout_marginStart="15dp"
         android:layout_marginTop="10dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginEnd="15dp"
+        android:layout_marginBottom="15dp"
         android:background="#FFFFFF"
         android:orientation="vertical"
         android:padding="10dp">
@@ -79,8 +76,13 @@
                 android:id="@+id/tabLayout"
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
-                android:background="#00aded"
-                app:tabTextColor="#EDEBEB">
+                android:layout_marginTop="15dp"
+                android:background="@drawable/dialog_button_round"
+                app:tabIndicator="@drawable/button_round"
+                app:tabIndicatorColor="#00aded"
+                app:tabIndicatorGravity="stretch"
+                app:tabSelectedTextColor="@color/colorBlack"
+                app:tabTextColor="#757575">
 
             </com.google.android.material.tabs.TabLayout>
 

@@ -54,8 +54,8 @@
                 android:orientation="horizontal">
 
                 <androidx.cardview.widget.CardView
-                    android:layout_width="90dp"
-                    android:layout_height="90dp"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
                     android:layout_margin="5dp"
                     app:cardCornerRadius="60dp">
 
@@ -93,7 +93,7 @@
                 <TextView
                     android:id="@+id/name_TextView"
                     android:layout_width="match_parent"
-                    android:layout_height="40dp"
+                    android:layout_height="30dp"
                     android:layout_gravity="center_vertical"
                     android:background="@drawable/name_text_round"
                     android:gravity="center_vertical"
@@ -128,7 +128,7 @@
                 <TextView
                     android:id="@+id/email_TextView"
                     android:layout_width="match_parent"
-                    android:layout_height="40dp"
+                    android:layout_height="30dp"
                     android:layout_gravity="center_vertical"
                     android:background="@drawable/name_text_round"
                     android:gravity="center_vertical"
@@ -140,17 +140,28 @@
                     android:textStyle="normal" />
             </LinearLayout>
         </RelativeLayout>
+
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="match_parent"
+            android:layout_height="6dp"
+            android:layout_below="@id/relative_first"
+            android:background="#f7f7f7" />
+
         <RelativeLayout
             android:id="@+id/relative_seconds"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/relative_first"
-            android:layout_marginTop="10dp">
+            android:layout_marginLeft="21dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="21dp"
+            android:layout_marginBottom="10dp">
 
             <LinearLayout
                 android:id="@+id/viewpager_linearLayout"
                 android:layout_width="match_parent"
-                android:layout_height="500dp"
+                android:layout_height="match_parent"
                 android:background="#FFFFFF"
                 android:orientation="vertical">
 
@@ -158,14 +169,20 @@
                     android:id="@+id/tabLayout"
                     android:layout_width="match_parent"
                     android:layout_height="30dp"
-                    android:background="#00aded">
+                    android:layout_marginTop="15dp"
+                    android:background="@drawable/dialog_button_round"
+                    app:tabIndicator="@drawable/button_round"
+                    app:tabIndicatorColor="#00aded"
+                    app:tabIndicatorGravity="stretch"
+                    app:tabSelectedTextColor="@color/colorBlack"
+                    app:tabTextColor="#757575">
 
                 </com.google.android.material.tabs.TabLayout>
 
                 <androidx.viewpager2.widget.ViewPager2
                     android:id="@+id/viewpager2"
                     android:layout_width="match_parent"
-                    android:layout_height="300dp"
+                    android:layout_height="match_parent"
                     android:background="#ffffff" />
             </LinearLayout>
         </RelativeLayout>

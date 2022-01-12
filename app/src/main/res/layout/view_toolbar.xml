@@ -11,5 +11,5 @@
     android:visibility="visible"
     app:menu="@menu/toolbar_item"
     app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-    app:subtitleTextColor="#00aded"
-    app:titleTextColor="#00aded" />
+    app:subtitleTextColor=" #222222"
+    app:titleTextColor=" #222222" />
