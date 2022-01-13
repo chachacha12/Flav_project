@@ -202,8 +202,13 @@ class mapFragment : Fragment(), OnMapReadyCallback {
             var contents = markerpos_contents_map.get(it.position)!!
             //프사사진 삽입
             var face_photoUrl = contents.User.getString("profileimg_path")  //프사없으면 "null"값이옴. string임.
-            Glide.with(requireActivity()).load(face_photoUrl).override(500).thumbnail(0.1f)
-                .into(binding?.photoImageVIew!!)
+            if(face_photoUrl=="null"){  //프사없을때는 기본이미지
+                binding?.photoImageVIew!!.setImageResource(R.drawable.ic_account_circle_black_24dp) //기본이미지
+            }else{
+                Glide.with(requireActivity()).load(face_photoUrl).override(500).thumbnail(0.1f)
+                    .into(binding?.photoImageVIew!!)
+            }
+
             binding?.titleTextView?.text  =  contents.restname //식당명
             binding?.nameTextView?.text   =  contents.User.getString("username") //유저네임
             binding?.locationTextView?.text  =  contents.near_station+"역에서 "+contents.station_distance

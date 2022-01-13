@@ -204,7 +204,7 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
                     selectedImageView = it as ImageView
                 }
 
-                //intent에  jsonarray를 string값으로 바꿔서 날렸고, 그 string값을 받음. 프래그먼트로 날려준후 다시 jsonarray객체로 만들거임
+                //프래그먼트에서 intent에  jsonarray를 string값으로 바꿔서 날렸고, 그 string값을 이 액티비티에서 받음. 여기서 또 다른 프래그먼트로 날려준후 다시 jsonarray객체로 만들거임
                 namelist_string =
                     data!!.getStringExtra("restaurant_name_list")  //주변식당명리스트(string으로 되어있는)가 인텐트에 실려서 날아옴
                 //exif정보가 없는 사진이면 바로종료

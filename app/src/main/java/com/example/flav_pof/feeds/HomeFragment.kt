@@ -152,12 +152,10 @@ class HomeFragment(var server:retrofit_service) : Fragment() {
 
     //firebasehelper 클래스 안쓰고이 안에서 게시물 삭제로직 다 짤거임. 그래야 업데이트하기 편해서
     var onPostListener: OnPostListener = object : OnPostListener {
-        //override fun onDelete(postInfo: PostInfo)
         override fun onDelete(position: Int) {
             //s3와 rds삭제로직
             choosen_contents_id = contentsList?.get(position)?.contents_id!!  //사용자가 선택한 게시물의 id값
-            choosen_filename = contentsList?.get(position)?.filename.toString()  //사용자가 선택한 게시물의 id값
-
+            choosen_filename = contentsList?.get(position)?.filename.toString()  //사용자가 선택한 게시물의 파일네임값
             storageDelete(choosen_filename!!)  //s3삭제로직
         }
         override fun onModify() {

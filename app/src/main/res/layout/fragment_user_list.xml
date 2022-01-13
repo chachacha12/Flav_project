@@ -54,8 +54,8 @@
                 android:orientation="horizontal">
 
                 <androidx.cardview.widget.CardView
-                    android:layout_width="70dp"
-                    android:layout_height="70dp"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
                     android:layout_margin="5dp"
                     app:cardCornerRadius="60dp">
 
@@ -80,7 +80,7 @@
                 <TextView
                     android:id="@+id/textView"
                     android:layout_width="match_parent"
-                    android:layout_height="40dp"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:gravity="center_vertical"
                     android:lineSpacingExtra="6sp"
@@ -115,7 +115,7 @@
                 <TextView
                     android:id="@+id/textView2"
                     android:layout_width="match_parent"
-                    android:layout_height="40dp"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:gravity="center_vertical"
 
@@ -153,9 +153,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/relative_first"
-            android:layout_marginLeft="21dp"
             android:layout_marginTop="10dp"
-            android:layout_marginRight="21dp"
             android:layout_marginBottom="10dp">
 
             <LinearLayout
@@ -169,7 +167,9 @@
                     android:id="@+id/tabLayout"
                     android:layout_width="match_parent"
                     android:layout_height="30dp"
+                    android:layout_marginLeft="20dp"
                     android:layout_marginTop="15dp"
+                    android:layout_marginRight="20dp"
                     android:background="@drawable/dialog_button_round"
                     app:tabIndicator="@drawable/button_round"
                     app:tabIndicatorColor="#00aded"

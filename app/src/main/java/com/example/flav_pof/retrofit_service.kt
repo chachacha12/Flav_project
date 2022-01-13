@@ -65,7 +65,7 @@ interface retrofit_service {
     fun locationtag_Request(): Call<Tag_response>
 
     //본인, 본인팔로우친구들 컨텐츠 다 가져오기
-    @GET(" app/contents/relevant/{kakao_id}")
+    @GET("app/contents/relevant/{kakao_id}")
     fun get_ReleventsContents_Request(@Path("kakao_id") kakao_id:Int): Call<Result_response>
 
     //게시물 rds에서 삭제 요청
@@ -80,7 +80,17 @@ interface retrofit_service {
     @FormUrlEncoded
     @POST("app/relation")
     fun make_relation_Request(@Field("followed_id") followed_id:String, @Field("follower_id") follower_id:String ): Call<Msg>
-    
 
+    //내가 팔로우하는 친구들 목록 가져오기 ('팔로잉' 목록에 나열할것) / followingFragment에 있음
+    @GET("app/relation/following/{kakao_id}")
+    fun get_following_Request(@Path("kakao_id") kakao_id:String): Call<Result_response>
+
+    //나를 팔로우하는 친구들 목록 가져오기 ('팔로워' 목록에 나열할것) / followerFragment에 있음
+    @GET("app/relation/follower/{kakao_id}")
+    fun get_follower_Request(@Path("kakao_id") kakao_id: String): Call<Result_response>
+
+    //내가 팔로우하는 친구 삭제(팔로잉목록중에서)
+    @DELETE("app/relation/follower/{kakao_id}/{delete_id}")
+    fun deletefollowing_Request(@Path("kakao_id") kakao_id: String, @Path("delete_id") delete_id: String):Call<Msg>
 
 }

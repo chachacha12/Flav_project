@@ -11,6 +11,7 @@ import android.widget.Toast
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.flav_pof.R
 import com.example.flav_pof.classes.ContentsUpload_response
 import com.example.flav_pof.classes.Msg
 import com.example.flav_pof.classes.Usersingleton
@@ -26,7 +27,7 @@ import retrofit2.Response
 class UserListAdapter(
     var activity: Activity,
     var mDataset: ArrayList<UserInfo>,
-    var server: retrofit_service
+    var onFriendsAddListener: OnFriendsAddListener
 ): RecyclerView.Adapter<UserListAdapter.MainViewHolder>() {
 
     class MainViewHolder(var cardView: CardView) : RecyclerView.ViewHolder(
@@ -47,54 +48,28 @@ class UserListAdapter(
         //친구추가버튼 클릭시 이벤트
         cardView.FriendAdd_button.setOnClickListener {
             Log.e("태그","친구추가하기 누름")
-
             var followed_id = mDataset[mainViewHolder.adapterPosition].kakaoid  //내가 누른 특정유저의 카카오id값
-            var follower_id = Usersingleton.kakao_id.toString() //본인 카카오id값
-            Log.e("태그","followed_id: "+followed_id+", follower_id: "+follower_id)
+            Log.e("태그","followed_id: "+followed_id)
+            onFriendsAddListener.onAdd(followed_id)  //userList프래그먼트에 내가 친추할 유저의 카카오id값 보내줌
+            //친추버튼에 이미 친구라는 표시로 바꿔주는 로직
 
-            //해당하는 친구와 친구관계 맺어주고, 해당 친구는 다음부터 목록에서 제거
-            server.make_relation_Request(followed_id, follower_id
-            ).enqueue(object : Callback<Msg> {
-                override fun onFailure(
-                    call: Call<Msg>,
-                    t: Throwable
-                ) {
-                    Log.e("태그", "친추 통신 아예실패  ,t.message: " + t.message)
-                    Toast.makeText(activity, "친구추가에 실패하셨습니다.", Toast.LENGTH_SHORT).show()
-                }
-
-                override fun onResponse(
-                    call: Call<Msg>,
-                    response: Response<Msg>
-                ) {
-                    if (response.isSuccessful) {
-                        Log.e("태그", "친추 통신 성공  ,msg: "+response.body()?.msg)
-                        Toast.makeText(activity, "친구추가에 성공하셨습니다.", Toast.LENGTH_SHORT).show()
-                    } else {
-                        Log.e("태그", "친추 통신 서버접근했지만 실패: "+response.errorBody()?.string())
-                        Toast.makeText(activity, "친구추가에 실패하셨습니다.", Toast.LENGTH_SHORT).show()
-                    }
-                }
-            })
-        }
-
+         }
         return mainViewHolder
     }
 
-
-    //만약 contains 통해 봣을때 이미 친추한 유저라면 안 넣어줄거임
+    //만약 contains 통해 봣을때 이미 친추한 유저라면 이미 친구임 표시해줄거임
     override fun onBindViewHolder(holder: MainViewHolder, position: Int) {
         val cardView = holder.cardView
         val photoImageVIew: ImageView = cardView.findViewById(com.example.flav_pof.R.id.photoImageVIew)
         val nameTextView = cardView.findViewById<TextView>(com.example.flav_pof.R.id.nameTextView)
         val userInfo = mDataset!![position]
-        if (mDataset!![position].profileimage != null) {
+        if (mDataset!![position].profileimage == "null") {  //프사없을경우
+            photoImageVIew.setImageResource(R.drawable.ic_account_circle_black_24dp) //기본이미지
+        }else{
             Glide.with(activity!!).load(mDataset!![position].profileimage).centerCrop().override(500)
                 .into(photoImageVIew)
         }
         nameTextView.text = userInfo.name
-
-
     }
 
     override fun getItemCount(): Int {
