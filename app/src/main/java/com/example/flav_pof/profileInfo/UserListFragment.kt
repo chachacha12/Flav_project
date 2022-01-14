@@ -19,6 +19,7 @@ import com.example.flav_pof.classes.Usersingleton
 import com.example.flav_pof.databinding.FragmentUserListBinding
 import com.example.flav_pof.retrofit_service
 import com.google.android.material.tabs.TabLayoutMediator
+import com.google.android.play.core.appupdate.e
 import com.kakao.sdk.talk.TalkApiClient
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import kotlinx.coroutines.*
@@ -29,10 +30,9 @@ import retrofit2.Response
 import java.lang.Runnable
 
 //처음 이 프래그먼트 올때랑 친구추가버튼 눌렀을때 동작 순서
-//1. thread_start()
-//2. get_myfollowing_Request() //내 팔로잉 목록 가져오기
-//3. get_kakaoFriendsList() //친구리스트 가져오기. 성공하면 여기서 내 팔로잉 목록에 있으면 userList에 안넣어줌
-//4. userListAdapter!!.notifyDataSetChanged() //카카오톡 친구목록 리사이클러뷰 업데이트
+//1. thread_start()-> get_myfollowing_Request() //내 팔로잉 목록 가져오기
+//2. get_kakaoFriendsList() //팔로잉목록 get성공시 친구리스트 가져오기실행. 성공하면 여기서 내 팔로잉 목록에 있으면 userList에 안넣어줌
+//3. userListAdapter!!.notifyDataSetChanged() //카카오톡 친구목록 리사이클러뷰 업데이트
 
 
 //내 프로필 정보와 함께, 팔로우 팔로하는  친구목록 보여주는, 메인액티비티에 부착되는 3번째 프래그먼트
@@ -116,13 +116,11 @@ class UserListFragment(var server: retrofit_service) : Fragment() {
         return view
     }  //onCreateView
 
-
     //친구추가
     var onFriendsAddListener: OnFriendsAddListener = object : OnFriendsAddListener {
         override fun onAdd(followed_id:String) {
             make_following(followed_id, Usersingleton.kakao_id.toString() )
             Log.e("로그: ", "userlist어댑터에서 userlist프래그먼트로 가져온 followed_id: "+followed_id)
-
         }
     }
 
@@ -146,12 +144,10 @@ class UserListFragment(var server: retrofit_service) : Fragment() {
                     Log.e("태그", "친추 통신 성공  ,msg: "+response.body()?.msg)
                     Toast.makeText(activity, "친구추가에 성공하셨습니다.", Toast.LENGTH_SHORT).show()
                     //친구목록 리사이클러뷰 다시 업데이트 해주는 로직
-                    Log.e("태그", "친구추가해주는 로직 성공. 내 팔로잉 목록 가져와서 following_userInfoLis에 저장하는 get_myfollowing_Request함수 시작  ")
+                    Log.e("태그", "친구추가해주는 로직 성공. 내 팔로잉 목록 가져오는 함수 쓰레드로 실행")
                     thread_start() //카톡 친구목록과 내 팔로잉 목록 다 가져와서 리사이클러뷰 다시 만들어줌
-
                     following_fragment?.thread_start()  //팔로잉 프래그먼트의 리사이클러뷰를 업데이트 해줌
-                    Log.e("태그", "userList프래그먼트에서 following_fragment의 thread_start함수사용. 팔로잉목록 업데이트됨")
-
+                    Log.e("태그", "userList프래그먼트에서 fofollowing_fragment?.thread_start()  사용. 팔로잉목록 업데이트됨")
                 } else {
                     Log.e("태그", "친추 통신 서버접근했지만 실패: "+response.errorBody()?.string())
                     Toast.makeText(activity, "친구추가에 실패하셨습니다.", Toast.LENGTH_SHORT).show()
@@ -160,23 +156,11 @@ class UserListFragment(var server: retrofit_service) : Fragment() {
         })
     }
 
-
     //팔로잉, 팔로워 정보를 서버로부터 가져와서 띄워줌
     fun init_viewpager(){
         //프래그먼트들 여기서 초기화
         follower_fragment = FollowerFragment(server)
         following_fragment = FollowingFragment(server)
-
-        /*
-        //프래그먼트로 식당명 데이터 전달
-        if(namelist_string == "") {  //게시물 수정하기 눌러서 온 경우엔 null임
-
-        }else{
-            var bundle = Bundle()
-            bundle.putString("namelist_string", namelist_string)  //식당명, 위경도 묶음jsonarray가  string묶음으로 된걸 frag에 보내줌
-            name_fragment!!.arguments = bundle
-        }
-         */
 
         //뷰페이저에 다시 프래그먼트들을 붙혀줌. 이때 어댑터에 인자를 하나 추가해서 내가 위에서 bundle넣어서 새로 만든 프래그먼트를 어댑터에 전달해줌
         binding.viewpager2.adapter = follower_following_Viewpager_Adapter(
@@ -184,7 +168,6 @@ class UserListFragment(var server: retrofit_service) : Fragment() {
             follower_fragment,
             following_fragment
         )
-
 
         //뷰페이저2객체를 슬라이딩 할때마다 tab의 위치도 바뀌어야함. 그 둘을 동기화 해주는 클래스인 TabLayoutMediator을 이용해줌.
         TabLayoutMediator(binding.tabLayout, binding.viewpager2){ tab, position -> tab.text = textArray[position]
@@ -250,8 +233,6 @@ class UserListFragment(var server: retrofit_service) : Fragment() {
                         userList!!.add(userInfo)
                     }
                     i++
-                   // Log.e(TAG, "!(following_userInfoList.contains(userInfo)): "+!(following_userInfoList.contains(userInfo)))
-                   // Log.e(TAG, "following_userInfoList: "+following_userInfoList+", userInfo: "+userInfo)
                 }
                 handler()
                 Log.e(TAG, "카톡 친구목록 가져오기 성공!  핸들러 실행하여 리사이클러뷰 notifiy ")
@@ -259,38 +240,22 @@ class UserListFragment(var server: retrofit_service) : Fragment() {
             }
         }
     }
-
     private fun thread_start() {
         var thread = Thread(null, getData()) //스레드 생성후 스레드에서 작업할 함수 지정(getDATA)
         thread.start()
-        Log.e("태그", "thread_start시작됨.")
+        Log.e("태그", "userlistfrag의 thread_start시작됨.")
     }
-
     fun getData() = Runnable {
         kotlin.run {
             try {
-
-                //코루틴을 이용하여 실행순서를 정해준다
-               GlobalScope.launch {
-
-                   Log.e("태그", "userListFrag에서 코루틴을 이용하여 getData함수안에서 내 팔로잉 목록받기 실행 후 친구리스트 가져올거임")
-                   async { withContext(this.coroutineContext) {  get_myfollowing_Request()  }}.await()  //내 팔로잉 목록 가져오기
-                   async { withContext(this.coroutineContext) {    get_kakaoFriendsList()   }}.await()   //친구리스트 가져오기
-
-               }
-
-                /*
-                 get_myfollowing_Request()
-                //친구리스트 가져오기
-                get_kakaoFriendsList()
-                 */
+                Log.e("태그", "비교위한 내 팔로잉 목록받기 실행 시작")
+                get_myfollowing_Request()  //내 팔로잉 목록 가져오기
                 Log.e("태그", "getData성공. 데이터 가져옴")
             } catch (e: Exception) {
                 Log.e("태그", "getData실패")
             }
         }
     }
-
     private fun handler() {
         var handler = object : Handler(Looper.getMainLooper()) {
             override fun handleMessage(msg: Message) {
@@ -324,14 +289,19 @@ class UserListFragment(var server: retrofit_service) : Fragment() {
                                 Object.getInt("kakao_id").toString() ))
                             i++
                         } //repeat
+
+                        get_kakaoFriendsList()  //친구리스트 가져오기
+                        //handler2()  //카톡목록 다시 가져와서 리사이클러뷰 업데이트
                         Log.e(
                             "태그",
-                            " 통신성공 - 내 팔로잉목록 가져와서 following_userInfoList에 저장하는 함수 완료. 리사이클러뷰 다시생성하는 thread_start 로직실행 following_userInfoList: "+following_userInfoList)
+                            " 통신성공 - 내 팔로잉목록 가져와서 following_userInfoList에 저장하는 함수 완료. 이제 카톡친추목록받아오면됨.  following_userInfoList: "+following_userInfoList)
                     } else {
                     }
                 }
             })
     } //get_myfollowing_Request
+
+
 
 
 }

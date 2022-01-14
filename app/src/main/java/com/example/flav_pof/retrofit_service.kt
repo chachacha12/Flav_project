@@ -43,11 +43,6 @@ interface retrofit_service {
     @POST("app/s3/{kakao_id}")
     fun s3_upload_Request(@Path("kakao_id") kakao_id:Int, @Part file: MultipartBody.Part): Call<Filename>
 
-    //app/rekog?s3ImageKey={s3ImageKey}&kakaoId={kakaoId}
-    //음식사진 인식 판별 요청
-    @GET("app/rekog")
-    fun postpic_rekog_Request(@Query("s3ImageKey") s3ImageKey: String, @Query("kakaoId") kakaoId: String): Call<Rekognition_response>
-
     //컨텐츠 업로드 요청
     @POST("app/contents")
     fun contents_upload_Request(@Body contents: ContentsUpload_request): Call<ContentsUpload_response>

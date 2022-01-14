@@ -165,7 +165,12 @@ class FollowingFragment(var server: retrofit_service) : Fragment() {
                 //following_userInfoList에다가 새로 받아온 update_following_userInfoList값들을 다 넣어줌
                 update_following_userInfoList?.let { following_userInfoList?.addAll(it) }
                 update_following_userInfoList?.clear()  //피드 업데이트될때 다시 여기로 받아와야 해서 비워줌
-                followingAdapter!!.notifyDataSetChanged()
+
+                followingAdapter = FollowingAdapter(requireActivity(), following_userInfoList!!, onfollowingdeleteListener )  //인터페이스 개체를 넣어줘서 어댑터말고 프래그먼트에서 유저삭제후 바로 업데이트 가능
+                recyclerView.adapter = followingAdapter
+
+
+                // followingAdapter!!.notifyDataSetChanged()
                 Log.e("태그","팔로잉프래그먼트 handler에서    followingAdapter!!.notifyDataSetChanged()진행")
             }
         }
