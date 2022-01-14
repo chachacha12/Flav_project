@@ -3,6 +3,7 @@ package com.example.flav_pof.profileInfo
 //GalleryAdapter클래스를 복사해서 좀 바꿔서 써준 어댑터임
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Build
 import android.util.Log
@@ -62,7 +63,22 @@ class FollowingAdapter(
 
         // 사용자 삭제버튼 클릭시
         cardView.FriendDelete_button.setOnClickListener {
-            onfollowingdeleteListener.onDelete(myDataset[mainViewHolder.adapterPosition])  //인터페이스를 통해 홈프래그먼트에서 삭제로직 작동시킬거임
+            var builder = AlertDialog.Builder(activity)
+            builder.setMessage(myDataset[mainViewHolder.adapterPosition].name+"님을 팔로우 취소하시겠습니까?")
+            builder.setCancelable(false) // 다이얼로그 화면 밖 터치 방지
+
+            builder.setPositiveButton(
+                "예"
+            ) { dialog, which -> onfollowingdeleteListener.onDelete(myDataset[mainViewHolder.adapterPosition])  //인터페이스를 통해 홈프래그먼트에서 삭제로직 작동시킬거임
+            }
+            builder.setNegativeButton(
+                "아니요"
+            ) { dialog, which -> }
+
+            builder.setNeutralButton(
+                "취소"
+            ) { dialog, which -> }
+            builder.show() // 다이얼로그 보이기
         }
         return mainViewHolder
     }

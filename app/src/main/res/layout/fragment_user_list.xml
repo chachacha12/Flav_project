@@ -170,6 +170,7 @@
                     android:layout_marginLeft="20dp"
                     android:layout_marginTop="15dp"
                     android:layout_marginRight="20dp"
+                    android:layout_marginBottom="14dp"
                     android:background="@drawable/dialog_button_round"
                     app:tabIndicator="@drawable/button_round"
                     app:tabIndicatorColor="#00aded"
@@ -239,8 +240,8 @@
 
                         <Button
                             android:id="@+id/pulldown_button"
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
                             android:background="@drawable/ic_keyboard_arrow_down_black_24dp" />
                     </LinearLayout>
                 </RelativeLayout>

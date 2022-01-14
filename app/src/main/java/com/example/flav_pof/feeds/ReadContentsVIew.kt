@@ -79,8 +79,8 @@ class ReadContentsVIew : LinearLayout {
         val contentsLayout = findViewById<LinearLayout>(com.example.flav_pof.R.id.contentsLayout)
         val layoutParams = ViewGroup.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT
-        )
+           1000
+        )        //생성되는 음식사진 이미지뷰의 길이는 여기서 정해줌
 
         //받아온 이미지 넣어주기
         val photoUrl = contents.filepath  //컨텐츠에 있는 사진경로값
