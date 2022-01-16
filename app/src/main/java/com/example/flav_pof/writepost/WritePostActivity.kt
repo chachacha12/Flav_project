@@ -215,8 +215,8 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
                 }
 
                 //사진의 디폴트 위경도값을 갤러리어댑터로부터 가져옴
-               // default_lat = data!!.getStringExtra("default_lat")
-              //  default_lng = data!!.getStringExtra("default_lng")
+               default_lat = data!!.getStringExtra("default_lat")
+               default_lng = data!!.getStringExtra("default_lng")
               //  Log.e("태그","갤러리어댑터에서 날라온 디폴트 위경도값 writepost에서 받음default_lat, default_lng: "+default_lat+", "+default_lng)
 
                 init_viewpager()  //위에서 받은 식당명을 가지고 뷰페이저를 만들어줌.. 프래그먼트 2개 만들고 어댑터 붙히고 등등해서
