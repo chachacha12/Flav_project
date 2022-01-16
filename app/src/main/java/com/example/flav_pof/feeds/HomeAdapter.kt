@@ -1,6 +1,5 @@
 package com.example.flav_pof.feeds
 
-//GalleryAdapter클래스를 복사해서 좀 바꿔서 써준 어댑터임
 
 import android.app.Activity
 import android.content.Intent
@@ -16,18 +15,18 @@ import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.flav_pof.R
+import com.example.flav_pof.classes.Usersingleton
 import com.example.flav_pof.retrofit_service
 import kotlinx.android.synthetic.main.item_post.view.*
 import kotlinx.android.synthetic.main.view_post.view.*
 import java.util.*
 
-
-//괄호안은 어댑터클래스의 인자들
+// 피드 게시물들 띄우는 리사이클러뷰의 어댑터
 class HomeAdapter(
     var activity: Activity,
     private var myDataset: ArrayList<Contents>,
     var server:retrofit_service,
-    var onPostListener: OnPostListener
+    var onPostListener: OnPostdeleteListener
 
 )  : RecyclerView.Adapter<HomeAdapter.MainViewHolder>() {
 
@@ -126,33 +125,41 @@ class HomeAdapter(
     override fun getItemCount() = myDataset!!.size
 
     //피드상에서 바로 점세게버튼 중 하나 눌렀을때 동작
-   //res안에 menu디렉토리 만든거에서, 그 안의 menu파일을 불러와서 toolbar보여주고, 클릭했을때 이벤트처리해줌  //developers사이트에서 가져온 함수.
+   //res안에 menu디렉토리 만든거에서, 그 안의 menu파일을 불러와서 보여주고, 클릭했을때 이벤트처리해줌
     private fun showPopup(v: View, position: Int) {
         val popup = PopupMenu(activity, v)
-        popup.setOnMenuItemClickListener {
-            return@setOnMenuItemClickListener when (it.itemId) {
-                R.id.modify -> {                    //수정하기 눌렀을때
-                    true
-                }
-                R.id.delete -> {                  //삭제하기 눌렀을때
-                   // firebaseHelper.storageDelete(myDataset[position])
-                    onPostListener.onDelete(position)  //인터페이스를 통해 홈프래그먼트에서 삭제로직 작동시킬거임
 
-                    true
+        if(myDataset[position].User.getString("username") == Usersingleton.username){
+            //사용자가 선택한 게시물의 유저네임이랑 본인 이름이랑 같을경우 (둘다 카카오에서 받아온 이름임)
+            popup.setOnMenuItemClickListener {
+                return@setOnMenuItemClickListener when (it.itemId) {
+                    R.id.delete -> {
+                        onPostListener.onDelete(position)  //인터페이스를 통해 홈프래그먼트에서 삭제로직 작동시킬거임
+                        Log.e("태그","게시물삭제버튼 클릭")
+                        true
+                    }
+                    else -> false
                 }
-                else -> false
             }
+            val inflater: MenuInflater = popup.menuInflater
+            inflater.inflate(R.menu.post, popup.menu)
+            popup.show()
+        }else{
+            //다를경우 밥약신청버튼 보여줌
+            popup.setOnMenuItemClickListener {
+                return@setOnMenuItemClickListener when (it.itemId) {
+                    R.id.appointment -> {
+                        onPostListener.onAppointment(position)  //인터페이스를 통해 홈프래그먼트에서
+                        Log.e("태그","밥약속 신청버튼 클릭")
+                        true
+                    }
+                    else -> false
+                }
+            }
+            val inflater: MenuInflater = popup.menuInflater
+            inflater.inflate(R.menu.appointment, popup.menu)
+            popup.show()
         }
-        val inflater: MenuInflater = popup.menuInflater
-        inflater.inflate(R.menu.post, popup.menu)
-        popup.show()
-    }
-
-
-    private fun myStartActivity(c: Class<*>, contents: Contents) {
-        val intent = Intent(activity, c)
-        intent.putExtra("postInfo", contents)
-        activity.startActivity(intent)
     }
 
 

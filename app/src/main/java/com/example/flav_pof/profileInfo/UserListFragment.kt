@@ -17,6 +17,7 @@ import com.example.flav_pof.classes.Msg
 import com.example.flav_pof.classes.Result_response
 import com.example.flav_pof.classes.Usersingleton
 import com.example.flav_pof.databinding.FragmentUserListBinding
+
 import com.example.flav_pof.retrofit_service
 import com.google.android.material.tabs.TabLayoutMediator
 import com.google.android.play.core.appupdate.e
@@ -42,7 +43,6 @@ class UserListFragment(var server: retrofit_service) : Fragment() {
     private var _binding: FragmentUserListBinding? = null
     private val binding get() = _binding!!
     lateinit var slidePanel:SlidingUpPanelLayout  //슬라이드업파넬레이아웃
-
     private var userListAdapter: UserListAdapter? = null
     private var userList: ArrayList<UserInfo>? = null
 

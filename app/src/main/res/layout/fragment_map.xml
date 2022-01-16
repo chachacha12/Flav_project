@@ -77,6 +77,7 @@
                             android:layout_height="20dp"
                             android:layout_alignParentRight="true"
                             android:layout_gravity="end"
+                            android:layout_marginRight="15dp"
                             android:background="@drawable/ic_clear_black_24dp" />
 
                     </LinearLayout>
@@ -84,7 +85,7 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp"
+                        android:layout_marginTop="10dp"
                         android:background="#ffffff"
                         android:gravity="center_vertical"
                         android:orientation="horizontal">
@@ -177,35 +178,39 @@
                             android:id="@+id/tag1_TextView"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginRight="5dp"
-                            android:textColor="#00aded"
-                            android:textSize="14sp" />
+                            android:layout_marginLeft="15dp"
+                            android:layout_marginRight="10dp"
+                            android:textColor="#222222"
+                            android:textSize="15sp" />
 
                         <TextView
                             android:id="@+id/tag2_TextView"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginRight="5dp"
+                            android:layout_marginRight="10dp"
                             android:text="TextView"
-                            android:textColor="#00aded"
-                            android:textSize="14sp" />
+                            android:textColor="#222222"
+                            android:textSize="15sp" />
 
                         <TextView
                             android:id="@+id/tag3_TextView"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="TextView"
-                            android:textColor="#00aded"
-                            android:textSize="14sp" />
+                            android:textColor="#222222"
+                            android:textSize="15sp" />
                     </LinearLayout>
 
                     <TextView
                         android:id="@+id/createdAt_TextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginRight="15dp"
                         android:layout_weight="1"
                         android:gravity="right|end"
-                        android:text="생성일" />
+                        android:text="생성일"
+                        android:textColor="#999999"
+                        android:textSize="15sp" />
                 </LinearLayout>
 
             </LinearLayout>

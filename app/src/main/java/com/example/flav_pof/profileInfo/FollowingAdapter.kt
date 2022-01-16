@@ -4,35 +4,18 @@ package com.example.flav_pof.profileInfo
 
 import android.app.Activity
 import android.app.AlertDialog
-import android.content.Intent
 import android.os.Build
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.MenuInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.PopupMenu
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.flav_pof.R
-import com.example.flav_pof.classes.Msg
-import com.example.flav_pof.classes.Result_response
-import com.example.flav_pof.classes.Usersingleton
-import com.example.flav_pof.feeds.Contents
-import com.example.flav_pof.feeds.OnPostListener
-import com.example.flav_pof.retrofit_service
 import kotlinx.android.synthetic.main.item_follower_following.view.*
-import kotlinx.android.synthetic.main.item_post.view.*
 import kotlinx.android.synthetic.main.item_post.view.nameTextView
 import kotlinx.android.synthetic.main.item_post.view.photoImageVIew
-import kotlinx.android.synthetic.main.view_post.view.*
-import org.json.JSONArray
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import java.util.*
 
 //괄호안은 어댑터클래스의 인자들

@@ -18,5 +18,13 @@
         android:layout_width="50dp"
         android:layout_height="60dp"
         android:layout_below="@id/test_textView"
+        android:visibility="gone"
         app:srcCompat="@drawable/ic_logo" />
+
+    <ImageView
+        android:id="@+id/face_imageView2"
+        android:layout_width="50dp"
+        android:layout_height="60dp"
+        android:layout_below="@id/test_textView"
+        android:visibility="gone" />
 </RelativeLayout>

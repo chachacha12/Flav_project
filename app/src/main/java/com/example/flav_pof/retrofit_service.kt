@@ -88,4 +88,20 @@ interface retrofit_service {
     @DELETE("app/relation/follower/{kakao_id}/{delete_id}")
     fun deletefollowing_Request(@Path("kakao_id") kakao_id: String, @Path("delete_id") delete_id: String):Call<Msg>
 
+    //특정 유저 카카오id로 약속신청하기
+    @FormUrlEncoded
+    @POST("app/appointments")
+    fun make_appointment_Request(@Field("request") request:String, @Field("requested") requested:String, @Field("restname") restname:String ): Call<Msg>
+
+
+    //약속목록보기
+    @GET("app/appointments/{kakao_id}")
+    fun get_appointment_Request(@Path("kakao_id") kakao_id:String): Call<Result_response>
+
+
+    //내 약속목록 삭제
+    @DELETE("app/appointments/{kakao_id}")
+    fun delete_appointmentlist_Request(@Path("kakao_id") kakao_id:String):Call<Msg>
+
+
 }

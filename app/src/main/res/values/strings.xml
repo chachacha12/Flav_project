@@ -1,9 +1,13 @@
 <resources>
-    <string name="app_name">foowinkle</string>
+    <string name="app_name">뿌잉클</string>
     <string name="request_permission">This sample needs camera permission.</string>
     <string name="camera_error">This device doesn\'t support Camera2 API.</string>
     <string name="please_grant_permission">권한을 허용해 주세요.</string>
     <string name="kakao_app_key">c96f6bd57c1d1f50be96460adb9705c3</string>
+
+    <string name="facebook_app_id">397485705505941</string>
+    <string name="fb_login_protocol_scheme">fb[APP_ID]</string>
+
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

@@ -75,30 +75,7 @@ class PostActivity : BasicActivity() {
         menuInflater.inflate(R.menu.post, menu)
         return super.onCreateOptionsMenu(menu)
     }
-    //피드에서 게시물 한번 눌러서 postactivity로 와서 점세계버튼 누른경우
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.delete -> {
 
-                true
-            }
-            R.id.modify -> {
-                //myStartActivity(WritePostActivity::class.java, postInfo!!)
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
-
-    var onPostListener: OnPostListener = object : OnPostListener {
-        override fun onDelete(position: Int) {
-            Log.e("로그 ", "onPostListener작동하여 삭제 성공")
-        }
-
-        override fun onModify() {
-            Log.e("로그 ", "수정 성공")
-        }
-    }
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun uiUpdate() {

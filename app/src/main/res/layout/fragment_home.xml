@@ -1,34 +1,155 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<com.sothree.slidinguppanel.SlidingUpPanelLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:background="#00FFFFFF"
+    app:umanoShadowHeight="0dp"
+    app:umanoOverlay="true"
+    android:id="@+id/SlideUpPannerLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".feeds.HomeFragment">
+    android:gravity="bottom"
+    app:umanoDragView="@id/slide_Relativelayout"
+    app:umanoPanelHeight="0dp">         <!--처음에 슬라이드 되기전에 패널의 높이를 조절  0dp이면 아예 밑에 안보임 -->
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-    </androidx.recyclerview.widget.RecyclerView>
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/floatingActionButton"
-        android:layout_width="56dp"
-        android:layout_height="56dp"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginEnd="10dp"
-        android:layout_marginBottom="10dp"
-        android:clickable="true"
-        android:src="@drawable/ic_add_black_24dp"
-        app:backgroundTint="#00aded" />
-
-    <include
-        layout="@layout/view_loader"
+    <!--SlidingUpPanelLayout의 첫번째 뷰 - 슬라이드가 나오기 전에 보여지는 뷰 -->
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone" />
+        tools:context=".feeds.HomeFragment">
 
-</RelativeLayout>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        </androidx.recyclerview.widget.RecyclerView>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/floatingActionButton"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="10dp"
+            android:clickable="true"
+            android:src="@drawable/ic_add_black_24dp"
+            app:backgroundTint="#00aded" />
+
+        <include
+            layout="@layout/view_loader"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone" />
+    </RelativeLayout>
+
+
+    <!--SlidingUpPanelLayout의 두번째 뷰 - 슬라이드때 나오는 뷰 -->
+    <RelativeLayout
+        android:id="@+id/slide_Relativelayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/transparent"
+        android:orientation="vertical">    <!--슬라이드 했을때 나오는 뷰의 길이-->
+
+        <RelativeLayout
+            android:id="@+id/relativeLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/cardview_light_background">
+
+            <LinearLayout
+                android:id="@+id/LinearLayout_first"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:layout_centerHorizontal="false"
+                        android:layout_centerVertical="true"
+                        android:gravity="left"
+                        android:orientation="horizontal">
+
+                        <Button
+                            android:id="@+id/DeleteAll_button"
+                            android:layout_width="wrap_content"
+                            android:layout_height="25dp"
+                            android:background="@drawable/name_text_round"
+                            android:text="모두 지우기"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/textView6"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:lineSpacingExtra="9sp"
+                        android:text="★ My 밥약속 리스트 ★"
+                        android:textColor="#222222"
+                        android:textSize="16sp"
+                        android:textStyle="normal" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerInParent="false"
+                        android:layout_centerVertical="true"
+                        android:orientation="horizontal">
+
+                        <Button
+                            android:id="@+id/pulldown_button"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:background="@drawable/ic_keyboard_arrow_down_black_24dp" />
+                    </LinearLayout>
+
+                </RelativeLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/LinearLayout_first"
+                android:orientation="vertical">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/appointment_recyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+            </LinearLayout>
+        </RelativeLayout>
+    </RelativeLayout>
+
+    <!--SlidingUpPanelLayout의 두번째 뷰 끝 -->
+
+
+
+</com.sothree.slidinguppanel.SlidingUpPanelLayout>
+
+
+
+
+
+
+
+
+
+

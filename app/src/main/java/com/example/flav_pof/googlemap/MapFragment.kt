@@ -6,6 +6,8 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.drawable.ShapeDrawable
+import android.graphics.drawable.shapes.OvalShape
 import android.os.Build
 import android.os.Bundle
 import android.util.DisplayMetrics
@@ -46,6 +48,7 @@ class mapFragment : Fragment(), OnMapReadyCallback {
     private lateinit var mMap:GoogleMap  //onMapReady에서 초기화 해줄 구글맵
     lateinit var marker_root_view:View  //마커의 배경
     private lateinit var tv_marker:ImageView  //마커 이미지
+    private lateinit var tv_marker2:ImageView  //마커 이미지 - 프사있어서 본인 프사 띄울때
     lateinit var textView:TextView  //마커 이미지위에 뜨는 유저네임
     lateinit var slidePanel:SlidingUpPanelLayout  //슬라이드업파넬레이아웃
     //마커좌표값을 key로 contents값을 value로 하는 map. 유저가 마커정보클릭시 슬라이드뷰에 컨텐츠내용 채워주기 위한 변수
@@ -158,14 +161,24 @@ class mapFragment : Fragment(), OnMapReadyCallback {
             var username: String = MapContentsList[i].User.getString("username")  //유저이름가져옴
 
 
-            if (photourl != "null") {    //프사가 있을때
-                Log.e("태그", "mapfragmenT 프사가 있을때")
-                //마커에 특정유저 프사 넣어줌
+            if(photourl == "null"){  //프사없을땐 기본이미지로
+                Log.e("태그", "맛지도에서 프사가 없을때는 기본 이미지")
+                tv_marker.visibility = View.VISIBLE  // tv_marker는 기본이미지
+                tv_marker2.visibility = View.GONE  //tv_marker2는 내 얼굴 너을 이미지뷰
+                tv_marker.setImageResource(R.drawable.ic_logo)
+            }else{     //프사있을때
+                Log.e("태그", "맛지도에서 프사가 있을때")
+                tv_marker.visibility = View.GONE
+                tv_marker2.visibility = View.VISIBLE
+
                 Glide.with(requireActivity()).load(photourl).override(500).thumbnail(0.1f)
-                    .into(tv_marker)
-            } else {                  //프사가 없을때
-                Log.e("태그", "mapfragmenT 프사가 없을때는 기본 이미지")
+                    .into(tv_marker2)
+                //이미지뷰 완전 둥글게 해주는 작업
+                tv_marker2.background =  ShapeDrawable(OvalShape())
+                tv_marker2.clipToOutline = true
             }
+
+
             textView.text = username
 
             markerOptions.position(pos)
@@ -268,8 +281,9 @@ class mapFragment : Fragment(), OnMapReadyCallback {
             R.layout.view_marker,
             null
         )  //마커 배경?
-        tv_marker = marker_root_view.findViewById(R.id.face_imageView) as ImageView  //얼굴나올 마커
+        tv_marker = marker_root_view.findViewById(R.id.face_imageView) as ImageView  //별 모양 나올 마커
         textView =  marker_root_view.findViewById(R.id.test_textView) as TextView
+        tv_marker2 = marker_root_view.findViewById(R.id.face_imageView2) as ImageView  //얼굴 나올 마커
     }
 
     // View를 Bitmap으로 변환

@@ -11,6 +11,16 @@
         app:showAsAction="always">
 
     </item>
+    <item
+        android:id="@+id/notice_button2"
+        android:layout_width="16.650634765625dp"
+        android:layout_height="14.985595703125dp"
+        android:icon="@drawable/ic_notifications_active_red_24dp"
+        android:shape="rectangle"
+        android:title="title"
+        app:showAsAction="always">
+
+    </item>
 
 
 </menu>

@@ -30,6 +30,8 @@ allprojects {
         /*카카오 로그인 - 이 작업을 해줘야 gradle(app)쪽에 implement한 라이브러리를 다운받는 소통창구가 여기임*/
         maven { url 'https://devrepo.kakao.com/nexus/content/groups/public/'}
         maven { url 'https://jitpack.io' }
+        /*페이스북 sdk설치 - 앱광고를 계속 모니터링 하기 위한*/
+        mavenCentral()
     }
 
 }

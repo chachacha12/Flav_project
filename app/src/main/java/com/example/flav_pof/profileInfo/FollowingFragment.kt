@@ -17,10 +17,7 @@ import com.example.flav_pof.R
 import com.example.flav_pof.classes.Msg
 import com.example.flav_pof.classes.Result_response
 import com.example.flav_pof.classes.Usersingleton
-import com.example.flav_pof.feeds.Contents
-import com.example.flav_pof.feeds.OnPostListener
 import com.example.flav_pof.retrofit_service
-import com.google.firebase.firestore.auth.User
 import org.json.JSONArray
 import retrofit2.Call
 import retrofit2.Callback
@@ -75,7 +72,6 @@ class FollowingFragment(var server: retrofit_service) : Fragment() {
 
     //내가 팔로잉하는 친구를 팔로잉 취소. 즉 삭제
     fun delete_following(delete_id:String){
-        //로그삭제 로직
         server.deletefollowing_Request(Usersingleton.kakao_id.toString(), delete_id!!)
             .enqueue(object : Callback<Msg> {
                 override fun onFailure(call: Call<Msg>, t: Throwable) {
@@ -166,8 +162,10 @@ class FollowingFragment(var server: retrofit_service) : Fragment() {
                 update_following_userInfoList?.let { following_userInfoList?.addAll(it) }
                 update_following_userInfoList?.clear()  //피드 업데이트될때 다시 여기로 받아와야 해서 비워줌
 
-                followingAdapter = FollowingAdapter(requireActivity(), following_userInfoList!!, onfollowingdeleteListener )  //인터페이스 개체를 넣어줘서 어댑터말고 프래그먼트에서 유저삭제후 바로 업데이트 가능
-                recyclerView.adapter = followingAdapter
+                if (isAdded && activity != null) {
+                    followingAdapter = FollowingAdapter(requireActivity(), following_userInfoList!!, onfollowingdeleteListener )  //인터페이스 개체를 넣어줘서 어댑터말고 프래그먼트에서 유저삭제후 바로 업데이트 가능
+                    recyclerView.adapter = followingAdapter
+                }
 
 
                 // followingAdapter!!.notifyDataSetChanged()

@@ -3,6 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
+apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion 29
@@ -17,12 +18,14 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
-
-    viewBinding {
+    dataBinding {
         enabled = true
     }
 
 
+    viewBinding {
+        enabled = true
+    }
 
 
     buildTypes {
@@ -45,6 +48,10 @@ android {
 
 
 dependencies {
+
+    //페이스북sdk관려 - 앱광고 모니터링에 필요
+    implementation 'com.facebook.android:facebook-android-sdk:[4,5)'
+
 
     //SlidingUpPanel 라이브러리 - 아래에서 위로 올라오는 슬라이드뷰
     implementation 'com.github.hannesa2:AndroidSlidingUpPanel:3.5.0'
