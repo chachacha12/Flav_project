@@ -24,6 +24,7 @@ import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.example.flav_pof.R
 import com.example.flav_pof.databinding.FragmentMapBinding
+
 import com.example.flav_pof.feeds.Contents
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -60,9 +61,7 @@ class mapFragment : Fragment(), OnMapReadyCallback {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setCustomMarkerView()
-
     }
-
 
     override fun onStart() {
         super.onStart()
@@ -171,16 +170,18 @@ class mapFragment : Fragment(), OnMapReadyCallback {
                 tv_marker.visibility = View.GONE
                 tv_marker2.visibility = View.VISIBLE
 
+                tv_marker2.setImageResource(R.drawable.ic_logo)
+
+                /*
+                //이미지뷰 완전 둥글게 해주는 작업
+                //tv_marker2.background =  ShapeDrawable(OvalShape())
+                 //tv_marker2.clipToOutline = true
                 Glide.with(requireActivity()).load(photourl).override(500).thumbnail(0.1f)
                     .into(tv_marker2)
-                //이미지뷰 완전 둥글게 해주는 작업
-                tv_marker2.background =  ShapeDrawable(OvalShape())
-                tv_marker2.clipToOutline = true
+                 */
             }
 
-
             textView.text = username
-
             markerOptions.position(pos)
             markerOptions.title(restaurant_name)
             markerOptions.snippet(near_station+"역에서 "+distance)
@@ -282,8 +283,8 @@ class mapFragment : Fragment(), OnMapReadyCallback {
             null
         )  //마커 배경?
         tv_marker = marker_root_view.findViewById(R.id.face_imageView) as ImageView  //별 모양 나올 마커
-        textView =  marker_root_view.findViewById(R.id.test_textView) as TextView
         tv_marker2 = marker_root_view.findViewById(R.id.face_imageView2) as ImageView  //얼굴 나올 마커
+        textView =  marker_root_view.findViewById(R.id.test_textView) as TextView
     }
 
     // View를 Bitmap으로 변환

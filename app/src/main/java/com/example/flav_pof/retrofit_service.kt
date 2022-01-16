@@ -63,6 +63,8 @@ interface retrofit_service {
     @GET("app/contents/relevant/{kakao_id}")
     fun get_ReleventsContents_Request(@Path("kakao_id") kakao_id:Int): Call<Result_response>
 
+
+
     //게시물 rds에서 삭제 요청
     @DELETE("app/contents/{content_id}")
     fun deleteContents_Request(@Path("content_id") content_id: Int):Call<Msg>

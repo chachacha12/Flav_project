@@ -82,7 +82,6 @@ class KakaoLoginActivity: BasicActivity() {
 
     //처음 앱 실행하면 토큰 있는지 등등 판별해줌
     fun has_kakaotoken() {
-
         //카카오 토큰 있는지 판별
         if (AuthApiClient.instance.hasToken()) {  //토큰이 있을때
             UserApiClient.instance.accessTokenInfo { _, error ->
@@ -99,7 +98,6 @@ class KakaoLoginActivity: BasicActivity() {
                         logo_image.visibility  = View.VISIBLE
                         login_Text.visibility  = View.VISIBLE
                         cardView_kakaobtn.visibility  = View.VISIBLE
-
                     } else {
                         //기타 다른 토큰 에러
                         Log.e("태그", "UpdateKakakotalkUI/   기타 에러남 ")

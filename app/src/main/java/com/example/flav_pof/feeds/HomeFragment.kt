@@ -312,10 +312,10 @@ class HomeFragment(var server:retrofit_service) : Fragment() {
         thread_start()
     }
 
-    //플레브 서버로부터 피드 가져오는 로직
+    //플레브 서버로부터 피드 가져오는 로직 -본인, 본인친구들 게시물 가져오기
     fun getRelevant_Contents_Request() {
         update_contentsList = ArrayList()  //초기화
-        server.get_ReleventsContents_Request(Usersingleton.kakao_id!!)
+        server.get_ReleventsContents_Request(Usersingleton.kakao_id!!)  //2번째 인자는 가져올 게시물 최대갯수
             .enqueue(object : Callback<Result_response> {
                 override fun onFailure(call: Call<Result_response>, t: Throwable) {
                     Log.e("관련 컨텐츠 태그", "피드 컨텐츠 서버 통신 아예 실패" + t.message)

@@ -8,16 +8,16 @@ package com.example.flav_pof.feeds
 
 import android.app.AlertDialog
 import android.content.Intent
-import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.os.Message
+import android.graphics.Color
+import android.os.*
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.WindowManager
 import android.widget.Button
 import android.widget.RelativeLayout
+import androidx.annotation.RequiresApi
 import com.example.flav_pof.R
 import com.example.flav_pof.activity.BasicActivity
 import com.example.flav_pof.classes.Result_response
@@ -140,6 +140,7 @@ class MainActivity : BasicActivity(), home_map_Listener, OnAppointment_noexistLi
             1 -> init()
         }
     }
+    @RequiresApi(Build.VERSION_CODES.M)
     fun init() {
         check_appointment_list()  //약속목록 잇는지 체크해줌. 잇으면 check_appointment변수 true
 
@@ -153,6 +154,11 @@ class MainActivity : BasicActivity(), home_map_Listener, OnAppointment_noexistLi
         bottomNavigationView.setOnNavigationItemSelectedListener {
             when(it.itemId) {
                 R.id.home -> {
+                    //상태바를 흰색으로 바꿔주는 로직
+                    window?.decorView?.systemUiVisibility =
+                        View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR  //글씨색은 검은색으로
+                    window.statusBarColor = Color.WHITE
+
                     homeFragment = HomeFragment(server)  //프래그먼트가 교체될때마다 약속목록 보내줌
                     supportFragmentManager.beginTransaction()
                         .replace(com.example.flav_pof.R.id.container, homeFragment!!)
@@ -160,6 +166,11 @@ class MainActivity : BasicActivity(), home_map_Listener, OnAppointment_noexistLi
                     true
                 }
                 R.id.map -> {
+                    //상태바를 투명하게 바꿔주는 로직
+                    window?.decorView?.systemUiVisibility =
+                        View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN  //글씨색도 투명하게 바꿔줌
+                    window.statusBarColor = Color.TRANSPARENT
+
                     //mapfragment = mapFragment()
                     Log.e("태그", "mapfrag로 replace")
                     supportFragmentManager.beginTransaction()
@@ -168,6 +179,11 @@ class MainActivity : BasicActivity(), home_map_Listener, OnAppointment_noexistLi
                     true
                 }
                 R.id.userList -> {
+                    //상태바를 흰색으로 바꿔주는 로직
+                    window?.decorView?.systemUiVisibility =
+                        View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR  //글씨색은 검은색으로
+                    window.statusBarColor = Color.WHITE
+
                     userListFragment = UserListFragment(server)
                     supportFragmentManager.beginTransaction()
                         .replace(com.example.flav_pof.R.id.container, userListFragment!!)

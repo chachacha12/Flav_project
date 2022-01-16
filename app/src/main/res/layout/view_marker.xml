@@ -9,8 +9,14 @@
         android:id="@+id/test_textView"
         android:layout_width="wrap_content"
         android:layout_height="20dp"
+
+        android:shadowColor="#5ED3FF"
+        android:shadowDx="0.0"
+        android:shadowDy="0.0"
+        android:shadowRadius="8"
         android:text="없음"
-        android:textColor="#05A4EC"
+        android:textColor=" #00aded"
+        android:textSize="16sp"
         android:textStyle="bold" />
 
     <ImageView
@@ -26,5 +32,7 @@
         android:layout_width="50dp"
         android:layout_height="60dp"
         android:layout_below="@id/test_textView"
+        android:adjustViewBounds="false"
         android:visibility="gone" />
+
 </RelativeLayout>
