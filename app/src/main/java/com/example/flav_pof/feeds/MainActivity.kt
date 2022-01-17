@@ -40,7 +40,7 @@ class MainActivity : BasicActivity(), home_map_Listener, OnAppointment_noexistLi
     var strNick: String? = null
     var strprofileImg: String? = null
     var strEmail: String? = null
-    var mapfragment:mapFragment = mapFragment()
+    var mapfragment:mapFragment? = mapFragment()
     var homeFragment:HomeFragment? =null
     var userListFragment: UserListFragment? =null
     //서버로부터 가져온 내 약속목록 저장할 리스트
@@ -113,11 +113,13 @@ class MainActivity : BasicActivity(), home_map_Listener, OnAppointment_noexistLi
         when(item!!.itemId){
             R.id.notice_button -> { // notice_button 알림창 버튼 클릭 시 이벤트 처리
                 Log.e("태그", "알림창 클릭")
-                get_myAppointmentList()
+                thread_start()  //약속목록 서버로부터 가져오기 시작
+                //get_myAppointmentList()
             }
             R.id.notice_button2 -> { // 알림창 버튼 클릭 시 이벤트 처리
                 Log.e("태그", "notice_button2 알림창 클릭")
-                get_myAppointmentList()
+                thread_start()  //약속목록 서버로부터 가져오기 시작
+                //get_myAppointmentList()
 
             }
         }
@@ -172,6 +174,7 @@ class MainActivity : BasicActivity(), home_map_Listener, OnAppointment_noexistLi
                         View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN  //글씨색도 투명하게 바꿔줌
                     window.statusBarColor = Color.TRANSPARENT
 
+                    //mapfrag만 여기서 초기화 안해주는 이유는 피드에서 모든 컨텐츠값 가져온걸로 계속 맵 띄워줘야하는데, 초기화되면 값들 다 날라가니까..
                     //mapfragment = mapFragment()
                     Log.e("태그", "mapfrag로 replace")
                     supportFragmentManager.beginTransaction()

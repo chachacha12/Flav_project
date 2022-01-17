@@ -68,7 +68,13 @@ class mapFragment : Fragment(), OnMapReadyCallback {
         super.onStart()
         if(MapContentsList.isNotEmpty()){
             mapView.onStart()
-            (activity as AppCompatActivity?)!!.supportActionBar!!.hide()
+            (activity as AppCompatActivity?)!!.supportActionBar!!.hide()  
+
+            //여기서 이거 넣는 이유는 사용자가 패널 연상태로 다른곳 갔다가 다시 mapfrag왔을때 state저장안되서 이상한값이 패널 뷰들에 들어가는 오류때문
+            val state = slidePanel.panelState
+            if (state == SlidingUpPanelLayout.PanelState.EXPANDED) {  //패널 열렸으면
+                slidePanel.panelState = SlidingUpPanelLayout.PanelState.COLLAPSED  //닫기
+            }
         }
 
     }
@@ -79,7 +85,6 @@ class mapFragment : Fragment(), OnMapReadyCallback {
             mapView.onStop()
             (activity as AppCompatActivity?)!!.supportActionBar!!.show()
         }
-
     }
 
     // 슬라이드업파넬레이아웃 이벤트 리스너
@@ -141,8 +146,8 @@ class mapFragment : Fragment(), OnMapReadyCallback {
     //map 로딩이 완료되었을때 호출되는 함수.  좌표설정, 마커등을 달아줌
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onMapReady(map: GoogleMap) {
-        Log.e("태그", "onMapReady 시작")
 
+        Log.e("태그", "onMapReady 시작")
         if(MapContentsList.isEmpty()){     //피드에 게시물이 하나도 없는경우
             Toast.makeText(activity, "게시물을 등록해야 맛지도가 나타납니다!",Toast.LENGTH_SHORT).show()
         }else{   //피드에 게시물 하나라도 있을땐 구글맵만들고 마커만들고 등등 진행
