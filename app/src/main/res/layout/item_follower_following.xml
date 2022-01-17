@@ -55,11 +55,11 @@
 
                 <Button
                     android:id="@+id/FriendDelete_button"
-                    android:layout_width="10dp"
+                    android:layout_width="20dp"
 
-                    android:layout_height="15dp"
+                    android:layout_height="20dp"
                     android:layout_marginRight="10dp"
-                    android:background="@drawable/ic_ico_detail"
+                    android:background="@drawable/ic_clear_black_24dp"
                     android:gravity="center"
                     android:textStyle="bold" />
 

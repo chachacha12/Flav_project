@@ -11,6 +11,7 @@ import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
@@ -18,7 +19,10 @@ import com.bumptech.glide.Glide
 import com.example.flav_pof.R
 import com.example.flav_pof.feeds.Contents
 import com.example.flav_pof.retrofit_service
+import kotlinx.android.synthetic.main.item_follower_following.view.*
 import kotlinx.android.synthetic.main.item_post.view.*
+import kotlinx.android.synthetic.main.item_post.view.nameTextView
+import kotlinx.android.synthetic.main.item_post.view.photoImageVIew
 import kotlinx.android.synthetic.main.view_post.view.*
 import java.util.*
 
@@ -48,10 +52,10 @@ class FollowerAdapter(
 
         val mainViewHolder = MainViewHolder(cardView)  //밑의 setOnClickListener에서 사용자가 선택한 특정뷰의 위치값 알아야해서 여기서 뷰홀더객체생성
 
-        //특정 게시글을 눌렀을때 효과
-        cardView.setOnClickListener {
-            Log.e("태그", "클릭한 유저 정보: "+myDataset[mainViewHolder.adapterPosition])
+        cardView.FriendDelete_button.setOnClickListener{
+            Toast.makeText(activity,"나를 믿어주는 친구는 삭제할 수 없습니다.",Toast.LENGTH_SHORT).show()
         }
+
         //mainViewHolder.adapterPosition을 넣어주는 이유는 사용자가 선택한 특정위치의 게시글을 삭제or수정해야 하기에.
         return mainViewHolder
     }

@@ -207,19 +207,28 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
                 //프래그먼트에서 intent에  jsonarray를 string값으로 바꿔서 날렸고, 그 string값을 이 액티비티에서 받음. 여기서 또 다른 프래그먼트로 날려준후 다시 jsonarray객체로 만들거임
                 namelist_string =
                     data!!.getStringExtra("restaurant_name_list")  //주변식당명리스트(string으로 되어있는)가 인텐트에 실려서 날아옴
-                //exif정보가 없는 사진이면 바로종료
-                if(namelist_string =="정보없음"){
-                    Toast.makeText(this, "해당 사진은 위치정보가 없습니다. 기본 카메라로 찍은 사진을 선택하세요.", Toast.LENGTH_SHORT).show()
-                    Log.e("태그", "writepost에 정보없음 식당리스트가 와서 바로 writepost 바로 finish")
+                if(namelist_string =="아예없음") {   //exif정보없는 사진이면 바로종료
+                    Toast.makeText(
+                        this,
+                        "해당 사진은 위치정보가 없습니다. 기본 카메라로 찍은 사진을 선택하세요.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    Log.e("태그", "writepost에 아예exif없는 식당리스트가 와서 바로 writepost 바로 finish")
                     finish()
+                }else if(namelist_string =="음식점없음"){    //exif정보는 있고 주변 음식점이 없는 사진일때
+                    //사진의 디폴트 위경도값을 갤러리어댑터로부터 가져옴
+                    default_lat = data!!.getStringExtra("default_lat")
+                    default_lng = data!!.getStringExtra("default_lng")
+                    Log.e("태그","exif정보는 있고 주변 음식점이 없는 사진일때임./   default_lat, default_lng: "+default_lat+", "+default_lng)
+                    init_viewpager()  //위에서 받은 식당명을 가지고 뷰페이저를 만들어줌.. 프래그먼트 2개 만들고 어댑터 붙히고 등등해서
+
+                }else{   //정상적인 사진일때 (exif정보있고, 주변음식점 있을때)
+                    //사진의 디폴트 위경도값을 갤러리어댑터로부터 가져옴
+                    default_lat = data!!.getStringExtra("default_lat")
+                    default_lng = data!!.getStringExtra("default_lng")
+                    Log.e("태그","정상적인 사진임/  default_lat, default_lng: "+default_lat+", "+default_lng)
+                    init_viewpager()  //위에서 받은 식당명을 가지고 뷰페이저를 만들어줌.. 프래그먼트 2개 만들고 어댑터 붙히고 등등해서
                 }
-
-                //사진의 디폴트 위경도값을 갤러리어댑터로부터 가져옴
-               default_lat = data!!.getStringExtra("default_lat")
-               default_lng = data!!.getStringExtra("default_lng")
-              //  Log.e("태그","갤러리어댑터에서 날라온 디폴트 위경도값 writepost에서 받음default_lat, default_lng: "+default_lat+", "+default_lng)
-
-                init_viewpager()  //위에서 받은 식당명을 가지고 뷰페이저를 만들어줌.. 프래그먼트 2개 만들고 어댑터 붙히고 등등해서
 
             }
             /*
@@ -236,60 +245,8 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
         View.OnClickListener { v ->
             when (v.id) {
                 R.id.checkButton2 -> storageUpload()
-                /*
-                R.id.buttonsBackgroundLayout -> if (buttonsBackgroundLayout.visibility === View.VISIBLE) {
-                    buttonsBackgroundLayout.visibility = View.GONE
-                }
-                R.id.imageModify -> {
-                    myStartActivity(Galleryactivity::class.java, "image", 1)
-                    buttonsBackgroundLayout.visibility = View.GONE
-                }
-                R.id.delete -> {
-                    var selectedView =
-                        selectedImageView.parent as View   // .parent 또는 getParent()를 하면 그 뷰의 부모 뷰(linearLayout 등)가 선택되어진다.  //removeView()안에는 뷰가 와야하는데 레이아웃이 와버려서 에러뜸. 그러므로 as를 통해 뷰로 형변환 해줌
-                    //mainAct에서 가져온 부분임. (스토리지에서 특정 게시물 삭제해주는 로직)********************************************8
-                    var list: List<String> =
-                        pathList.get(contentsLayout.indexOfChild(selectedView) - 1)
-                            .split("?")  //이미지 경로안을 split해서 이미지의 이름을 가져옴. 이미지의 이름을 알기위해
-                    var list2: List<String> = list[0].split("%2F")
-                    var name = list2[list2.size - 1] //스토리지에 저장된 이미지의 이름(ex. 0.jpg)을 알아냄
-                    Log.e("로그: ", "이름: " + name)
-                    if (name.contains("/")) {   //+버튼눌러서 서버 스토리지에 아직 저장안된 이미지를 삭제하려 할떄 : 이미지 경로값에 슬래쉬 있어서 이 조건문 포함
-                        Toast.makeText(this, "파일을 삭제하였습니다.", Toast.LENGTH_SHORT).show()
-                    } else {   //서버 스토리지에 이미 저장된 이미지를 삭제해주려 할때
-                        //파이어베이스 문서-스토리지-안드로이드-파일삭제  (스토리지 안의 내용 삭제)
-                        val desertRef =
-                            storageRef.child("posts/" + postInfo!!.id + "/" + name) //스토리지에서 지울 이미지의 경로를 줌
-                        Log.e(
-                            "WritePostAct 태그",
-                            "postInfo!!.id + /name값: " + postInfo!!.id + "/" + name
-                        )
-                        desertRef.delete().addOnSuccessListener {
-                            Toast.makeText(this, "파일을 삭제하였습니다.", Toast.LENGTH_SHORT).show()
-                        }.addOnFailureListener {
-                            Toast.makeText(this, "파일을 삭제하지 못하였습니다.", Toast.LENGTH_SHORT).show()
-                            Log.e("태그", "")
-                        }
-                    }
-                    //********************************************
-                    //스토리지에서도 삭제됐으니(저장되어 있는 상태였다면)  이제 pathList에서 해당 이미지를 삭제함  // indexOfChild를 써서 contentsLayout의 몇번째 뷰인지 알아냄  //첫번째 editText가 무조건 있으니까 마이너스 1 해줌
-                    pathList.removeAt(contentsLayout.indexOfChild(selectedView) - 1)
-                    contentsLayout.removeView(selectedView)
-                    buttonsBackgroundlayout.visibility = View.GONE
-                }
-                 */
-                 */
             }
         }
-
-
-    /*
-    //onFocusChangedListener는 뷰가 포커스를 가지고 있는지 판별해주고, 가지고 있다면(hasFocus) 그때의 이벤트를 처리해줌
-    // 여기선 뷰가 이 리스너를 달고 있고 포커스를 가지고 있다면 그 뷰가 전역변수인 selectedEditText가 된다. 즉 이 리스너는 selectedEditText를 정해주는 기능
-    private var onFocusChangedListener =
-        View.OnFocusChangeListener { v, hasFocus -> selectedEditText = v as EditText }
-
-     */
 
     private fun storageUpload()   //사용자가 확인버튼 누르면 실행시킬 함수 -게시글 작성한걸 aws서버에 등록(업데이트)해줌   (이미지 삭제, 수정 했을땐, 그 이미지를 db,스토리지에서 지우는 작업을 지우는 즉시 했음. 메인액티비티에서. 그래서 여기선 db, 스토리지에 등록만 해줌됨 )
     {

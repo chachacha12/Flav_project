@@ -1,5 +1,7 @@
 package com.example.flav_pof.activity
 
+import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
@@ -10,6 +12,7 @@ import android.view.View
 import android.widget.Toast
 import com.example.flav_pof.R
 import com.example.flav_pof.appIntro.AppIntroActivity
+import com.example.flav_pof.classes.Msg
 import com.example.flav_pof.classes.Users
 import com.example.flav_pof.classes.Users_request
 import com.example.flav_pof.classes.Usersingleton
@@ -54,7 +57,7 @@ class KakaoLoginActivity: BasicActivity() {
         introact_check = intent.getBooleanExtra("check",false)
         Log.e("태그", "카톡로그인 처음왓을때 바로 introact_check: " + introact_check)
 
-        has_kakaotoken()  //카카오 토큰 있는지 판별
+        has_kakaotoken()  //카카오 토큰 있는지 판별. 없으면
 
         //로그인 이미지 눌렀을때
         login.setOnClickListener {
@@ -66,7 +69,7 @@ class KakaoLoginActivity: BasicActivity() {
                     Log.e("태그", "로그인 성공 ${token.accessToken}")
                     kakao_token = token.accessToken
                     UserinfoCall_notoken()  //현재 로그인된 사용자 정보 가져옴 (이름, 이메일), 그리고 유저객체 하나 만듬
-                }  //토큰 있을때 작업
+                }
             }  //콜백함수
 
             // 카카오톡이 설치되어 있으면 카카오톡으로 로그인, 아니면 카카오 계정으로 로그인
@@ -112,7 +115,7 @@ class KakaoLoginActivity: BasicActivity() {
                     UserinfoCall_hastoken()
                 }
             }
-        } else {
+        } else {  //토큰이 없을때는 로그인버튼 보여줌
             if(introact_check == false){   //소개화면에 갔다온게 아닌 경우
                 finish()
                 //소개화면으로 보내줌.
@@ -120,7 +123,7 @@ class KakaoLoginActivity: BasicActivity() {
                 var i = Intent(this@KakaoLoginActivity, AppIntroActivity::class.java)
                 startActivity(i)
             }else{              //소개화면에 갔다가 온 경우
-                //로그인 필요
+                //로그인 필요하므로 로그인 버튼 보여줌
                 Toast.makeText(this@KakaoLoginActivity, "로그인 해주세요.", Toast.LENGTH_SHORT).show()
                 Log.e("태그", "UpdateKakakotalkUI/ 앱소개화면엔 갔다왔고,  토큰이 없습니다. 로그인 해주세요")
                 loaderLayout.visibility = View.GONE  //로딩화면제거
@@ -132,6 +135,7 @@ class KakaoLoginActivity: BasicActivity() {
         }
     }
 
+    //사용자가 앱지웠다가 와서 다시 카톡로그인할때 또 유저등록해줘서 2번등록되는 오류 -> 서버에 등록했는데 같은값있을땐 에러로 특정값 받고 유저 update api로 유저정보 새로 수정만해줌.
     //사용자가 아예 토큰도 없고 카톡 로그인 안되어있는 상태일때 -사용자 정보 가져와서 main에 넘겨주고 유저객체 만들어서 플레브 서버에 유저 등록.
     fun UserinfoCall_notoken() {
         // 사용자 정보 요청
@@ -144,7 +148,7 @@ class KakaoLoginActivity: BasicActivity() {
                 strprofileImg = user.kakaoAccount?.profile?.thumbnailImageUrl.toString()
                 strkakaoid = user.id!!.toString()
 
-                this.user = Users(strEmail, strNick, kakao_token, strkakaoid) //유저객체 하나 생성
+                this.user = Users(strEmail, strNick, kakao_token, strkakaoid,strprofileImg ) //유저객체 하나 생성
 
                 Usersingleton.kakao_id = user.id?.toInt()  //유저 싱글톤에 있는 회원번호 전역변수를 초기화
                 Usersingleton.username = user.kakaoAccount?.profile?.nickname.toString()
@@ -152,9 +156,6 @@ class KakaoLoginActivity: BasicActivity() {
                 Usersingleton.profilepath = user.kakaoAccount?.profile?.thumbnailImageUrl.toString()
                 Log.e("싱글톤태그","usersingleton.username: "+Usersingleton.username)
 
-
-
-                Log.e("카카오로그인화면 태그", "아예 첫 실행일때 user_id값 초기화 성공: " + Usersingleton.kakao_id)
 
                 //main에 보내줄 회원정보 데이터 값들
                 MainAct_Intent = Intent(this@KakaoLoginActivity, MainActivity::class.java)
@@ -179,6 +180,7 @@ class KakaoLoginActivity: BasicActivity() {
 
     //사용자가 토큰값있고 로그인 되어있는 상태라서 바로 main으로 넘어가도될때 - 유저정보 가져와서 main에 넘겨줌
     fun UserinfoCall_hastoken() {
+
         // 사용자 정보 요청
         UserApiClient.instance.me { user, error ->
             if (error != null) {
@@ -235,10 +237,19 @@ class KakaoLoginActivity: BasicActivity() {
                     )
                     handler()
                 } else {
-                    Log.e(
-                        "태그",
-                        "서버접근 성공했지만 올바르지 않은 response값" + response.body()?.msg + "response.body(): " + response.body() + ",response.message(): " + response.errorBody()?.string()
-                    )
+                    if(response.errorBody()?.string() == "{\"msg\":\"ER_DUP_ENTRY\"}"){  //이미 유저테이블에 유저 등록되어 있는경우
+                        Log.e(
+                            "태그",
+                            "이미 등록된 유저. 카카오토큰만 갱신후 진행 response.errorBody()?.string() " + response.errorBody()?.string()
+                        )
+                        //유저 업데이트 해주는 로직
+                        modify_kakaotoken()
+                    }else{
+                        Log.e(
+                            "태그",
+                            "서버접근 성공했지만 올바르지 않은 response값" + response.body()?.msg + "response.body(): " + response.body() + ",response.message(): " + response.errorBody()?.string()
+                        )
+                    }
                     handler()
                 }
             }
@@ -281,5 +292,27 @@ class KakaoLoginActivity: BasicActivity() {
         }
         handler.obtainMessage().sendToTarget()
     }
+
+    //이미 등록된 유저가 다시 서버에 유저등록시도할때 해당 유저의 카카오토큰값만 변경해주고 새로 등록은 안해줌
+    fun modify_kakaotoken(){
+        server.modify_kakaotoken(user.kakao_id, user.kakaotoken!!)
+            .enqueue(object : Callback<Msg> {
+                override fun onFailure(call: Call<Msg>, t: Throwable) {
+                    Toast.makeText(this@KakaoLoginActivity,"서버 접근 실패",Toast.LENGTH_SHORT).show()
+                }
+                override fun onResponse(call: Call<Msg>, response: Response<Msg>) {
+                    if (response.isSuccessful) {
+
+                        Log.e("태그","유저 카카오 토큰값 수정 성공. response.body()?.msg"+ response.body()?.msg)
+                    } else {
+                        Log.e("태그","유저 카카오 토큰값 수정 실패. response.errorBody()?.string():"+response.errorBody()?.string())
+                    }
+                }
+            })
+    }
+
+
+
+
 
 }

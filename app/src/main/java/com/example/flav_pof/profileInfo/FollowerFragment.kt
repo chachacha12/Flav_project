@@ -94,7 +94,7 @@ class FollowerFragment(var server: retrofit_service) : Fragment() {
                             val Object = jsonarray.getJSONObject(i)  //각각 하나의 컨텐츠씩 가져옴
                             //following_userInfoList안에 가져오는 팔로잉 유저들 다 넣어줌
                             update_follower_userInfoList!!.add( UserInfo(Object.getString("username"),Object.getString("profileimg_path"),
-                                Object.getInt("id").toString()   ))
+                                Object.getInt("kakao_id").toString()   ))
                             i++
                         } //repeat
                         Log.e("태그", "가져온 팔로워 목록: "+update_follower_userInfoList)

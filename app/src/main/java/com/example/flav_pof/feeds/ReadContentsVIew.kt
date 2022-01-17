@@ -71,8 +71,8 @@ class ReadContentsVIew : LinearLayout {
 
         tag1_textView.text = "#"+contents.Tag_FirstAdj.getString("tagname")
         //jsonobject타입으로 result라는 jsonArray안에 담아져서 오는 인자는 이렇게 처리
-        tag2_textView.text = "#"+contents.Tag_SecondAdj.getString("tagname")
-        tag3_textView.text = "#"+contents.Tag_Location.getString("tagname")
+        tag2_textView.text = contents.Tag_SecondAdj.getString("tagname")
+        tag3_textView.text = contents.Tag_Location.getString("tagname")
 
 
         //이미지넣어줄 부모뷰 세팅

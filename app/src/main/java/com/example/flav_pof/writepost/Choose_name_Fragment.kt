@@ -87,8 +87,8 @@ class Choose_name_Fragment : Fragment() {
 
         //식당명리스트 라디오버튼 만들기
 
-        if(namelist == "정보없음") {  //exif정보가 없을때
-
+        if(namelist == "음식점없음") {  //exif는 있는데 주변 음식점 정보가 없을때
+            Toast.makeText(activity, "주변 음식점 정보를 찾을 수 없습니다. 직접 식당명을 입력해주세요!", Toast.LENGTH_SHORT).show()
         }else{   //식당명 정보가 있을때
             var jsonArray = JSONArray(namelist)
             var i = 0;
@@ -127,8 +127,6 @@ class Choose_name_Fragment : Fragment() {
                 }
             }  //repaet
         }
-
-
     }
 
     //다른 프래그먼트로 갔다가 다시 이 프래그먼트로 돌아오거나, 뭔가를 사용자가 클릭해서 상호작용할때마다 작동되는 함수인듯?

@@ -50,10 +50,11 @@ class MainActivity : BasicActivity(), home_map_Listener, OnAppointment_noexistLi
     private lateinit var noticebutton:View
     private lateinit var noticebutton2:View
 
+    @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(com.example.flav_pof.R.layout.activity_main)
-        setToolbarTitle("  foowinkle")
+        setToolbarTitle("  Foowinkle")
 
 
         //알림버튼 초기화해주고 로딩중일때 가려줌
@@ -85,7 +86,7 @@ class MainActivity : BasicActivity(), home_map_Listener, OnAppointment_noexistLi
 
     override fun onBackPressed() {
         var builder = AlertDialog.Builder(this)
-        builder.setMessage("앱을 종료하시겠습니까?")
+        builder.setMessage("뿌잉클을 종료할까요?")
         builder.setCancelable(false) // 다이얼로그 화면 밖 터치 방지
 
         builder.setPositiveButton(
@@ -119,7 +120,6 @@ class MainActivity : BasicActivity(), home_map_Listener, OnAppointment_noexistLi
                 get_myAppointmentList()
 
             }
-
         }
         return super.onOptionsItemSelected(item)
     }
@@ -134,6 +134,7 @@ class MainActivity : BasicActivity(), home_map_Listener, OnAppointment_noexistLi
         super.onPause()
     }
 
+    @RequiresApi(Build.VERSION_CODES.M)
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
@@ -270,7 +271,6 @@ class MainActivity : BasicActivity(), home_map_Listener, OnAppointment_noexistLi
             })
     }
 
-
     //서버로부터 약속목록 가져와서 내용이 있는지 확인하는 함수 - 존재여부에 따라 알림버튼 모양 변경
     fun check_appointment_list(){
         appointment_list.clear()
@@ -314,7 +314,6 @@ class MainActivity : BasicActivity(), home_map_Listener, OnAppointment_noexistLi
 
     //home프래그먼트에서 약속목록 다 지울때 통신함. - OnAppointment_noexistListener인터페이스의 implement한 함수
     override fun exist_appointment(delete_appointment: Boolean) {
-
         //홈프래그먼트에서 약속목록 삭제되어서 true반환받았다면 - 알림버튼을 빈 알림모양으로 변경
         if(delete_appointment){
             check_appointment = false  //약속있는지 체크해주는 이 변수는 false로.

@@ -61,8 +61,7 @@ interface retrofit_service {
 
     //본인, 본인팔로우친구들 컨텐츠 다 가져오기
     @GET("app/contents/relevant/{kakao_id}")
-    fun get_ReleventsContents_Request(@Path("kakao_id") kakao_id:Int): Call<Result_response>
-
+    fun get_ReleventsContents_Request(@Path("kakao_id") kakao_id:Int ): Call<Result_response>
 
 
     //게시물 rds에서 삭제 요청
@@ -100,10 +99,16 @@ interface retrofit_service {
     @GET("app/appointments/{kakao_id}")
     fun get_appointment_Request(@Path("kakao_id") kakao_id:String): Call<Result_response>
 
-
     //내 약속목록 삭제
     @DELETE("app/appointments/{kakao_id}")
     fun delete_appointmentlist_Request(@Path("kakao_id") kakao_id:String):Call<Msg>
+
+    //유저등록때 이미 유저 등록되어 있는상태면 유저 카카오토큰만 수정 위함
+    @FormUrlEncoded
+    @PATCH("app/kakao/token/{kakao_id}")  // @Query
+    fun modify_kakaotoken(@Path("kakao_id") kakao_id: String, @Field("kakaotoken") kakaotoken: String) :Call<Msg>
+
+
 
 
 }

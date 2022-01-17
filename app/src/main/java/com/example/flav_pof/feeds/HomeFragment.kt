@@ -117,11 +117,16 @@ class HomeFragment(var server:retrofit_service) : Fragment() {
         }
         //슬라이드 열렸을때 약속목록 모두 지우기 버튼
         binding.DeleteAllButton.setOnClickListener {
-            Home_appointment_list.clear()  //약속목록 리스트 모두 비워주고 리사이클러뷰 다시 만드려고
-            if(Home_appointment_list.isEmpty())  //약속목록 아예 없을떄
-                Toast.makeText(activity,"존재하는 약속이 없습니다.",Toast.LENGTH_SHORT).show()
-            else
+            if(Home_appointment_list.isEmpty()) {  //약속목록 아예 없을떄
+                Toast.makeText(activity, "존재하는 약속이 없습니다.", Toast.LENGTH_SHORT).show()
+                appointmentAdapter?.notifyDataSetChanged()
+                //main액티비티로 빈 알림버튼으로 변경하라는 데이터를 보냄(true값) - 인터페이스 이용
+                onAppointment_noexistListener?.exist_appointment(true)
+            }
+            else{
                 delete_appointmentList()  //약속목록 지우고 appointment어댑터 업데이트, 메인액티비티로 true값 반환해서 알림버튼 변경해줌
+            }
+            Home_appointment_list.clear()  //약속목록 리스트 모두 비워주고 리사이클러뷰 다시 만드려고
         }
         return view
     }
@@ -134,7 +139,7 @@ class HomeFragment(var server:retrofit_service) : Fragment() {
                 }
                 override fun onResponse(call: Call<Msg>, response: Response<Msg>) {
                     if (response.isSuccessful) {
-                        Toast.makeText(activity, "모든 약속을 삭제하였습니다.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(activity, "모든 약속을 삭제했습니다.", Toast.LENGTH_SHORT).show()
                         Log.e("태그",  "약속목록 삭제성공: "+response.body()?.msg)
                         appointmentAdapter?.notifyDataSetChanged()
                         //main액티비티로 빈 알림버튼으로 변경하라는 데이터를 보냄(true값) - 인터페이스 이용
@@ -239,19 +244,26 @@ class HomeFragment(var server:retrofit_service) : Fragment() {
                 call: Call<Msg>,
                 response: Response<Msg>
             ) {
-                if (response.isSuccessful) {
+                if(response.isSuccessful) {
                     Log.e("태그", "약속신청 통신 성공  ,msg: "+response.body()?.msg)
+                    Log.e("태그", "약속신청 통신 성공  ,msg: "+response.body()?.toString())
                     Toast.makeText(activity, "밥약속 신청 완료!", Toast.LENGTH_SHORT).show()
                  } else {
-                    Log.e("태그", "약속신청 서버접근했지만 실패: "+response.errorBody()?.string())
-                    Toast.makeText(activity, "밥약속 신청에 실패하셨습니다.", Toast.LENGTH_SHORT).show()
+                    if(response.errorBody()?.string() == "{\"msg\":\"ER_DUP_ENTRY\"}"){   // 이미 그 게시물에 약속 신청했던 상태일때
+                        Toast.makeText(activity, "이미 약속한 게시물 입니다.", Toast.LENGTH_SHORT).show()
+                        Log.e("태그", "이미 약속한 게시물: response.errorBody()?.string():"+response.errorBody()?.string())
+                        Log.e("태그", "이미 약속한 게시물: response.body()?.msg"+response.body()?.msg)
+                    }else{
+                        Log.e("태그", "약속신청 서버접근했지만 실패: response.errorBody()?.string()"+response.errorBody()?.string())
+                        Toast.makeText(activity, "밥약속 신청에 실패하셨습니다.", Toast.LENGTH_SHORT).show()
+                        Log.e("태그", "이미 약속한 게시물: response.errorBody()?.string():"+response.errorBody()?.string())
+                        Log.e("태그", "이미 약속한 게시물: response.body()?.msg"+response.body()?.msg)
+                    }
+
                 }
             }
         })
     }
-
-
-
 
     //s3스토리지 삭제로직
     fun storageDelete(filename: String) {

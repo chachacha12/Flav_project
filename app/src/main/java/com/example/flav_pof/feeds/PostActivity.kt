@@ -25,6 +25,7 @@ class PostActivity : BasicActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_post)
 
+
         contents = intent.getSerializableExtra("postInfo") as Contents
         Log.e("태그", "포스트액티비티로 받아온 intent.getSerializableExtra(\"postInfo\") as Contents: "+contents)
 

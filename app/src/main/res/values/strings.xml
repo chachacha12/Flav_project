@@ -6,7 +6,7 @@
     <string name="kakao_app_key">c96f6bd57c1d1f50be96460adb9705c3</string>
 
     <string name="facebook_app_id">397485705505941</string>
-    <string name="fb_login_protocol_scheme">fb[APP_ID]</string>
+    <string name="fb_login_protocol_scheme">fb397485705505941</string>
 
 
     <!-- TODO: Remove or change this placeholder text -->

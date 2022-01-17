@@ -10,12 +10,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.flav_pof.classes.Name
 import com.example.flav_pof.R
 import com.example.flav_pof.activity.BasicActivity
+import com.example.flav_pof.activity.Galleryactivity
 import com.example.flav_pof.classes.LatLng
+import com.example.flav_pof.feeds.MainActivity
 import com.example.flav_pof.retrofit_service
 import kotlinx.android.synthetic.main.item_gallery.view.*
 import kotlinx.android.synthetic.main.view_loader.*
@@ -80,36 +83,39 @@ class GalleryAdapter(var activity: Activity, private val myDataset: ArrayList<St
         //가져온 이미지들이 리사이클러뷰에서 너무 사이즈 이상하게 나오는 문제 해결해줌 --> Glide라는걸 이용할거임! -> Gradle의 dependency에서 라이브러리 추가해주고, 아래 코드들 넣어주면 됨.+ 이미지경로값 필요
 
         Glide.with(activity).load(myDataset!![position]).centerCrop().override(500).into(imageView)  //with()안에는 이미지를 띄울 프래그먼트나 액티비티정보를 넣어줘야해서 어댑터클래스의 인자에 띄울 데이터셋 에다가 액티비티도 추가해
-                                                                            // 매니패스트안에 android:requestLegacyExternalStorage="true"  이것도 추가해줘야 사진 온전히 나옴
+        // 매니패스트안에 android:requestLegacyExternalStorage="true"  이것도 추가해줘야 사진 온전히 나옴
     }
 
+    //서버로부터 주변 식당명리스트 받아옴
     fun RESTAURANT_NAME_API_REPUEST(){
-
         server.getAllrestaurant_Request(file).enqueue(object : Callback<Name> {
             override fun onFailure(call: Call<Name>, t: Throwable) {
-                Log.e("태그", "서버 통신 아예 실패" + t.message)
+                Log.e("태그", "갤러리서버 통신 아예 실패" + t.message)
+                //메인액티비티로 이동
+
+                //백스택들 지워주고 메인으로 이동
+                var intent = Intent(activity,  MainActivity::class.java)
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                activity.startActivity(intent)
+
             }
             override fun onResponse(call: Call<Name>, response: Response<Name>) {
                 if (response.isSuccessful) {
-                    //Log.e("태그", "갤러리어댑터에서 식당정보리스트 통신성공" + response.body()?.result)
-                    handler()  //서버통해 데이터 가져오는 거 성공하면 핸들러함수 통해서 식당이름리스트 데이터 담아서 writepostactivity이동
+                    Log.e("태그", "갤러리어댑터에서 식당정보리스트 통신성공" + response.body()?.result)
                 } else {
                     Log.e(
                         "태그",
                         "서버접근 성공했지만 올바르지 않은 response값" + response.body()?.result + "에러: " + response.errorBody()?.string() )
-                    handler()
                 }
-                //response값(주변 식당들 이름)을 writepost액티비티에 전달을 위해
-
-
+                handler()  //서버통해 데이터 가져오는 거 성공하면 핸들러함수 통해서 식당이름리스트 데이터 담아서 writepostactivity이동
                 //서버로부터 사진의 위경도정보를 받아옴.   디폴트 위경도값 string을 각각 저장
-                default_lat = response.body()?.default_lat.toString()!!
-                default_lng = response.body()?.default_lng.toString()!!
+                default_lat = response.body()?.default_lat.toString()
+                default_lng = response.body()?.default_lng.toString()
                 Log.e("태그", "(String상태인)default_lat,  default_lng: "+ default_lat+", "+default_lng)
-
                 //서버로부터 주변음식점이름을 List<Any>타입으로 받아옴. 그걸 jsonarray로 만듬
                 var jsonArray = JSONArray(response.body()?.result)
-                 name_list = jsonArray
+                name_list = jsonArray
+                Log.e("태그", "갤러리어댑터에서 name_list: " + name_list)
             }
         })
     }
@@ -138,15 +144,23 @@ class GalleryAdapter(var activity: Activity, private val myDataset: ArrayList<St
         var handler = object: Handler(Looper.getMainLooper()){
             override fun handleMessage(msg: Message) {
 
-                if(name_list.length()==0 ){  //exif정보 없는 사진이거나.. 서버에 데이터 없는 사진일경우 등등
-                    Log.e("태그","exif정보없는 사진이 들어옴")
-                    resultIntent.putExtra("restaurant_name_list","정보없음")  //"정보없음"이라는 string을 보내줌
-
+                if(name_list.length()==0) {  //주변음식점 1도없을때
+                    if(default_lat=="null" || default_lng=="null"){  //주변음식점 1도없으면서 exif정보도 없는 사진일때 ->바로 꺼줄거임
+                        Log.e("갤러리태그", "주변음식점 1도없으면서 exif정보도 없는 사진들어감")
+                        resultIntent.putExtra("restaurant_name_list", "아예없음")  //"정보없음"이라는 string을 보내줌
+                    }else{  //주변음식점만 없고 위경도 값은 사진에 있을때 ->디폴트 위경도값 주고 작성창 띄울거임
+                        Log.e("갤러리태그", "주변음식점만 없고 위경도 값은 사진들어감")
+                        resultIntent.putExtra("default_lat", default_lat ) //사진의 디폴트 위도값 보내줌
+                        resultIntent.putExtra("default_lng", default_lng ) //사진의 디폴트 경도값 보내줌
+                        resultIntent.putExtra("restaurant_name_list", "음식점없음")  //"정보없음"이라는 string을 보내줌
+                    }
                 }else{
+                    Log.e("갤러리태그","2")
                     resultIntent.putExtra("restaurant_name_list",name_list.toString() )  //주변식당이름, 위경도 정보 보내줌
                     resultIntent.putExtra("default_lat",default_lat ) //사진의 디폴트 위도값 보내줌
                     resultIntent.putExtra("default_lng",default_lng ) //사진의 디폴트 경도값 보내줌
                 }
+                Log.e("갤러리태그","3")
                 activity.setResult(Activity.RESULT_OK, resultIntent)   //onActivityResult함수로 인텐트 보냄.
                 activity.loaderLayout.visibility = View.GONE //갤러리 액티비티객체를 통해 로딩화면 xml보여줌
                 activity.finish()  //갤러리액티비티 닫아줌

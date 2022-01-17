@@ -226,7 +226,7 @@
                         android:layout_height="wrap_content"
                         android:layout_centerHorizontal="true"
                         android:lineSpacingExtra="9sp"
-                        android:text="친구찾기"
+                        android:text="믿을만한 친구찾기"
                         android:textColor="#222222"
                         android:textSize="18sp"
                         android:textStyle="normal" />

@@ -17,6 +17,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.scale
@@ -65,14 +66,20 @@ class mapFragment : Fragment(), OnMapReadyCallback {
 
     override fun onStart() {
         super.onStart()
-        mapView.onStart()
-       (activity as AppCompatActivity?)!!.supportActionBar!!.hide()
+        if(MapContentsList.isNotEmpty()){
+            mapView.onStart()
+            (activity as AppCompatActivity?)!!.supportActionBar!!.hide()
+        }
+
     }
 
     override fun onStop() {
         super.onStop()
-        mapView.onStop()
-       (activity as AppCompatActivity?)!!.supportActionBar!!.show()
+        if(MapContentsList.isNotEmpty()){
+            mapView.onStop()
+            (activity as AppCompatActivity?)!!.supportActionBar!!.show()
+        }
+
     }
 
     // 슬라이드업파넬레이아웃 이벤트 리스너
@@ -136,7 +143,18 @@ class mapFragment : Fragment(), OnMapReadyCallback {
     override fun onMapReady(map: GoogleMap) {
         Log.e("태그", "onMapReady 시작")
 
-        mMap = map
+        if(MapContentsList.isEmpty()){     //피드에 게시물이 하나도 없는경우
+            Toast.makeText(activity, "게시물을 등록해야 맛지도가 나타납니다!",Toast.LENGTH_SHORT).show()
+        }else{   //피드에 게시물 하나라도 있을땐 구글맵만들고 마커만들고 등등 진행
+            mMap = map
+            make_Map_marker()
+        } //피드에 게시물 하나라도 있는경우
+    } //OnMapReady
+
+
+    //구글맵과 마커 등을 만듬
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun make_Map_marker(){
         var photourl: String?
         var pos:LatLng
         var restaurant_name: String?   //식당명
@@ -180,7 +198,6 @@ class mapFragment : Fragment(), OnMapReadyCallback {
                     .into(tv_marker2)
                  */
             }
-
             textView.text = username
             markerOptions.position(pos)
             markerOptions.title(restaurant_name)
@@ -199,7 +216,6 @@ class mapFragment : Fragment(), OnMapReadyCallback {
             markerpos_contents_map.put(markerOptions.position, MapContentsList[i])
             i++
         }
-
         //가장 피드 최신에 있는 음식점의 마커를 중심마커로 보여줌  - 근데 first()를 하는 이유는 MapContentsList에 값들이 들어갈때 거꾸로 들어간듯
         var lastpos = LatLng(
             MapContentsList.first().lat.toDouble(),
@@ -234,8 +250,8 @@ class mapFragment : Fragment(), OnMapReadyCallback {
                 .into(binding?.foodImageView!!)
             //태그삽입
             binding?.tag1TextView?.text = "#"+contents.Tag_FirstAdj.getString("tagname")
-            binding?.tag2TextView?.text = "#"+contents.Tag_SecondAdj.getString("tagname")
-            binding?.tag3TextView?.text =  "#"+contents.Tag_Location.getString("tagname")
+            binding?.tag2TextView?.text = contents.Tag_SecondAdj.getString("tagname")
+            binding?.tag3TextView?.text = contents.Tag_Location.getString("tagname")
 
             //게시물생성일값 삽입
             val instant = Instant.parse(contents.date)  //contents.date가 string날짜값임.
@@ -263,10 +279,8 @@ class mapFragment : Fragment(), OnMapReadyCallback {
             binding!!.cancelButton.setOnClickListener {
                 slidePanel.panelState = SlidingUpPanelLayout.PanelState.COLLAPSED
             }
-
         }
-    } //OnMapReady
-
+    } //make_Map_marker
 
     //homefragment에서 넘어온 컨텐츠리스트를 받음
     fun display(map_contentsList: ArrayList<Contents>){

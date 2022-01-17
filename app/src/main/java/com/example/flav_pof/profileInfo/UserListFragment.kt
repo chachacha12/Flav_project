@@ -47,7 +47,7 @@ class UserListFragment(var server: retrofit_service) : Fragment() {
     private var userList: ArrayList<UserInfo>? = null
 
     //tabLayout에 붙을 텍스트들
-    var textArray = arrayListOf("팔로워", "팔로잉")
+    var textArray = arrayListOf("나를 믿어주는 친구", "내가 믿는 친구")
     //이 프래그먼트에 붙힐 프래그먼트 2개를 만들어줌
     var follower_fragment: FollowerFragment? =null
     var following_fragment: FollowingFragment? = null

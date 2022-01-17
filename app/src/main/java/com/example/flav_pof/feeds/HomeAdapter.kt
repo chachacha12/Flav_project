@@ -2,6 +2,7 @@ package com.example.flav_pof.feeds
 
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Build
 import android.util.Log
@@ -134,8 +135,26 @@ class HomeAdapter(
             popup.setOnMenuItemClickListener {
                 return@setOnMenuItemClickListener when (it.itemId) {
                     R.id.delete -> {
-                        onPostListener.onDelete(position)  //인터페이스를 통해 홈프래그먼트에서 삭제로직 작동시킬거임
-                        Log.e("태그","게시물삭제버튼 클릭")
+                        var builder = AlertDialog.Builder(activity)
+                        builder.setMessage("게시물을 삭제할까요?")
+                        builder.setCancelable(false) // 다이얼로그 화면 밖 터치 방지
+
+                        builder.setPositiveButton(
+                            "예"
+                        ) { dialog, which ->
+                            //게시물 삭제로직
+                            onPostListener.onDelete(position)  //인터페이스를 통해 홈프래그먼트에서 삭제로직 작동시킬거임
+                            Log.e("태그", "게시물삭제버튼 클릭")
+                        }
+                        builder.setNegativeButton(
+                            "아니요"
+                        ) { dialog, which -> }
+
+                        builder.setNeutralButton(
+                            "취소"
+                        ) { dialog, which -> }
+
+                        builder.show() // 다이얼로그 보이기
                         true
                     }
                     else -> false
@@ -149,8 +168,26 @@ class HomeAdapter(
             popup.setOnMenuItemClickListener {
                 return@setOnMenuItemClickListener when (it.itemId) {
                     R.id.appointment -> {
-                        onPostListener.onAppointment(position)  //인터페이스를 통해 홈프래그먼트에서
-                        Log.e("태그","밥약속 신청버튼 클릭")
+                        var builder = AlertDialog.Builder(activity)
+                        builder.setMessage(myDataset[position].User.getString("username")+"님에게 <" +
+                                myDataset[position].restname+">에 같이 가지고 할까요?")
+                        builder.setCancelable(false) // 다이얼로그 화면 밖 터치 방지
+                        builder.setPositiveButton(
+                            "예"
+                        ) { dialog, which ->
+                            //밥약속신청로직
+                            onPostListener.onAppointment(position)  //인터페이스를 통해 홈프래그먼트에서
+                            Log.e("태그","밥약속 신청버튼 클릭")
+                        }
+                        builder.setNegativeButton(
+                            "아니요"
+                        ) { dialog, which -> }
+
+                        builder.setNeutralButton(
+                            "취소"
+                        ) { dialog, which -> }
+
+                        builder.show() // 다이얼로그 보이기
                         true
                     }
                     else -> false
@@ -160,7 +197,9 @@ class HomeAdapter(
             inflater.inflate(R.menu.appointment, popup.menu)
             popup.show()
         }
-    }
+    }  //showPopup
+
+
 
 
 }

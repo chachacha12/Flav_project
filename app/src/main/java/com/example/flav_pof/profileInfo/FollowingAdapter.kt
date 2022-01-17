@@ -47,7 +47,7 @@ class FollowingAdapter(
         // 사용자 삭제버튼 클릭시
         cardView.FriendDelete_button.setOnClickListener {
             var builder = AlertDialog.Builder(activity)
-            builder.setMessage(myDataset[mainViewHolder.adapterPosition].name+"님을 팔로우 취소하시겠습니까?")
+            builder.setMessage(myDataset[mainViewHolder.adapterPosition].name+"님을 팔로우 취소할까요?"+"\n"+ myDataset[mainViewHolder.adapterPosition].name+"님의 맛집 정보를 볼 수 없습니다)"  )
             builder.setCancelable(false) // 다이얼로그 화면 밖 터치 방지
 
             builder.setPositiveButton(
