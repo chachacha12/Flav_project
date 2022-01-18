@@ -122,7 +122,7 @@
                     android:layout_width="120dp"
                     android:layout_height="36dp"
                     android:layout_gravity="center_vertical"
-                    android:layout_marginLeft="35dp"
+                    android:layout_marginLeft="20dp"
                     android:background="@drawable/button_round"
                     android:text="직접입력하기"
                     android:textColor="#00aded"
