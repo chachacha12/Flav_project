@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION" />
 
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
@@ -38,10 +39,10 @@
         </activity> <!-- 구글맵 이용을 위한 구글맵API키 -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyAoYdrzLOpdCRtyVGnopXgQdVfPm9adhx8" /> <!-- 카카오톡 로그인을 위한 API키 -->
+            android:value="AIzaSyAoYdrzLOpdCRtyVGnopXgQdVfPm9adhx8" />
         <meta-data
             android:name="com.kakao.sdk.AppKey"
-            android:value="@string/kakao_app_key" />
+            android:value="@string/kakao_app_key" />   <!-- 카카오톡 로그인을 위한 API키 -->
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />       <!-- 페이스북 sdk 광고모니터링을 위한것 -->

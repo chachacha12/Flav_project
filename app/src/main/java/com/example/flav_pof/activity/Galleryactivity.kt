@@ -51,7 +51,7 @@ class Galleryactivity : BasicActivity() {
             }
             else -> {                                                          //권한미승인일때
                 requestPermissions(
-                    arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                    arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.ACCESS_MEDIA_LOCATION),
                     1
                 )  //권한요청창 띄움
                 Toast.makeText(

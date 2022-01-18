@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat.startActivity
+import androidx.exifinterface.media.ExifInterface
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.flav_pof.classes.Name
@@ -33,6 +34,7 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.File
+import java.io.IOException
 
 class GalleryAdapter(var activity: Activity, private val myDataset: ArrayList<String?>?,  var server:retrofit_service) :     //어댑터클래스의 인자 3개, 어댑터클래스엔 basicactivity상속 안되있으므로 액티비티에서 server를 가져옴
     RecyclerView.Adapter<GalleryAdapter.GalleryViewHolder>() {
@@ -57,8 +59,46 @@ class GalleryAdapter(var activity: Activity, private val myDataset: ArrayList<St
         cardView.setOnClickListener {                //사용자가 갤러리에서 특정 사진을 클릭해서 선택했을때
             activity.loaderLayout.visibility = View.VISIBLE //갤러리 액티비티객체를 통해 로딩화면 xml보여줌
             //레트로핏 post image 업로드
-            var imageFile = File(myDataset!![galleryViewHolder.adapterPosition])
+            var imageFile = File(myDataset!![galleryViewHolder.adapterPosition]!!)
             Log.e("태그", "이미지 uri: " + myDataset!![galleryViewHolder.adapterPosition])
+            ///////////////////////////////////
+
+            /*
+            //프론트에서 exif추출 로직 - 추출성공했음
+            val photo = imageFile
+            var exif : ExifInterface? = null
+            try{
+                exif = ExifInterface(photo.absolutePath)
+            }catch (e : IOException){
+                e.printStackTrace()
+            }
+            val filename = photo.name
+            val manufacturer = exif?.getAttribute(ExifInterface.TAG_MAKE)
+            val cameraModel = exif?.getAttribute(ExifInterface.TAG_MODEL)
+            val orientation = when (exif?.getAttributeInt(ExifInterface.TAG_ORIENTATION, 0)) {
+                ExifInterface.ORIENTATION_ROTATE_90 -> 90
+                ExifInterface.ORIENTATION_ROTATE_180 -> 180
+                ExifInterface.ORIENTATION_ROTATE_270 -> 270
+                else -> 0
+            }
+
+            val dateTime = exif?.getAttribute(ExifInterface.TAG_DATETIME)
+            val length = exif?.getAttribute(ExifInterface.TAG_IMAGE_LENGTH)
+            val width = exif?.getAttribute(ExifInterface.TAG_IMAGE_WIDTH)
+            Log.e("ExifData", "File Name : $filename")
+            Log.e("ExifData", "model : $manufacturer")
+            Log.e("ExifData", "model2 : $cameraModel")
+            Log.e("ExifData", "Orientation : $orientation")
+            Log.e("ExifData", "dateTime : $dateTime")
+            Log.e("ExifData", "Resolution(x*y) : $width x $length")
+            Log.e("ExifData", "  exif?.latLong?.get(0) : "+   exif?.latLong?.get(0))
+            Log.e("ExifData", " exif?.latLong?.get(1) : "+     exif?.latLong?.get(1))
+             */
+
+
+
+
+            /////////////////////////////////
             var reqFile: RequestBody = RequestBody.create(
                 //MediaType.parse("multipart/form-data"),
                 MediaType.parse("image/jpeg"),
