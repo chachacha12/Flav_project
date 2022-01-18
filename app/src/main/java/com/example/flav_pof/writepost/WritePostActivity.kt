@@ -206,7 +206,7 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
 
                 //프래그먼트에서 intent에  jsonarray를 string값으로 바꿔서 날렸고, 그 string값을 이 액티비티에서 받음. 여기서 또 다른 프래그먼트로 날려준후 다시 jsonarray객체로 만들거임
                 namelist_string =
-                    data!!.getStringExtra("restaurant_name_list")  //주변식당명리스트(string으로 되어있는)가 인텐트에 실려서 날아옴
+                    data.getStringExtra("restaurant_name_list").toString()  //주변식당명리스트(string으로 되어있는)가 인텐트에 실려서 날아옴
                 if(namelist_string =="아예없음") {   //exif정보없는 사진이면 바로종료
                     Toast.makeText(
                         this,
@@ -217,15 +217,15 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
                     finish()
                 }else if(namelist_string =="음식점없음"){    //exif정보는 있고 주변 음식점이 없는 사진일때
                     //사진의 디폴트 위경도값을 갤러리어댑터로부터 가져옴
-                    default_lat = data!!.getStringExtra("default_lat")
-                    default_lng = data!!.getStringExtra("default_lng")
+                    default_lat = data.getStringExtra("default_lat").toString()
+                    default_lng = data.getStringExtra("default_lng").toString()
                     Log.e("태그","exif정보는 있고 주변 음식점이 없는 사진일때임./   default_lat, default_lng: "+default_lat+", "+default_lng)
                     init_viewpager()  //위에서 받은 식당명을 가지고 뷰페이저를 만들어줌.. 프래그먼트 2개 만들고 어댑터 붙히고 등등해서
 
                 }else{   //정상적인 사진일때 (exif정보있고, 주변음식점 있을때)
                     //사진의 디폴트 위경도값을 갤러리어댑터로부터 가져옴
-                    default_lat = data!!.getStringExtra("default_lat")
-                    default_lng = data!!.getStringExtra("default_lng")
+                    default_lat = data.getStringExtra("default_lat").toString()
+                    default_lng = data.getStringExtra("default_lng").toString()
                     Log.e("태그","정상적인 사진임/  default_lat, default_lng: "+default_lat+", "+default_lng)
                     init_viewpager()  //위에서 받은 식당명을 가지고 뷰페이저를 만들어줌.. 프래그먼트 2개 만들고 어댑터 붙히고 등등해서
                 }

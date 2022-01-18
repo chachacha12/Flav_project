@@ -107,10 +107,11 @@ class MainActivity : BasicActivity(), home_map_Listener, OnAppointment_noexistLi
         menuInflater.inflate(R.menu.toolbar_item, menu)       // toolbar_item 메뉴를 toolbar 메뉴 버튼으로 설정
         return true
     }
+
     // 툴바에 있는 알림 버튼 클릭시
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
         // 클릭된 메뉴 아이템의 아이디 마다 when 구절로 클릭시 동작을 설정한다.
-        when(item!!.itemId){
+        when(item.itemId){
             R.id.notice_button -> { // notice_button 알림창 버튼 클릭 시 이벤트 처리
                 Log.e("태그", "알림창 클릭")
                 thread_start()  //약속목록 서버로부터 가져오기 시작
@@ -136,14 +137,15 @@ class MainActivity : BasicActivity(), home_map_Listener, OnAppointment_noexistLi
         super.onPause()
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
             1 -> init()
         }
     }
-    @RequiresApi(Build.VERSION_CODES.M)
+
+
     fun init() {
         check_appointment_list()  //약속목록 잇는지 체크해줌. 잇으면 check_appointment변수 true
 

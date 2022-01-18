@@ -97,7 +97,6 @@ class GalleryAdapter(var activity: Activity, private val myDataset: ArrayList<St
                 var intent = Intent(activity,  MainActivity::class.java)
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                 activity.startActivity(intent)
-
             }
             override fun onResponse(call: Call<Name>, response: Response<Name>) {
                 if (response.isSuccessful) {
