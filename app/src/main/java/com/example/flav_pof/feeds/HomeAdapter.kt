@@ -130,8 +130,8 @@ class HomeAdapter(
     private fun showPopup(v: View, position: Int) {
         val popup = PopupMenu(activity, v)
 
-        if(myDataset[position].User.getString("username") == Usersingleton.username){
-            //사용자가 선택한 게시물의 유저네임이랑 본인 이름이랑 같을경우 (둘다 카카오에서 받아온 이름임)
+        if(myDataset[position].User.getString("kakao_id") == Usersingleton.kakao_id.toString()){
+            //사용자가 선택한 게시물의 카카오id랑 내 카카오id랑 같을경우 (둘다 카카오에서 받아온 값)
             popup.setOnMenuItemClickListener {
                 return@setOnMenuItemClickListener when (it.itemId) {
                     R.id.delete -> {

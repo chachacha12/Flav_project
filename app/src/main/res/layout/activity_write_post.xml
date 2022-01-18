@@ -107,13 +107,13 @@
 
                 <TextView
                     android:id="@+id/textView3"
-                    android:layout_width="160dp"
+                    android:layout_width="175dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginLeft="10dp"
                     android:background="#ffffff"
                     android:fontFamily="sans-serif-medium"
-                    android:text="걸맞은 식당이름이 없나요?"
+                    android:text="다녀오신 식당 이름이 없나요?"
                     android:textColor="#222222"
                     android:textSize="14sp" />
 
@@ -122,7 +122,7 @@
                     android:layout_width="120dp"
                     android:layout_height="36dp"
                     android:layout_gravity="center_vertical"
-                    android:layout_marginLeft="40dp"
+                    android:layout_marginLeft="35dp"
                     android:background="@drawable/button_round"
                     android:text="직접입력하기"
                     android:textColor="#00aded"

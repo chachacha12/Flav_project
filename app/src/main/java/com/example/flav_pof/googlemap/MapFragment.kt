@@ -76,7 +76,6 @@ class mapFragment : Fragment(), OnMapReadyCallback {
                 slidePanel.panelState = SlidingUpPanelLayout.PanelState.COLLAPSED  //닫기
             }
         }
-
     }
 
     override fun onStop() {
@@ -146,6 +145,11 @@ class mapFragment : Fragment(), OnMapReadyCallback {
     //map 로딩이 완료되었을때 호출되는 함수.  좌표설정, 마커등을 달아줌
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onMapReady(map: GoogleMap) {
+        //여기서 이거 넣는 이유는 사용자가 패널 연상태로 다른곳 갔다가 다시 mapfrag왔을때 state저장안되서 이상한값이 패널 뷰들에 들어가는 오류때문 - onStart에서도 해주는데 거기 안거칠땐 여기서
+        val state = slidePanel.panelState
+        if (state == SlidingUpPanelLayout.PanelState.EXPANDED) {  //패널 열렸으면
+            slidePanel.panelState = SlidingUpPanelLayout.PanelState.COLLAPSED  //닫기
+        }
 
         Log.e("태그", "onMapReady 시작")
         if(MapContentsList.isEmpty()){     //피드에 게시물이 하나도 없는경우
@@ -254,7 +258,7 @@ class mapFragment : Fragment(), OnMapReadyCallback {
             Glide.with(requireActivity()).load(food_photoUrl).override(500).thumbnail(0.1f)
                 .into(binding?.foodImageView!!)
             //태그삽입
-            binding?.tag1TextView?.text = "#"+contents.Tag_FirstAdj.getString("tagname")
+            binding?.tag1TextView?.text = contents.Tag_FirstAdj.getString("tagname")
             binding?.tag2TextView?.text = contents.Tag_SecondAdj.getString("tagname")
             binding?.tag3TextView?.text = contents.Tag_Location.getString("tagname")
 

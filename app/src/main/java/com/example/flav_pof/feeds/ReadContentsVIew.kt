@@ -69,7 +69,7 @@ class ReadContentsVIew : LinearLayout {
         val tag2_textView = findViewById<TextView>(com.example.flav_pof.R.id.tag2_textView)
         val tag3_textView = findViewById<TextView>(com.example.flav_pof.R.id.tag3_textView)
 
-        tag1_textView.text = "#"+contents.Tag_FirstAdj.getString("tagname")
+        tag1_textView.text = contents.Tag_FirstAdj.getString("tagname")
         //jsonobject타입으로 result라는 jsonArray안에 담아져서 오는 인자는 이렇게 처리
         tag2_textView.text = contents.Tag_SecondAdj.getString("tagname")
         tag3_textView.text = contents.Tag_Location.getString("tagname")

@@ -95,7 +95,6 @@ class Choose_tag_Fragment : Fragment() {
             tag_number_check = 3
             showDialog_tag(Ui_tag3_list)
         }
-
         return view
     }
 
@@ -103,7 +102,6 @@ class Choose_tag_Fragment : Fragment() {
     override fun onResume() {
         super.onResume()
         binding?.nameTextView?.text = restaurant_name  //name프래그에서의 데이터를 인터페이스로 액티비티 통해서 받아서 텍스트뷰에 넣어줌
-
     }
 
     override fun onDestroyView() {
@@ -155,11 +153,10 @@ class Choose_tag_Fragment : Fragment() {
         repeat(list.size) {
 
             val tagitem_textView = TextView(activity)  //텍스트뷰 하나 생성
-            tagitem_textView.setTextColor(resources.getColor(R.color.colorOrange))  //태그 글씨색
+            tagitem_textView.setTextColor(resources.getColor(R.color.colorBlack))  //태그 글씨색
             tagitem_textView.textSize =  18.0f
             tagitem_textView.setPaddingVertical(15)  //태그텍스트들 사이의 간격 padding값 조절
             tagitem_textView.text = list[i]
-
 
             val rprms: LinearLayout.LayoutParams =
                 LinearLayout.LayoutParams(
@@ -171,9 +168,8 @@ class Choose_tag_Fragment : Fragment() {
            dialog_tag?.TagList_LinearLayout?.addView(tagitem_textView, rprms)
             i++
 
-            //특정 식당명을 클릭했을시
+            //특정 태그를 클릭시
             tagitem_textView.setOnClickListener {
-
                 when(tag_number_check){   //fragment_choose_tag 의 xml에서 몇번째 태그 텍스트뷰에 setText해줄지
                     1 ->{
                         tag1_textView.text = tagitem_textView?.text.toString()
@@ -191,7 +187,6 @@ class Choose_tag_Fragment : Fragment() {
                         ontagsetListener?.onTag3Set(tag_id!!)  //액티비티로 태그id 데이터값 전달함
                     }
                 }
-                //Toast.makeText(activity, tagitem_textView?.text.toString() + " 선택", Toast.LENGTH_SHORT).show()
                 dialog_tag?.dismiss() // 다이얼로그 닫기
             }
         }
