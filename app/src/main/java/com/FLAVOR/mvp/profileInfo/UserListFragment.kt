@@ -218,7 +218,7 @@ class UserListFragment(var server: retrofit_service) : Fragment() {
                     var following_kakaoidList:java.util.ArrayList<String> = java.util.ArrayList()
                     var j = 0
                     repeat(following_userInfoList.size){
-                        following_kakaoidList.add(following_userInfoList[i].kakaoid)
+                        following_kakaoidList.add(following_userInfoList[j].kakaoid)
                         j++
                     }
                     //새로 생성할 유저객체 하나

@@ -25,7 +25,7 @@ class ContentsItemView : LinearLayout {
     ) {
         initView()
     }
-    aa
+
     private fun initView() {
         layoutParams = ViewGroup.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,
