@@ -79,7 +79,7 @@ class ReadContentsVIew : LinearLayout {
         val contentsLayout = findViewById<LinearLayout>(com.FLAVOR.mvp.R.id.contentsLayout)
         val layoutParams = ViewGroup.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,
-           1000
+            ViewGroup.LayoutParams.MATCH_PARENT
         )        //생성되는 음식사진 이미지뷰의 길이는 여기서 정해줌
 
         //받아온 이미지 넣어주기
@@ -94,10 +94,7 @@ class ReadContentsVIew : LinearLayout {
             Glide.with(this).load(photoUrl).override(1000).thumbnail(0.1f)
                 .into(imageView)
         }
-
-
     }
-
 
 
 }

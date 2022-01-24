@@ -1,54 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ffffff">
+    android:background="#FFFFFF">
 
-    <ImageView
-        android:id="@+id/logo_image"
-        android:layout_width="150dp"
-        android:layout_height="153dp"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="180dp"
-        android:background="#ffffff"
-        app:srcCompat="@drawable/ic_logo" />
 
-    <TextView
-        android:id="@+id/login_Text"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/logo_image"
+        android:layout_height="match_parent"
+        android:background="#FFFFFF">
 
-        android:layout_marginTop="30dp"
-        android:gravity="center_horizontal"
-        android:letterSpacing="-0.02"
-        android:lineSpacingExtra="9sp"
-        android:text="계속 진행하시려면\n로그인해주세요!"
-        android:textColor="#222222"
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#ffffff">
 
-        android:textSize="22sp"
-        android:textStyle="bold" />
+            <ImageView
+                android:id="@+id/logo_image"
+                android:layout_width="150dp"
+                android:layout_height="153dp"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="131dp"
+                android:layout_marginTop="140dp"
+                android:layout_marginEnd="130dp"
+                android:background="#ffffff"
+                app:srcCompat="@drawable/ic_logo" />
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cardView_kakaobtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/login_Text"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="40dp"
-        app:cardCornerRadius="20dp">
+            <TextView
+                android:id="@+id/login_Text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/logo_image"
 
-        <ImageView
-            android:id="@+id/login"
-            android:layout_width="320dp"
-            android:layout_height="56dp"
-            android:background="#ffe600"
-            android:textColor="#222222"
-            android:textSize="15sp"
-            app:srcCompat="@drawable/kakao_login_medium_narrow" />
-    </androidx.cardview.widget.CardView>
+                android:layout_marginTop="30dp"
+                android:gravity="center_horizontal"
+                android:letterSpacing="-0.02"
+                android:lineSpacingExtra="9sp"
+                android:text="계속 진행하시려면\n로그인해주세요!"
+                android:textColor="#222222"
+
+                android:textSize="22sp"
+                android:textStyle="bold" />
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardView_kakaobtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/login_Text"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="40dp"
+                app:cardCornerRadius="20dp">
+
+                <ImageView
+                    android:id="@+id/login"
+                    android:layout_width="320dp"
+                    android:layout_height="56dp"
+                    android:background="#ffe600"
+                    android:textColor="#222222"
+                    android:textSize="15sp"
+                    app:srcCompat="@drawable/kakao_login_medium_narrow" />
+            </androidx.cardview.widget.CardView>
+
+        </RelativeLayout>
+    </ScrollView>
 
     <include
         layout="@layout/view_loader"
@@ -56,5 +76,9 @@
         android:layout_height="match_parent"
         tools:visibility="gone" />
 
-
 </RelativeLayout>
+
+
+
+
+

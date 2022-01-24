@@ -16,7 +16,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 open class BasicActivity : AppCompatActivity() {
     
     var retrofit = Retrofit.Builder()
-        .baseUrl("https://www.flavorus.shop/")
+        .baseUrl("https://www.flavorus.shop/")  //http://localhost:3000/
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 

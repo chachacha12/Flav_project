@@ -1,45 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/pager_item_bg"
+
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ffffff"
-    android:gravity="center_horizontal"
-    android:orientation="vertical">
+    android:background="#ffffff">
 
-    <ImageView
-        android:id="@+id/pager_item_image"
-        android:layout_width="340.74365234375dp"
-        android:layout_height="391.84765625dp"
-        android:layout_marginTop="40dp"
-        android:background="#ffffff" />
 
-    <TextView
-        android:id="@+id/pager_item_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+    <LinearLayout
+        android:id="@+id/pager_item_bg"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="9dp"
+        android:layout_marginBottom="9dp"
+        android:background="#ffffff"
         android:gravity="center_horizontal"
-        android:letterSpacing="-0.02"
-        android:lineSpacingExtra="9sp"
-        android:text="기억하고 싶은\n나만의 맛집을 등록해보세요!"
-        android:textColor="#222222"
-        android:textSize="20sp"
-        android:textStyle="bold" />
-
-    <Button
-        android:id="@+id/startbutton"
-        android:layout_width="180dp"
-        android:layout_height="46dp"
-        android:layout_marginTop="15dp"
-        android:background="@drawable/button3_round"
-        android:gravity="center"
-        android:lineSpacingExtra="7sp"
-        android:text="시작하기"
-        android:textColor="#ffffff"
-        android:textSize="17sp"
-        android:textStyle="bold"
-        android:visibility="visible" />
+        android:orientation="vertical">
 
 
-</LinearLayout>
+        <ImageView
+            android:id="@+id/pager_item_image"
+            android:layout_width="310dp"
+            android:layout_height="350dp"
+            android:layout_marginTop="40dp"
+            android:background="#ffffff" />
+
+        <TextView
+            android:id="@+id/pager_item_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:gravity="center_horizontal"
+            android:letterSpacing="-0.02"
+            android:lineSpacingExtra="9sp"
+            android:text="기억하고 싶은\n나만의 맛집을 등록해보세요!"
+            android:textColor="#222222"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/startbutton"
+            android:layout_width="180dp"
+            android:layout_height="46dp"
+            android:layout_marginTop="35dp"
+            android:background="@drawable/button3_round"
+            android:gravity="center"
+            android:lineSpacingExtra="7sp"
+            android:text="시작하기"
+            android:textColor="#ffffff"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            android:visibility="visible" />
+
+
+    </LinearLayout>
+
+</RelativeLayout>
+
+

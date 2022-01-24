@@ -3,15 +3,15 @@
 <com.sothree.slidinguppanel.SlidingUpPanelLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="#00FFFFFF"
-    app:umanoShadowHeight="0dp"
-    app:umanoOverlay="true"
     android:id="@+id/SlideUpPannerLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#FFFFFF"
     android:gravity="bottom"
     app:umanoDragView="@id/slide_Relativelayout"
-    app:umanoPanelHeight="0dp">         <!--처음에 슬라이드 되기전에 패널의 높이를 조절  0dp이면 아예 밑에 안보임 -->
+    app:umanoOverlay="true"
+    app:umanoPanelHeight="0dp"
+    app:umanoShadowHeight="0dp">         <!--처음에 슬라이드 되기전에 패널의 높이를 조절  0dp이면 아예 밑에 안보임 -->
 
 
     <!--SlidingUpPanelLayout의 첫번째 뷰 - 슬라이드가 나오기 전에 보여지는 뷰 -->
@@ -19,6 +19,7 @@
         android:id="@+id/RelativeLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_margin="10dp"
         android:background="#FFFFFF">
 
         <RelativeLayout

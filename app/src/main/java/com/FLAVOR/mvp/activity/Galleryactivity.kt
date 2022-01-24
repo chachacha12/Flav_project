@@ -81,8 +81,12 @@ class Galleryactivity : BasicActivity() {
                 // If request is cancelled, the result arrays are empty.
                 if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {       //권한허용했을때
                     recyclerInit()
-                } else {                          //권한허용 안했을때
-                    finish()
+                } else {   //권한허용 안했을때
+                    var intent = Intent(this,  MainActivity::class.java)
+                    //백스택들 다 지워주는듯
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                    startActivity(intent)
+
                     Toast.makeText(
                         this,
                         resources.getString(R.string.please_grant_permission),
