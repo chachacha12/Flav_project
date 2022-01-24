@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.cardview.widget.CardView
+import androidx.exifinterface.media.ExifInterface
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.FLAVOR.mvp.classes.Name
@@ -26,6 +27,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.io.File
+import java.io.IOException
 
 class GalleryAdapter(var activity: Activity, private val myDataset: ArrayList<String?>?,  var server:retrofit_service) :     //어댑터클래스의 인자 3개, 어댑터클래스엔 basicactivity상속 안되있으므로 액티비티에서 server를 가져옴
     RecyclerView.Adapter<GalleryAdapter.GalleryViewHolder>() {
@@ -52,50 +54,29 @@ class GalleryAdapter(var activity: Activity, private val myDataset: ArrayList<St
             //레트로핏 post image 업로드
             var imageFile = File(myDataset!![galleryViewHolder.adapterPosition]!!)
             Log.e("태그", "이미지 uri: " + myDataset!![galleryViewHolder.adapterPosition])
-            ///////////////////////////////////
 
-            /*
+            ///////////////////////////////////
             //프론트에서 exif추출 로직 - 추출성공했음
-            val photo = imageFile
             var exif : ExifInterface? = null
             try{
-                exif = ExifInterface(photo.absolutePath)
+                exif = ExifInterface(imageFile.absolutePath)
             }catch (e : IOException){
                 e.printStackTrace()
             }
-            val filename = photo.name
-            val manufacturer = exif?.getAttribute(ExifInterface.TAG_MAKE)
-            val cameraModel = exif?.getAttribute(ExifInterface.TAG_MODEL)
-            val orientation = when (exif?.getAttributeInt(ExifInterface.TAG_ORIENTATION, 0)) {
-                ExifInterface.ORIENTATION_ROTATE_90 -> 90
-                ExifInterface.ORIENTATION_ROTATE_180 -> 180
-                ExifInterface.ORIENTATION_ROTATE_270 -> 270
-                else -> 0
-            }
-
-            val dateTime = exif?.getAttribute(ExifInterface.TAG_DATETIME)
-            val length = exif?.getAttribute(ExifInterface.TAG_IMAGE_LENGTH)
-            val width = exif?.getAttribute(ExifInterface.TAG_IMAGE_WIDTH)
-            Log.e("ExifData", "File Name : $filename")
-            Log.e("ExifData", "model : $manufacturer")
-            Log.e("ExifData", "model2 : $cameraModel")
-            Log.e("ExifData", "Orientation : $orientation")
-            Log.e("ExifData", "dateTime : $dateTime")
-            Log.e("ExifData", "Resolution(x*y) : $width x $length")
             Log.e("ExifData", "  exif?.latLong?.get(0) : "+   exif?.latLong?.get(0))
             Log.e("ExifData", " exif?.latLong?.get(1) : "+     exif?.latLong?.get(1))
-             */
-
-
-
-
+            default_lat = exif?.latLong?.get(0).toString()
+            default_lng = exif?.latLong?.get(1).toString()
             /////////////////////////////////
+            /*
+            //사진 이미지를 서버로 보내줄떄 사용함
             var reqFile: RequestBody = RequestBody.create(
                 //MediaType.parse("multipart/form-data"),
                 MediaType.parse("image/jpeg"),
                 imageFile
             )
             file = MultipartBody.Part.createFormData("photo", imageFile.name, reqFile)
+             */
 
             resultIntent = Intent()
             resultIntent.putExtra("profilePath", myDataset!![galleryViewHolder.adapterPosition])  //돌려보낼 인텐트에 값 넣어줌. 여기선 이미지가 저장된 경로를 보냄
@@ -119,10 +100,9 @@ class GalleryAdapter(var activity: Activity, private val myDataset: ArrayList<St
 
     //서버로부터 주변 식당명리스트 받아옴
     fun RESTAURANT_NAME_API_REPUEST(){
-        server.getAllrestaurant_Request(file).enqueue(object : Callback<Name> {
+        server.getAllrestaurant_Request(default_lat, default_lng ).enqueue(object : Callback<Name> {
             override fun onFailure(call: Call<Name>, t: Throwable) {
                 Log.e("태그", "갤러리서버 통신 아예 실패" + t.message)
-                //메인액티비티로 이동
 
                 //백스택들 지워주고 메인으로 이동
                 var intent = Intent(activity,  MainActivity::class.java)
@@ -139,9 +119,7 @@ class GalleryAdapter(var activity: Activity, private val myDataset: ArrayList<St
                 }
                 handler()  //서버통해 데이터 가져오는 거 성공하면 핸들러함수 통해서 식당이름리스트 데이터 담아서 writepostactivity이동
                 //서버로부터 사진의 위경도정보를 받아옴.   디폴트 위경도값 string을 각각 저장
-                default_lat = response.body()?.default_lat.toString()
-                default_lng = response.body()?.default_lng.toString()
-                Log.e("태그", "(String상태인)default_lat,  default_lng: "+ default_lat+", "+default_lng)
+                Log.e("태그", "식당객수: "+response.body()?.length)
                 //서버로부터 주변음식점이름을 List<Any>타입으로 받아옴. 그걸 jsonarray로 만듬
                 var jsonArray = JSONArray(response.body()?.result)
                 name_list = jsonArray
@@ -164,6 +142,10 @@ class GalleryAdapter(var activity: Activity, private val myDataset: ArrayList<St
                 Log.e("로딩태그","getData성공. 데이터 가져옴")
 
             }catch (e:Exception){
+                //백스택들 지워주고 메인으로 이동
+                var intent = Intent(activity,  MainActivity::class.java)
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                activity.startActivity(intent)
                 Log.e("로딩태그","getData실패")
             }
         }

@@ -154,7 +154,6 @@ class KakaoLoginActivity: BasicActivity() {
                 Usersingleton.profilepath = user.kakaoAccount?.profile?.thumbnailImageUrl.toString()
                 Log.e("싱글톤태그","usersingleton.username: "+Usersingleton.username)
 
-
                 //main에 보내줄 회원정보 데이터 값들
                 MainAct_Intent = Intent(this@KakaoLoginActivity, MainActivity::class.java)
                 MainAct_Intent.putExtra("id", user.id!!)  //회원번호

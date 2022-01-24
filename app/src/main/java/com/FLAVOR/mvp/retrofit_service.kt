@@ -27,10 +27,16 @@ interface retrofit_service {
     fun postpictures(@Part file: MultipartBody.Part): Call<Name> //file의 타입은 MultipartBody.Part. 반환값은 Name객체
      */
 
-    //주변식당이름 리스트 요청
+    /*
+    //주변식당이름 리스트 요청 - 백엔드에서 위도경도값찾는 로직
     @Multipart
     @POST("app/name")
     fun getAllrestaurant_Request(@Part file: MultipartBody.Part): Call<Name>
+     */
+
+    //주변식당이름 리스트 요청 - 프론트에서 위도경도 넘겨줌
+    @GET("app/near")
+    fun getAllrestaurant_Request(@Query("lat") lat:String, @Query("lng") lng:String ): Call<Name>
 
     //유저 등록 요청
     //@Multipart
