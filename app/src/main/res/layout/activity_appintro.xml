@@ -1,86 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-
-
-<RelativeLayout  xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/apk/res-auto"
+    xmlns:tools2="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#ffffff">
 
-    <RelativeLayout
-        android:id="@+id/relativeLayout4"
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/my_intro_view_pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:context=".appIntro.AppIntroActivity">
+        android:layout_centerInParent="true"
+        tools:layout_constraintBottom_toBottomOf="parent"
+        tools:layout_constraintEnd_toEndOf="parent"
+        tools:layout_constraintHorizontal_bias="1.0"
+        tools:layout_constraintStart_toStartOf="parent"
+        tools:layout_constraintTop_toTopOf="parent"
+        tools:layout_constraintVertical_bias="0.0">
 
+    </androidx.viewpager2.widget.ViewPager2>
 
-        <androidx.viewpager2.widget.ViewPager2
-            android:id="@+id/my_intro_view_pager"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_centerInParent="true" />
+    <com.tbuonomo.viewpagerdotsindicator.SpringDotsIndicator
+        android:id="@+id/dots_indicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="180dp"
 
-        <com.tbuonomo.viewpagerdotsindicator.SpringDotsIndicator
-            android:id="@+id/dots_indicator"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="180dp"
+        tools:dotsColor="#00aded"
+        tools:dotsCornerRadius="8dp"
+        tools:dotsSize="16dp"
+        tools:dotsSpacing="4dp"
+        tools:dotsStrokeColor=" #d4e4f9"
+        tools:dotsWidthFactor="2.5"
+        tools:layout_constraintBottom_toBottomOf="@+id/my_intro_view_pager"
+        tools:layout_constraintEnd_toEndOf="parent"
+        tools:layout_constraintStart_toStartOf="parent"
+        tools:progressMode="true"
+        tools:selectedDotColor=" #d4e4f9">
 
-            app:dotsColor="#00aded"
-            app:dotsCornerRadius="8dp"
-            app:dotsSize="16dp"
-            app:dotsSpacing="4dp"
-            app:dotsStrokeColor=" #d4e4f9"
-            app:dotsWidthFactor="2.5"
-            app:progressMode="true"
-            app:selectedDotColor=" #d4e4f9">
+    </com.tbuonomo.viewpagerdotsindicator.SpringDotsIndicator>
 
-        </com.tbuonomo.viewpagerdotsindicator.SpringDotsIndicator>
+    <Button
+        android:id="@+id/previous_btn"
+        android:layout_width="140dp"
+        android:layout_height="46dp"
 
-        <Button
-            android:id="@+id/previous_btn"
-            android:layout_width="140dp"
-            android:layout_height="46dp"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentBottom="true"
-            android:layout_marginLeft="30dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginBottom="80dp"
+        android:background="@drawable/button_round"
+        android:gravity="center"
+        android:lineSpacingExtra="7sp"
+        android:text="이전"
+        android:textColor="#00aded"
+        android:textSize="17sp"
+        android:textStyle="bold"
+        tools:layout_constraintBottom_toBottomOf="@+id/my_intro_view_pager"
+        tools:layout_constraintLeft_toLeftOf="@+id/my_intro_view_pager" />
 
-            android:layout_marginBottom="80dp"
-            android:background="@drawable/button_round"
-            android:gravity="center"
-            android:lineSpacingExtra="7sp"
-            android:text="이전"
-            android:textColor="#00aded"
-            android:textSize="17sp"
-            android:textStyle="bold" />
+    <Button
+        android:id="@+id/next_btn"
 
-        <Button
-            android:id="@+id/next_btn"
+        android:layout_width="140dp"
+        android:layout_height="46dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginBottom="80dp"
+        android:background="@drawable/button2_round"
+        android:gravity="center"
 
-            android:layout_width="140dp"
-            android:layout_height="46dp"
-            android:layout_alignParentTop="false"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentBottom="true"
-            android:layout_marginRight="30dp"
-            android:layout_marginBottom="80dp"
-            android:background="@drawable/button2_round"
-            android:gravity="center"
-            android:lineSpacingExtra="7sp"
-            android:text="다음"
-            android:textColor="#ffffff"
-            android:textSize="17sp"
-            android:textStyle="bold" />
-    </RelativeLayout>
-</RelativeLayout>
+        android:lineSpacingExtra="7sp"
+        android:text="다음"
+        android:textColor="#ffffff"
+        android:textSize="17sp"
+        android:textStyle="bold"
+        tools2:layout_editor_absoluteX="271dp"
+        tools:layout_constraintBottom_toBottomOf="@+id/my_intro_view_pager"
+        tools:layout_constraintRight_toRightOf="@+id/my_intro_view_pager" />
+</androidx.constraintlayout.widget.ConstraintLayout>
 
 
 

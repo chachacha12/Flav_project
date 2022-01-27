@@ -2,6 +2,7 @@
 
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/apk/res-auto"
+    xmlns:tools2="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#ffffff">
@@ -24,7 +25,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
 
-        android:layout_marginTop="30dp"
         android:gravity="center_horizontal"
         android:letterSpacing="-0.02"
         android:lineSpacingExtra="9sp"
@@ -32,6 +32,7 @@
         android:textColor="#222222"
         android:textSize="22sp"
         android:textStyle="bold"
+        android:layout_marginTop="30dp"
         tools:layout_constraintBottom_toTopOf="@+id/cardView_kakaobtn"
         tools:layout_constraintLeft_toLeftOf="parent"
         tools:layout_constraintRight_toRightOf="parent"
@@ -42,13 +43,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
 
-        android:layout_below="@id/login_Text"
-        android:layout_centerHorizontal="true"
         android:layout_marginTop="40dp"
-        tools:cardCornerRadius="20dp"
         tools:layout_constraintEnd_toEndOf="parent"
         tools:layout_constraintStart_toStartOf="parent"
-        tools:layout_constraintTop_toBottomOf="@+id/login_Text">
+        tools:layout_constraintTop_toBottomOf="@+id/login_Text"
+        android:layout_below="@id/login_Text"
+        android:layout_centerHorizontal="true"
+        tools:cardCornerRadius="20dp">
 
         <ImageView
             android:id="@+id/login"
@@ -61,15 +62,4 @@
             tools:srcCompat="@drawable/kakao_login_medium_narrow" />
     </androidx.cardview.widget.CardView>
 
-    <include
-        layout="@layout/view_loader"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-
-
-

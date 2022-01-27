@@ -51,7 +51,7 @@ android {
 dependencies {
 
     //constraintLAYOUT을 쓰는 라이브러리
-    implementation("androidx.constraintlayout:constraintlayout:2.1.2")
+    //implementation("androidx.constraintlayout:constraintlayout:2.1.2")
 
 
     //페이스북sdk관려 - 앱광고 모니터링에 필요
