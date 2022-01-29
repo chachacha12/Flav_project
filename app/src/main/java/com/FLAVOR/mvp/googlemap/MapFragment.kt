@@ -66,7 +66,8 @@ class mapFragment : Fragment(), OnMapReadyCallback {
         super.onStart()
         if(MapContentsList.isNotEmpty()){
             mapView.onStart()
-            (activity as AppCompatActivity?)!!.supportActionBar!!.hide()  
+            (requireActivity() as AppCompatActivity?)!!.supportActionBar!!.hide()
+
 
             //여기서 이거 넣는 이유는 사용자가 패널 연상태로 다른곳 갔다가 다시 mapfrag왔을때 state저장안되서 이상한값이 패널 뷰들에 들어가는 오류때문
             val state = slidePanel.panelState

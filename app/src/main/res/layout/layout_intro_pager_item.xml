@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/apk/res-auto"
+    xmlns:tools2="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#ffffff">
 
-
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/pager_item_bg"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -16,40 +15,51 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         android:layout_margin="10dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="9dp"
-        android:layout_marginBottom="9dp"
         android:background="#ffffff"
         android:gravity="center_horizontal"
-        android:orientation="vertical">
+        tools:layout_constraintBottom_toBottomOf="parent"
+        tools:layout_constraintEnd_toEndOf="parent"
+        tools:layout_constraintStart_toStartOf="parent"
+        tools:layout_constraintTop_toTopOf="parent">
 
 
         <ImageView
             android:id="@+id/pager_item_image"
             android:layout_width="310dp"
-            android:layout_height="350dp"
-            android:layout_marginTop="40dp"
-            android:background="#ffffff" />
+            android:layout_height="0dp"
+            android:layout_marginTop="50dp"
+            android:layout_marginBottom="20dp"
+            android:background="#ffffff"
+            tools:layout_constraintBottom_toTopOf="@+id/pager_item_text"
+            tools:layout_constraintEnd_toEndOf="parent"
+            tools:layout_constraintStart_toStartOf="parent"
+            tools:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/pager_item_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="35dp"
             android:gravity="center_horizontal"
             android:letterSpacing="-0.02"
             android:lineSpacingExtra="9sp"
             android:text="기억하고 싶은\n나만의 맛집을 등록해보세요!"
             android:textColor="#222222"
             android:textSize="20sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            tools:layout_constraintBottom_toTopOf="@+id/startbutton"
+            tools:layout_constraintEnd_toEndOf="@+id/pager_item_image"
+            tools:layout_constraintStart_toStartOf="@+id/pager_item_image"
+            tools:layout_constraintTop_toBottomOf="@+id/pager_item_image" />
 
         <Button
             android:id="@+id/startbutton"
             android:layout_width="180dp"
             android:layout_height="46dp"
-            android:layout_marginTop="35dp"
+            android:layout_marginStart="35dp"
+            android:layout_marginEnd="35dp"
+            android:layout_marginBottom="20dp"
             android:background="@drawable/button3_round"
             android:gravity="center"
             android:lineSpacingExtra="7sp"
@@ -57,11 +67,12 @@
             android:textColor="#ffffff"
             android:textSize="17sp"
             android:textStyle="bold"
-            android:visibility="visible" />
+            android:visibility="visible"
+            tools:layout_constraintBottom_toBottomOf="parent"
+            tools:layout_constraintEnd_toEndOf="@+id/pager_item_text"
+            tools:layout_constraintStart_toStartOf="@+id/pager_item_text"
+            tools:layout_constraintTop_toBottomOf="@+id/pager_item_text" />
 
 
-    </LinearLayout>
-
-</RelativeLayout>
-
-
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

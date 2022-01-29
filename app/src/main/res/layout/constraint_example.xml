@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/apk/res-auto"
     xmlns:tools2="http://schemas.android.com/tools"
@@ -7,59 +6,34 @@
     android:layout_height="match_parent"
     android:background="#ffffff">
 
-    <ImageView
-        android:id="@+id/logo_image"
-        android:layout_width="150dp"
-        android:layout_height="153dp"
-
-        android:layout_marginTop="120dp"
-        android:background="#ffffff"
-        tools:layout_constraintBottom_toTopOf="@+id/login_Text"
-        tools:layout_constraintEnd_toEndOf="parent"
-        tools:layout_constraintStart_toStartOf="parent"
-        tools:layout_constraintTop_toTopOf="parent"
-        tools:srcCompat="@drawable/ic_logo" />
-
-    <TextView
-        android:id="@+id/login_Text"
+    <include
+        layout="@layout/view_toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-
-        android:gravity="center_horizontal"
-        android:letterSpacing="-0.02"
-        android:lineSpacingExtra="9sp"
-        android:text="계속 진행하시려면\n로그인해주세요!"
-        android:textColor="#222222"
-        android:textSize="22sp"
-        android:textStyle="bold"
-        android:layout_marginTop="30dp"
-        tools:layout_constraintBottom_toTopOf="@+id/cardView_kakaobtn"
-        tools:layout_constraintLeft_toLeftOf="parent"
-        tools:layout_constraintRight_toRightOf="parent"
-        tools:layout_constraintTop_toBottomOf="@+id/logo_image" />
-
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cardView_kakaobtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-
-        android:layout_marginTop="40dp"
+        tools:layout_constraintBottom_toTopOf="@+id/constraint_readContents"
         tools:layout_constraintEnd_toEndOf="parent"
         tools:layout_constraintStart_toStartOf="parent"
-        tools:layout_constraintTop_toBottomOf="@+id/login_Text"
-        android:layout_below="@id/login_Text"
-        android:layout_centerHorizontal="true"
-        tools:cardCornerRadius="20dp">
+        tools:layout_constraintTop_toTopOf="parent" />
 
-        <ImageView
-            android:id="@+id/login"
-            android:layout_width="320dp"
-            android:layout_height="56dp"
-            android:background="#ffe600"
-            android:textColor="#222222"
-            android:textSize="15sp"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraint_readContents"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        tools:layout_constraintEnd_toEndOf="parent"
+        tools:layout_constraintStart_toStartOf="parent"
+        tools:layout_constraintTop_toBottomOf="@+id/toolbar">
 
-            tools:srcCompat="@drawable/kakao_login_medium_narrow" />
-    </androidx.cardview.widget.CardView>
+        <com.FLAVOR.mvp.feeds.ReadContentsVIew
+            android:id="@+id/readContentsView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools2:layout_conversion_absoluteHeight="64dp"
+            tools2:layout_conversion_absoluteWidth="392dp"
+            tools:layout_constraintEnd_toEndOf="@+id/constraint_readContents"
+            tools:layout_constraintStart_toStartOf="@+id/constraint_readContents"
+            tools:layout_constraintTop_toTopOf="@+id/constraint_readContents">
 
+        </com.FLAVOR.mvp.feeds.ReadContentsVIew>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -2,6 +2,7 @@ package com.FLAVOR.mvp.feeds
 
 import android.content.Context
 import android.os.Build
+import android.provider.Settings.Secure.getString
 import android.util.AttributeSet
 import android.util.Log
 import android.util.Patterns
@@ -12,6 +13,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.annotation.Nullable
 import androidx.annotation.RequiresApi
+import com.FLAVOR.mvp.R
 import com.bumptech.glide.Glide
 import java.text.SimpleDateFormat
 import java.time.Instant
@@ -58,6 +60,8 @@ class ReadContentsVIew : LinearLayout {
         val instant = Instant.parse(contents.date)  //contents.date가 string날짜값임.
         var date = Date.from(instant)   //기존 string날짜값을 date타입으로 만듬
         val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm")
+
+
         val cal = Calendar.getInstance()
         cal.time = date
         val createdAt: String = simpleDateFormat.format(cal.time)  // 원하는대로 포맷된 string날짜값임
@@ -85,7 +89,7 @@ class ReadContentsVIew : LinearLayout {
         //받아온 이미지 넣어주기
         val photoUrl = contents.filepath  //컨텐츠에 있는 사진경로값
         if (Patterns.WEB_URL.matcher(photoUrl)
-                .matches() && photoUrl.contains("https://flavbucket.s3.ap-northeast-2.amazonaws.com/")) {
+                .matches() && photoUrl.contains( resources.getString(R.string.release_s3_ContainsUrl))) {  //배포용 url값:  release_s3_ContainsUrl /  개발용 url값: debug_s3_ContainsUrl
             val imageView = ImageView(context)
             imageView.layoutParams = layoutParams
             imageView.adjustViewBounds = true

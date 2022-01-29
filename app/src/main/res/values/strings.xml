@@ -8,8 +8,16 @@
     <string name="facebook_app_id">397485705505941</string>
     <string name="fb_login_protocol_scheme">fb397485705505941</string>
 
-
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!-- ReadContentsView파일의 이미지 check코드안에 들어갈 url 개발용 배포용 분리 -->
+    <string name="debug_s3_ContainsUrl">https://foowinkle.s3.ap-northeast-2.amazonaws.com/</string>
+    <string name="release_s3_ContainsUrl">https://flavbucket.s3.ap-northeast-2.amazonaws.com/</string>
+
+    <!-- BasicAcitivty파일의 레트로핏 baseUrl 코드안에 들어갈 url 개발용 배포용 분리 -->
+    <string name="debug_baseUrl">http://localhost:3000/</string>
+    <string name="release_baseUrl">https://www.flavorus.shop/</string>
+
 
 </resources>

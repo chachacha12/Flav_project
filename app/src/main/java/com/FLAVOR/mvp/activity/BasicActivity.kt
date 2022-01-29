@@ -8,6 +8,7 @@ import android.os.Bundle
 import androidx.annotation.LayoutRes
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
+import com.FLAVOR.mvp.R
 import com.FLAVOR.mvp.retrofit_service
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -16,7 +17,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 open class BasicActivity : AppCompatActivity() {
     
     var retrofit = Retrofit.Builder()
-        .baseUrl("https://www.flavorus.shop/")  //http://localhost:3000/
+        .baseUrl( "https://www.flavorus.shop/" )  //개발용 url-> https://www.flavorus.shop/  /  배표용 url-> http://localhost:3000/
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 
