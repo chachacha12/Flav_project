@@ -17,12 +17,10 @@ import retrofit2.converter.gson.GsonConverterFactory
 open class BasicActivity : AppCompatActivity() {
     
     var retrofit = Retrofit.Builder()
-        .baseUrl( "https://www.flavorus.shop/" )  //개발용 url-> https://www.flavorus.shop/  /  배표용 url-> http://localhost:3000/
+        .baseUrl( "https://www.flavorus.shop/")  //개발용 url-> https://www.flavorus.shop/  /  배표용 url-> http://localhost:3000/
         .addConverterFactory(GsonConverterFactory.create())
         .build()
-
     var server = retrofit.create(retrofit_service::class.java)  //서버와 만들어둔 인터페이스를 연결시켜줌.
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
