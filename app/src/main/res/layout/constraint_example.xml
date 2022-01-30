@@ -1,39 +1,202 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/apk/res-auto"
-    xmlns:tools2="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#ffffff">
 
-    <include
-        layout="@layout/view_toolbar"
+    <LinearLayout
+        android:id="@+id/top_LinearLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        tools:layout_constraintBottom_toTopOf="@+id/constraint_readContents"
+        android:layout_height="40dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="15dp"
+        android:background="#ffffff"
+        android:orientation="horizontal"
+        tools:layout_constraintBottom_toTopOf="@+id/under_LinearLayout"
         tools:layout_constraintEnd_toEndOf="parent"
         tools:layout_constraintStart_toStartOf="parent"
-        tools:layout_constraintTop_toTopOf="parent" />
+        tools:layout_constraintTop_toTopOf="parent">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/constraint_readContents"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        tools:layout_constraintEnd_toEndOf="parent"
-        tools:layout_constraintStart_toStartOf="parent"
-        tools:layout_constraintTop_toBottomOf="@+id/toolbar">
 
-        <com.FLAVOR.mvp.feeds.ReadContentsVIew
-            android:id="@+id/readContentsView"
+        <ImageButton
+            android:id="@+id/backButton"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="center"
+            android:layout_marginLeft="14dp"
+            android:background="#ffffff"
+            app:srcCompat="@drawable/ic_chevron_left_black_24dp" />
+
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            tools2:layout_conversion_absoluteHeight="64dp"
-            tools2:layout_conversion_absoluteWidth="392dp"
-            tools:layout_constraintEnd_toEndOf="@+id/constraint_readContents"
-            tools:layout_constraintStart_toStartOf="@+id/constraint_readContents"
-            tools:layout_constraintTop_toTopOf="@+id/constraint_readContents">
+            android:layout_gravity="center"
+            android:layout_marginLeft="65dp"
+            android:background="#FFFFFF"
+            android:fontFamily="sans-serif-condensed-medium"
+            android:gravity="center"
+            android:lineSpacingExtra="9sp"
+            android:text="식당이름을 입력하세요"
+            android:textColor="#222222"
+            android:textSize="18sp"
+            android:textStyle="normal" />
+    </LinearLayout>
 
-        </com.FLAVOR.mvp.feeds.ReadContentsVIew>
+    <LinearLayout
+        android:id="@+id/under_LinearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/top_LinearLayout"
+        android:layout_marginStart="15dp"
+        android:layout_marginEnd="15dp"
+        android:background="#FFFFFF"
+        android:orientation="vertical"
+        android:padding="10dp"
+        tools:layout_constraintEnd_toEndOf="parent"
+        tools:layout_constraintStart_toStartOf="parent"
+        tools:layout_constraintTop_toBottomOf="@+id/top_LinearLayout">
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <LinearLayout
+            android:id="@+id/contentsLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#FFFFFF"
+            android:orientation="vertical">
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/viewpager_linearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#FFFFFF"
+            android:orientation="vertical">
+
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/tabLayout"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/dialog_button_round"
+                app:tabIndicator="@drawable/button_round"
+                app:tabIndicatorColor="#00aded"
+                app:tabIndicatorGravity="stretch"
+                app:tabSelectedTextColor="@color/colorBlack"
+                app:tabTextColor="#757575">
+
+            </com.google.android.material.tabs.TabLayout>
+
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/viewpager2"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:background="#ffffff" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:orientation="vertical">
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="37dp"
+                android:background="#FFFFFF"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/textView3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="10dp"
+                    android:background="#ffffff"
+                    android:fontFamily="sans-serif-medium"
+                    android:text="다녀오신 식당 이름이 없나요?"
+                    android:textColor="#222222"
+                    android:textSize="14sp" />
+
+                <Button
+                    android:id="@+id/selfbutton"
+                    android:layout_width="120dp"
+                    android:layout_height="36dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="16sp"
+                    android:background="@drawable/button_round"
+                    android:text="직접입력하기"
+                    android:textColor="#00aded"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/checkButton2"
+                android:layout_width="match_parent"
+                android:layout_height="46dp"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/button2_round"
+                android:lineSpacingExtra="7sp"
+                android:text="선택완료"
+                android:textColor="#ffffff"
+                android:textSize="15sp"
+                android:textStyle="bold">
+
+            </Button>
+
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/buttonsBackgroundLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/gray"
+        android:visibility="gone">
+
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:elevation="10dp"
+            app:cardCornerRadius="15dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:padding="5dp"
+                android:visibility="visible">
+
+                <Button
+                    android:id="@+id/imageModify"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="이미지 수정" />
+
+                <Button
+                    android:id="@+id/delete"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="삭제" />
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+    </RelativeLayout>
+
+    <include
+        layout="@layout/view_loader"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
 </androidx.constraintlayout.widget.ConstraintLayout>
