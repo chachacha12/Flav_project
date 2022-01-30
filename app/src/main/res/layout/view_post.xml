@@ -16,65 +16,105 @@
 
     </LinearLayout>
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="30dp"
-        android:layout_marginBottom="15dp"
-        android:orientation="horizontal">
+        tools:layout_constraintEnd_toEndOf="parent"
+        tools:layout_constraintStart_toStartOf="parent"
+        tools:layout_constraintTop_toTopOf="parent">
 
         <TextView
             android:id="@+id/shap"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="15dp"
+            android:layout_marginStart="15dp"
+            android:lineHeight="18sp"
             android:maxWidth="80dp"
             android:text="#"
             android:textColor="#222222"
             android:textSize="14sp"
-            app:lineHeight="18sp" />
+            app:layout_constraintEnd_toStartOf="@+id/tag1_textView"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:layout_constraintBaseline_toBaselineOf="@+id/tag1_textView"
+            tools:layout_constraintEnd_toStartOf="@+id/tag1_textView"
+            tools:layout_constraintStart_toStartOf="parent" />
 
         <TextView
             android:id="@+id/tag1_textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:lineHeight="18sp"
             android:maxWidth="80dp"
-            android:text="#태그1"
+            android:text="태그1"
             android:textColor="#222222"
             android:textSize="14sp"
-            app:lineHeight="18sp" />
+            app:layout_constraintEnd_toStartOf="@+id/tag2_textView"
+            app:layout_constraintStart_toEndOf="@+id/shap"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:layout_constraintEnd_toStartOf="@+id/tag2_textView"
+            tools:layout_constraintStart_toEndOf="@+id/shap"
+            tools:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/tag2_textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
+            android:lineHeight="18sp"
             android:maxWidth="80dp"
-            android:text="#태그2"
+            android:text="태그2"
             android:textColor="#222222"
             android:textSize="14sp"
-            app:lineHeight="18sp" />
+            app:layout_constraintEnd_toStartOf="@+id/tag3_textView"
+            app:layout_constraintStart_toEndOf="@+id/tag1_textView"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:layout_constraintBaseline_toBaselineOf="@+id/tag1_textView"
+            tools:layout_constraintEnd_toStartOf="@+id/tag3_textView"
+            tools:layout_constraintStart_toEndOf="@+id/tag1_textView" />
 
         <TextView
             android:id="@+id/tag3_textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
+            android:lineHeight="18sp"
             android:maxWidth="80dp"
-            android:text="#태그3"
+            android:text="태그3"
             android:textColor="#222222"
             android:textSize="14sp"
-            app:lineHeight="18sp" />
+            app:layout_constraintEnd_toStartOf="@+id/createAtTextView"
+            app:layout_constraintStart_toEndOf="@+id/tag2_textView"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:layout_constraintBaseline_toBaselineOf="@+id/createAtTextView"
+            tools:layout_constraintEnd_toStartOf="@+id/createAtTextView"
+            tools:layout_constraintStart_toEndOf="@+id/tag2_textView" />
 
         <TextView
             android:id="@+id/createAtTextView"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginRight="15dp"
+            android:layout_marginEnd="15dp"
             android:gravity="end"
             android:minWidth="125dp"
+            android:text="2019-04-25 00:00"
             android:textColor="#999999"
-            tools:text="2019-04-25 00:00" />
-    </LinearLayout>
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/tag3_textView"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:layout_constraintEnd_toEndOf="parent"
+            tools:layout_constraintStart_toEndOf="@+id/tag3_textView"
+            tools:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/textView7"
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="15dp"
+        android:background="#f7f7f7"
+        android:text="TextView" />
 
 </merge>
