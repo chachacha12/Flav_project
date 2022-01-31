@@ -79,19 +79,19 @@ class Choose_tag_Fragment : Fragment() {
         val view = binding?.root
 
         //태그1 클릭시 이벤트처리
-        binding?.tag1TextView?.setOnClickListener {
+        binding?.tag1Button?.setOnClickListener {
             tag_number_check = 1
             showDialog_tag(Ui_tag1_list)
         }
 
         //태그2 클릭시 이벤트처리
-        binding?.tag2TextView?.setOnClickListener {
+        binding?.tag2Button?.setOnClickListener {
             tag_number_check = 2
             showDialog_tag(Ui_tag2_list)
         }
 
         //태그3 클릭시 이벤트처리
-        binding?.tag3TextView?.setOnClickListener {
+        binding?.tag3Button?.setOnClickListener {
             tag_number_check = 3
             showDialog_tag(Ui_tag3_list)
         }
@@ -172,17 +172,17 @@ class Choose_tag_Fragment : Fragment() {
             tagitem_textView.setOnClickListener {
                 when(tag_number_check){   //fragment_choose_tag 의 xml에서 몇번째 태그 텍스트뷰에 setText해줄지
                     1 ->{
-                        tag1_textView.text = tagitem_textView?.text.toString()
+                        tag1_button.text = tagitem_textView?.text.toString()
                         var tag_id = tag1_map[tagitem_textView?.text.toString()]  //사용자가 선택한 태그의 string텍스트값으로 map에서 태그 id값 찾음
                         ontagsetListener?.onTag1Set(tag_id!!)  //액티비티로 태그id 데이터값 전달함
                     }
                     2 -> {
-                        tag2_textView.text = tagitem_textView?.text.toString()
+                        tag2_button.text = tagitem_textView?.text.toString()
                         var tag_id = tag2_map[tagitem_textView?.text.toString()]  //사용자가 선택한 태그의 string텍스트값으로 map에서 태그 id값 찾음
                         ontagsetListener?.onTag2Set(tag_id!!)  //액티비티로 태그id 데이터값 전달함
                     }
                     3 ->{
-                        tag3_textView.text = tagitem_textView?.text.toString()
+                        tag3_button.text = tagitem_textView?.text.toString()
                         var tag_id = tag3_map[tagitem_textView?.text.toString()]  //사용자가 선택한 태그의 string텍스트값으로 map에서 태그 id값 찾음
                         ontagsetListener?.onTag3Set(tag_id!!)  //액티비티로 태그id 데이터값 전달함
                     }
