@@ -47,7 +47,7 @@ interface retrofit_service {
     //s3 이미지 업로드 요청
     @Multipart
     @POST("app/s3/{kakao_id}")
-    fun s3_upload_Request(@Path("kakao_id") kakao_id:Int, @Part file: MultipartBody.Part): Call<Filename>
+    fun s3_upload_Request(@Path("kakao_id") kakao_id:String, @Part file: MultipartBody.Part): Call<Filename>
 
     //컨텐츠 업로드 요청
     @POST("app/contents")
@@ -67,7 +67,7 @@ interface retrofit_service {
 
     //본인, 본인팔로우친구들 컨텐츠 다 가져오기
     @GET("app/contents/relevant/{kakao_id}")
-    fun get_ReleventsContents_Request(@Path("kakao_id") kakao_id:Int ): Call<Result_response>
+    fun get_ReleventsContents_Request(@Path("kakao_id") kakao_id:String ): Call<Result_response>
 
 
     //게시물 rds에서 삭제 요청
@@ -76,7 +76,7 @@ interface retrofit_service {
 
     //이미지 s3스토리지에서 삭제 요청
     @DELETE("app/s3/{kakao_id}/{filename}")
-    fun deleteS3_Request(@Path("kakao_id") kakao_id: Int, @Path("filename") filename: String ):Call<Msg>
+    fun deleteS3_Request(@Path("kakao_id") kakao_id: String, @Path("filename") filename: String ):Call<Msg>
 
     //카톡목록중 친추버튼 눌러서 친구관계 형성, 즉 본인이 팔로우 하는 역할
     @FormUrlEncoded

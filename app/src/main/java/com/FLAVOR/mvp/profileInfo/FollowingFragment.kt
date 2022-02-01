@@ -98,7 +98,7 @@ class FollowingFragment(var server: retrofit_service) : Fragment() {
     //서버에서 내 팔로잉 목록 가져옴
     fun  get_myfollowing_Request(){
         update_following_userInfoList = ArrayList()  //초기화
-        server.get_following_Request(Usersingleton.kakao_id.toString())
+        server.get_following_Request(Usersingleton.kakao_id!!)
             .enqueue(object : Callback<Result_response> {
                 override fun onFailure(call: Call<Result_response>, t: Throwable) {
                     Log.e("태그", "팔로잉 목록 통신 아예 실패" + t.message)

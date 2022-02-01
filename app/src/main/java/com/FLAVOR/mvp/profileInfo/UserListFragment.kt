@@ -267,7 +267,7 @@ class UserListFragment(var server: retrofit_service) : Fragment() {
 
     //서버에서 내 팔로잉 목록 가져와서 following_userInfoList에 저장하는 함수
     fun get_myfollowing_Request(){
-        server.get_following_Request(Usersingleton.kakao_id.toString())
+        server.get_following_Request(Usersingleton.kakao_id!!)
             .enqueue(object : Callback<Result_response> {
                 override fun onFailure(call: Call<Result_response>, t: Throwable) {
                     Log.e("태그", "유저리스트에서 친추목록 비교위한 팔로잉 목록 통신 아예 실패" + t.message)

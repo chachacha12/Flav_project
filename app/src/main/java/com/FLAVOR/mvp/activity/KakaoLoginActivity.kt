@@ -148,7 +148,7 @@ class KakaoLoginActivity: BasicActivity() {
 
                 this.user = Users(strEmail, strNick, kakao_token, strkakaoid,strprofileImg ) //유저객체 하나 생성
 
-                Usersingleton.kakao_id = user.id?.toInt()  //유저 싱글톤에 있는 회원번호 전역변수를 초기화
+                Usersingleton.kakao_id = user.id.toString()  //유저 싱글톤에 있는 회원번호 전역변수를 초기화
                 Usersingleton.username = user.kakaoAccount?.profile?.nickname.toString()
                 Usersingleton.userEmail = user.kakaoAccount?.email.toString()
                 Usersingleton.profilepath = user.kakaoAccount?.profile?.thumbnailImageUrl.toString()
@@ -188,7 +188,7 @@ class KakaoLoginActivity: BasicActivity() {
                 strprofileImg = user.kakaoAccount?.profile?.thumbnailImageUrl.toString()
                 strkakaoid = user.id!!.toString()
 
-                Usersingleton.kakao_id = user.id?.toInt() //유저 싱글톤에 있는 회원번호 전역변수를 초기화
+                Usersingleton.kakao_id = user.id!!.toString()  //유저 싱글톤에 있는 회원번호 전역변수를 초기화
                 Usersingleton.username = user.kakaoAccount?.profile?.nickname.toString()
                 Usersingleton.userEmail = user.kakaoAccount?.email.toString()
                 Usersingleton.profilepath = user.kakaoAccount?.profile?.thumbnailImageUrl.toString()

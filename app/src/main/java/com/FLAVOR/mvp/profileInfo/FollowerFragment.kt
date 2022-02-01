@@ -73,7 +73,7 @@ class FollowerFragment(var server: retrofit_service) : Fragment() {
     fun get_myfollower_Request(){
         update_follower_userInfoList = ArrayList()  //초기화
 
-        server.get_follower_Request(Usersingleton.kakao_id.toString())
+        server.get_follower_Request(Usersingleton.kakao_id!!)
             .enqueue(object : Callback<Result_response> {
                 override fun onFailure(call: Call<Result_response>, t: Throwable) {
                     Log.e("태그", "팔로워 목록 통신 아예 실패" + t.message)
