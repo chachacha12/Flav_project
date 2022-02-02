@@ -9,6 +9,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.cardview.widget.CardView
 import androidx.exifinterface.media.ExifInterface
 import androidx.recyclerview.widget.RecyclerView
@@ -63,8 +64,8 @@ class GalleryAdapter(var activity: Activity, private val myDataset: ArrayList<St
             }catch (e : IOException){
                 e.printStackTrace()
             }
-            Log.e("ExifData", "  exif?.latLong?.get(0) : "+   exif?.latLong?.get(0))
-            Log.e("ExifData", " exif?.latLong?.get(1) : "+     exif?.latLong?.get(1))
+            Log.e("ExifData", "  exif?.latLong?.get(0) : "+   exif?.latLong?.get(0).toString())
+            Log.e("ExifData", " exif?.latLong?.get(1) : "+     exif?.latLong?.get(1).toString())
             default_lat = exif?.latLong?.get(0).toString()
             default_lng = exif?.latLong?.get(1).toString()
             /////////////////////////////////
@@ -78,9 +79,14 @@ class GalleryAdapter(var activity: Activity, private val myDataset: ArrayList<St
             file = MultipartBody.Part.createFormData("photo", imageFile.name, reqFile)
              */
 
-            resultIntent = Intent()
-            resultIntent.putExtra("profilePath", myDataset!![galleryViewHolder.adapterPosition])  //돌려보낼 인텐트에 값 넣어줌. 여기선 이미지가 저장된 경로를 보냄
-            thread_start()
+            if(default_lat=="null" || default_lng=="null"){  //위도경도 정보가 exif에 없을시
+                activity.loaderLayout.visibility = View.GONE
+                Toast.makeText(activity, "위치정보가 없는 사진입니다.\n기본카메라로 찍은 사진을 선택하세요.", Toast.LENGTH_SHORT).show()
+            }else{
+                resultIntent = Intent()
+                resultIntent.putExtra("profilePath", myDataset!![galleryViewHolder.adapterPosition])  //돌려보낼 인텐트에 값 넣어줌. 여기선 이미지가 저장된 경로를 보냄
+                thread_start()
+            }
         }
 
         return galleryViewHolder
@@ -157,15 +163,10 @@ class GalleryAdapter(var activity: Activity, private val myDataset: ArrayList<St
             override fun handleMessage(msg: Message) {
 
                 if(name_list.length()==0) {  //주변음식점 1도없을때
-                    if(default_lat=="null" || default_lng=="null"){  //주변음식점 1도없으면서 exif정보도 없는 사진일때 ->바로 꺼줄거임
-                        Log.e("갤러리태그", "주변음식점 1도없으면서 exif정보도 없는 사진들어감")
-                        resultIntent.putExtra("restaurant_name_list", "아예없음")  //"정보없음"이라는 string을 보내줌
-                    }else{  //주변음식점만 없고 위경도 값은 사진에 있을때 ->디폴트 위경도값 주고 작성창 띄울거임
-                        Log.e("갤러리태그", "주변음식점만 없고 위경도 값은 사진들어감")
-                        resultIntent.putExtra("default_lat", default_lat ) //사진의 디폴트 위도값 보내줌
-                        resultIntent.putExtra("default_lng", default_lng ) //사진의 디폴트 경도값 보내줌
-                        resultIntent.putExtra("restaurant_name_list", "음식점없음")  //"정보없음"이라는 string을 보내줌
-                    }
+                    Log.e("갤러리태그", "주변음식점만 없고 위경도 값은 사진들어감")
+                    resultIntent.putExtra("default_lat", default_lat ) //사진의 디폴트 위도값 보내줌
+                    resultIntent.putExtra("default_lng", default_lng ) //사진의 디폴트 경도값 보내줌
+                    resultIntent.putExtra("restaurant_name_list", "음식점없음")  //"정보없음"이라는 string을 보내줌
                 }else{
                     Log.e("갤러리태그","2")
                     resultIntent.putExtra("restaurant_name_list",name_list.toString() )  //주변식당이름, 위경도 정보 보내줌

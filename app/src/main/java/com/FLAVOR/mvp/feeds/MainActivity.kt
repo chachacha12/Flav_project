@@ -91,9 +91,11 @@ class MainActivity : BasicActivity(), home_map_Listener, OnAppointment_noexistLi
             "아니요"
         ) { dialog, which -> }
 
+        /*
         builder.setNeutralButton(
             "취소"
         ) { dialog, which -> }
+         */
         builder.show() // 다이얼로그 보이기
     }
 

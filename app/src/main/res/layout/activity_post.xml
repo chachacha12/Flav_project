@@ -27,7 +27,7 @@
 
         <com.FLAVOR.mvp.feeds.ReadContentsVIew
             android:id="@+id/readContentsView"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             tools2:layout_conversion_absoluteHeight="64dp"
             tools2:layout_conversion_absoluteWidth="392dp"

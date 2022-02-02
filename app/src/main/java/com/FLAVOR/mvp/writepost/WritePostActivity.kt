@@ -156,6 +156,7 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
             }
         }
 
+        /*
         //작성중인 게시물의 이미지 다른 이미지로 수정하기
         imageModify.setOnClickListener {
             var i = Intent(this, Galleryactivity::class.java)
@@ -164,12 +165,11 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
             buttonsBackgroundlayout.visibility = View.GONE
             Log.e("로그: ", "이미지수정")
         }
-
+         */
         //작성중인 게시물의 이미지 삭제하기
         // 1. 이미 저장해서 존재하던 게시물 이미지 수정하기 2. +버튼 눌러서 저장안된 새 게시물 작성중에 이미지 수정하기
         //->2가지 경우로 나누는 이유는 아직 파베 스토리지에 저장안된 이미지인 경우엔 postInfo.id값이 없기 때문에 밑의 지우기로직때 에러뜸. 그니까 예외처리해주기
         delete.setOnClickListener {
-
         }  //delete
     }  //init
 
@@ -207,21 +207,12 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
                 //프래그먼트에서 intent에  jsonarray를 string값으로 바꿔서 날렸고, 그 string값을 이 액티비티에서 받음. 여기서 또 다른 프래그먼트로 날려준후 다시 jsonarray객체로 만들거임
                 namelist_string =
                     data.getStringExtra("restaurant_name_list").toString()  //주변식당명리스트(string으로 되어있는)가 인텐트에 실려서 날아옴
-                if(namelist_string =="아예없음") {   //exif정보없는 사진이면 바로종료
-                    Toast.makeText(
-                        this,
-                        "해당 사진은 위치정보가 없습니다. 기본 카메라로 찍은 사진을 선택하세요.",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    Log.e("태그", "writepost에 아예exif없는 식당리스트가 와서 바로 writepost 바로 finish")
-                    finish()
-                }else if(namelist_string =="음식점없음"){    //exif정보는 있고 주변 음식점이 없는 사진일때
+                if(namelist_string =="음식점없음"){    //exif정보는 있고 주변 음식점이 없는 사진일때
                     //사진의 디폴트 위경도값을 갤러리어댑터로부터 가져옴
                     default_lat = data.getStringExtra("default_lat").toString()
                     default_lng = data.getStringExtra("default_lng").toString()
                     Log.e("태그","exif정보는 있고 주변 음식점이 없는 사진일때임./   default_lat, default_lng: "+default_lat+", "+default_lng)
                     init_viewpager()  //위에서 받은 식당명을 가지고 뷰페이저를 만들어줌.. 프래그먼트 2개 만들고 어댑터 붙히고 등등해서
-
                 }else{   //정상적인 사진일때 (exif정보있고, 주변음식점 있을때)
                     //사진의 디폴트 위경도값을 갤러리어댑터로부터 가져옴
                     default_lat = data.getStringExtra("default_lat").toString()
@@ -229,7 +220,6 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
                     Log.e("태그","정상적인 사진임/  default_lat, default_lng: "+default_lat+", "+default_lng)
                     init_viewpager()  //위에서 받은 식당명을 가지고 뷰페이저를 만들어줌.. 프래그먼트 2개 만들고 어댑터 붙히고 등등해서
                 }
-
             }
             /*
             1 -> if (resultCode == Activity.RESULT_OK) {    //이미지를 수정하려고 새 이미지를 선택했을때
@@ -309,7 +299,7 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
                     }
                 })
         } else {  //사용자가 태그,식당명 등 중에서 선택 안한거 있을때
-            Toast.makeText(this, "컨텐츠 업로드에 필요한 모든 옵션을 선택해주세요.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "식당이름과 태그를 모두 선택해주세요.", Toast.LENGTH_SHORT).show()
             loaderLayout.visibility = View.GONE
         }
     }
