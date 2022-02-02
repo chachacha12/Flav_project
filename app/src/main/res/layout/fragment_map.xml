@@ -4,15 +4,15 @@
 
 
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="#00FFFFFF"
-    app:umanoShadowHeight="0dp"
-    app:umanoOverlay="true"
     android:id="@+id/SlideUpPannerLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#00FFFFFF"
     android:gravity="bottom"
-    app:umanoDragView="@id/slide_Relativelayout"
-    app:umanoPanelHeight="0dp">     <!--처음에 슬라이드 되기전에 패널의 높이를 조절  0dp이면 아예 밑에 안보임 -->
+    app:umanoDragView="@id/slide_ConstrainLayout"
+    app:umanoOverlay="true"
+    app:umanoPanelHeight="0dp"
+    app:umanoShadowHeight="0dp">     <!--처음에 슬라이드 되기전에 패널의 높이를 조절  0dp이면 아예 밑에 안보임 -->
 
 
     <com.google.android.gms.maps.MapView
@@ -22,30 +22,44 @@
 
     </com.google.android.gms.maps.MapView>
 
-    <RelativeLayout
-        android:id="@+id/slide_Relativelayout"
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/slide_ConstrainLayout"
         android:layout_width="match_parent"
         android:layout_height="600dp"
         android:background="@android:color/transparent"
-        android:orientation="vertical">    <!--슬라이드 했을때 나오는 뷰의 길이-->
+        android:orientation="vertical">
 
-        <RelativeLayout
-            android:id="@+id/relativeLayout"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintLayout"
             android:layout_width="match_parent"
-            android:layout_height="600dp"
-            android:background="@drawable/slidepannel_round">
+            android:layout_height="0dp"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/slidepannel_round"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.17000002">
 
             <LinearLayout
-                android:layout_width="match_parent"
+                android:id="@+id/linearLayout2"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/slidepannel_round"
                 android:orientation="vertical"
-                android:padding="10dp">
+                android:padding="10dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:layout_conversion_absoluteHeight="442dp"
+                tools:layout_conversion_absoluteWidth="411dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="5dp"
                     android:background="#ffffff"
                     android:gravity="center_vertical"
                     android:orientation="vertical">
@@ -229,9 +243,8 @@
                 </LinearLayout>
 
             </LinearLayout>
-        </RelativeLayout>
-
-    </RelativeLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
 </com.sothree.slidinguppanel.SlidingUpPanelLayout>

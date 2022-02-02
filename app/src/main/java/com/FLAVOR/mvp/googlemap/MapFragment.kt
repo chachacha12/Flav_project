@@ -113,7 +113,7 @@ class mapFragment : Fragment(), OnMapReadyCallback {
         val view = binding?.root
 
         //binding?.slideRelativelayout?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        binding?.slideRelativelayout?.  setBackgroundColor(Color.TRANSPARENT )
+        binding?.slideConstrainLayout?.setBackgroundColor(Color.TRANSPARENT )
 
         slidePanel = binding?.SlideUpPannerLayout!!   //fragment_map.xml의 가장 최상단 레이아웃을 가져옴
         slidePanel.addPanelSlideListener(PanelEventListener()) //슬라이드업파넬 이벤트 리스너 추가

@@ -10,135 +10,134 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="bottom"
-    app:umanoDragView="@id/slide_Relativelayout"
+    app:umanoDragView="@id/Slide_ConstraintLayout"
     app:umanoPanelHeight="0dp">         <!--처음에 슬라이드 되기전에 패널의 높이를 조절  0dp이면 아예 밑에 안보임 -->
 
     <!--SlidingUpPanelLayout의 첫번째 뷰 - 슬라이드가 나오기 전에 보여지는 뷰 -->
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".feeds.HomeFragment">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:layout_conversion_absoluteHeight="731dp"
+            tools:layout_conversion_absoluteWidth="411dp">
         </androidx.recyclerview.widget.RecyclerView>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/floatingActionButton"
             android:layout_width="56dp"
-            android:layout_height="56dp"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentBottom="true"
-            android:layout_marginEnd="10dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
             android:layout_marginBottom="10dp"
             android:clickable="true"
             android:src="@drawable/ic_add_black_24dp"
-            app:backgroundTint="#00aded" />
+            app:backgroundTint="#00aded"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            tools:layout_conversion_absoluteHeight="56dp"
+            tools:layout_conversion_absoluteWidth="56dp" />
 
         <include
             layout="@layout/view_loader"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="gone" />
-    </RelativeLayout>
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:layout_conversion_absoluteHeight="0dp"
+            tools:layout_conversion_absoluteWidth="0dp" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-    <!--SlidingUpPanelLayout의 두번째 뷰 - 슬라이드때 나오는 뷰 -->
-    <RelativeLayout
-        android:id="@+id/slide_Relativelayout"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/Slide_ConstraintLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@android:color/transparent"
         android:orientation="vertical">    <!--슬라이드 했을때 나오는 뷰의 길이-->
 
-        <RelativeLayout
-            android:id="@+id/relativeLayout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/cardview_light_background">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@color/cardview_light_background"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:layout_conversion_absoluteHeight="731dp"
+            tools:layout_conversion_absoluteWidth="411dp">
 
-            <LinearLayout
-                android:id="@+id/LinearLayout_first"
-                android:layout_width="match_parent"
+
+            <Button
+                android:id="@+id/DeleteAll_button"
+                android:layout_width="wrap_content"
+                android:layout_height="25dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginRight="10dp"
+                android:background="@drawable/name_text_round"
+                android:text="모두 지우기"
+                android:textSize="12sp"
+                app:layout_constraintRight_toLeftOf="@+id/textView6"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+            <TextView
+                android:id="@+id/textView6"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                android:gravity="center"
-                android:orientation="vertical">
+                android:lineSpacingExtra="9sp"
+                android:text="★ My 밥약속 리스트 ★"
+                android:textColor="#222222"
+                android:textSize="16sp"
+                android:textStyle="normal"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginRight="20dp">
 
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true"
-                        android:layout_centerHorizontal="false"
-                        android:layout_centerVertical="true"
-                        android:gravity="left"
-                        android:orientation="horizontal">
-
-                        <Button
-                            android:id="@+id/DeleteAll_button"
-                            android:layout_width="wrap_content"
-                            android:layout_height="25dp"
-                            android:background="@drawable/name_text_round"
-                            android:text="모두 지우기"
-                            android:textSize="12sp" />
-                    </LinearLayout>
-
-                    <TextView
-                        android:id="@+id/textView6"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerInParent="true"
-                        android:lineSpacingExtra="9sp"
-                        android:text="★ My 밥약속 리스트 ★"
-                        android:textColor="#222222"
-                        android:textSize="16sp"
-                        android:textStyle="normal" />
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentRight="true"
-                        android:layout_centerInParent="false"
-                        android:layout_centerVertical="true"
-                        android:orientation="horizontal">
-
-                        <Button
-                            android:id="@+id/pulldown_button"
-                            android:layout_width="30dp"
-                            android:layout_height="30dp"
-                            android:background="@drawable/ic_keyboard_arrow_down_black_24dp" />
-                    </LinearLayout>
-
-                </RelativeLayout>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/LinearLayout_first"
+            <Button
+                android:id="@+id/pulldown_button"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginLeft="10dp"
                 android:layout_marginTop="20dp"
-                android:orientation="vertical">
+                android:layout_marginRight="20dp"
+                android:background="@drawable/ic_keyboard_arrow_down_black_24dp"
+                app:layout_constraintLeft_toRightOf="@+id/textView6"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/appointment_recyclerView"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
-            </LinearLayout>
-        </RelativeLayout>
-    </RelativeLayout>
 
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/appointment_recyclerView"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginBottom="10dp"
+
+
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView6" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
     <!--SlidingUpPanelLayout의 두번째 뷰 끝 -->
 
 

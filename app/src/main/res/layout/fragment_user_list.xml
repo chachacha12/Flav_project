@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<com.sothree.slidinguppanel.SlidingUpPanelLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.sothree.slidinguppanel.SlidingUpPanelLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/SlideUpPannerLayout"
@@ -8,261 +9,231 @@
     android:layout_height="match_parent"
     android:background="#FFFFFF"
     android:gravity="bottom"
-    app:umanoDragView="@id/slide_Relativelayout"
+    app:umanoDragView="@id/slide_ConstraintLayout"
     app:umanoOverlay="true"
     app:umanoPanelHeight="0dp"
     app:umanoShadowHeight="0dp">         <!--처음에 슬라이드 되기전에 패널의 높이를 조절  0dp이면 아예 밑에 안보임 -->
 
 
     <!--SlidingUpPanelLayout의 첫번째 뷰 - 슬라이드가 나오기 전에 보여지는 뷰 -->
-    <RelativeLayout
-        android:id="@+id/RelativeLayout"
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="10dp"
         android:background="#FFFFFF">
 
-        <RelativeLayout
-            android:id="@+id/relative_first"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="21dp"
+
+        <Button
+            android:id="@+id/friendsLook_button"
+            android:layout_width="25dp"
+            android:layout_height="20dp"
             android:layout_marginTop="30dp"
-            android:layout_marginRight="21dp"
-            android:layout_marginBottom="10dp">
+            android:layout_marginEnd="21dp"
+            android:background="@drawable/ic_ico_flow_plus"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-            <LinearLayout
-                android:id="@+id/LinearLayout_friendsAdd"
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/CardView_photo"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginTop="60dp"
+            app:cardCornerRadius="60dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/profile_imageView"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="right"
-                android:orientation="horizontal">
+                android:layout_height="match_parent"
+                android:adjustViewBounds="true"
+                app:srcCompat="@drawable/ic_account_circle_black_24dp" />
+        </androidx.cardview.widget.CardView>
 
-                <Button
-                    android:id="@+id/friendsLook_button"
-                    android:layout_width="25dp"
-                    android:layout_height="20dp"
-                    android:background="@drawable/ic_ico_flow_plus" />
-            </LinearLayout>
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="21dp"
+            android:layout_marginTop="10dp"
+            android:gravity="center_vertical"
+            android:lineSpacingExtra="6sp"
+            android:text="이름"
+            android:textColor="#616161"
+            android:textSize="14sp"
+            android:textStyle="normal"
+            app:layout_constraintBottom_toTopOf="@+id/name_TextView"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/CardView_photo" />
 
-            <LinearLayout
-                android:id="@+id/LinearLayout_profilephoto"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/LinearLayout_friendsAdd"
-                android:layout_marginTop="5dp"
-                android:gravity="center"
-                android:orientation="horizontal">
 
-                <androidx.cardview.widget.CardView
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
-                    android:layout_margin="5dp"
-                    app:cardCornerRadius="60dp">
+        <TextView
+            android:id="@+id/name_TextView"
+            android:layout_width="0dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="21dp"
+            android:layout_marginEnd="21dp"
 
-                    <ImageView
-                        android:id="@+id/profile_imageView"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:adjustViewBounds="true"
-                        app:srcCompat="@drawable/ic_account_circle_black_24dp" />
-                </androidx.cardview.widget.CardView>
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/name_text_round"
+            android:gravity="center_vertical"
+            android:lineSpacingExtra="6sp"
+            android:text="  홍길동"
+            android:textColor="#333333"
+            android:textSize="16sp"
+            android:textStyle="normal"
+            app:layout_constraintBottom_toTopOf="@+id/textView2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView" />
 
-            </LinearLayout>
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="21dp"
 
-            <LinearLayout
-                android:id="@+id/LinearLayout_name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/LinearLayout_profilephoto"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="5dp"
-                android:orientation="vertical">
+            android:layout_marginTop="5dp"
+            android:gravity="center_vertical"
+            android:lineSpacingExtra="6sp"
+            android:text="이메일"
+            android:textColor="#616161"
+            android:textSize="14sp"
+            android:textStyle="normal"
+            app:layout_constraintBottom_toTopOf="@+id/email_TextView"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/name_TextView" />
 
-                <TextView
-                    android:id="@+id/textView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:gravity="center_vertical"
-                    android:lineSpacingExtra="6sp"
+        <TextView
+            android:id="@+id/email_TextView"
+            android:layout_width="0dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="21dp"
+            android:layout_marginEnd="21dp"
+            android:background="@drawable/name_text_round"
+            android:gravity="center_vertical"
+            android:lineSpacingExtra="6sp"
+            android:text="aaa@gmail.com"
+            android:textColor="#333333"
+            android:textSize="16sp"
+            android:textStyle="normal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView2" />
 
-                    android:text="이름"
-                    android:textColor="#616161"
-                    android:textSize="14sp"
-                    android:textStyle="normal" />
-
-                <TextView
-                    android:id="@+id/name_TextView"
-                    android:layout_width="match_parent"
-                    android:layout_height="30dp"
-                    android:layout_gravity="center_vertical"
-                    android:background="@drawable/name_text_round"
-                    android:gravity="center_vertical"
-                    android:lineSpacingExtra="6sp"
-
-                    android:text="  홍길동"
-                    android:textColor="#333333"
-                    android:textSize="16sp"
-                    android:textStyle="normal" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/LinearLayout_email"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/LinearLayout_name"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/textView2"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:gravity="center_vertical"
-
-                    android:lineSpacingExtra="6sp"
-                    android:text="이메일"
-                    android:textColor="#616161"
-                    android:textSize="14sp"
-                    android:textStyle="normal" />
-
-                <TextView
-                    android:id="@+id/email_TextView"
-                    android:layout_width="match_parent"
-                    android:layout_height="30dp"
-                    android:layout_gravity="center_vertical"
-                    android:background="@drawable/name_text_round"
-                    android:gravity="center_vertical"
-
-                    android:lineSpacingExtra="6sp"
-                    android:text="aaa@gmail.com"
-                    android:textColor="#333333"
-                    android:textSize="16sp"
-                    android:textStyle="normal" />
-            </LinearLayout>
-        </RelativeLayout>
 
         <TextView
             android:id="@+id/textView4"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="6dp"
-            android:layout_below="@id/relative_first"
-            android:background="#f7f7f7" />
-
-        <RelativeLayout
-            android:id="@+id/relative_seconds"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/relative_first"
             android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp">
+            android:background="#f7f7f7"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/email_TextView" />
 
-            <LinearLayout
-                android:id="@+id/viewpager_linearLayout"
+
+        <LinearLayout
+            android:id="@+id/viewpager_linearLayout"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:background="#FFFFFF"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView4">
+
+
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/tabLayout"
+                android:layout_width="match_parent"
+                android:layout_height="25dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginBottom="14dp"
+                android:background="@drawable/dialog_button_round"
+                app:tabIndicator="@drawable/button_round"
+                app:tabIndicatorColor="#00aded"
+                app:tabIndicatorGravity="stretch"
+                app:tabSelectedTextColor="@color/colorBlack"
+                app:tabTextColor="#757575">
+
+            </com.google.android.material.tabs.TabLayout>
+
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/viewpager2"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="#FFFFFF"
-                android:orientation="vertical">
-
-                <com.google.android.material.tabs.TabLayout
-                    android:id="@+id/tabLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="30dp"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginTop="15dp"
-                    android:layout_marginRight="20dp"
-                    android:layout_marginBottom="14dp"
-                    android:background="@drawable/dialog_button_round"
-                    app:tabIndicator="@drawable/button_round"
-                    app:tabIndicatorColor="#00aded"
-                    app:tabIndicatorGravity="stretch"
-                    app:tabSelectedTextColor="@color/colorBlack"
-                    app:tabTextColor="#757575">
-
-                </com.google.android.material.tabs.TabLayout>
-
-                <androidx.viewpager2.widget.ViewPager2
-                    android:id="@+id/viewpager2"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="#ffffff" />
-            </LinearLayout>
-        </RelativeLayout>
-    </RelativeLayout>
-    <!--SlidingUpPanelLayout의 첫번째 뷰 끝 -->
+                android:background="#ffffff" />
+        </LinearLayout>
 
 
-    <!--SlidingUpPanelLayout의 두번째 뷰 - 슬라이드때 나오는 뷰 -->
-    <RelativeLayout
-        android:id="@+id/slide_Relativelayout"
+        <!--SlidingUpPanelLayout의 두번째 뷰 - 슬라이드때 나오는 뷰 -->
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/slide_ConstraintLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@android:color/transparent"
-        android:orientation="vertical">    <!--슬라이드 했을때 나오는 뷰의 길이-->
+        android:orientation="vertical">
 
-        <RelativeLayout
-            android:id="@+id/relativeLayout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/cardview_light_background">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintLayout2"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@color/cardview_light_background"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-            <LinearLayout
-                android:id="@+id/LinearLayout_first"
-                android:layout_width="match_parent"
+
+            <TextView
+                android:id="@+id/textView6"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:gravity="center"
-                android:orientation="horizontal">
+                android:lineSpacingExtra="9sp"
+                android:text="믿을만한 친구찾기"
+                android:textColor="#222222"
+                android:textSize="18sp"
+                android:textStyle="normal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginRight="20dp">
 
-                    <TextView
-                        android:id="@+id/textView6"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerHorizontal="true"
-                        android:lineSpacingExtra="9sp"
-                        android:text="믿을만한 친구찾기"
-                        android:textColor="#222222"
-                        android:textSize="18sp"
-                        android:textStyle="normal" />
+            <Button
+                android:id="@+id/pulldown_button"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginRight="20dp"
+                android:background="@drawable/ic_keyboard_arrow_down_black_24dp"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentRight="true"
-                        android:layout_centerInParent="true"
-                        android:layout_centerHorizontal="false"
-                        android:orientation="horizontal">
 
-                        <Button
-                            android:id="@+id/pulldown_button"
-                            android:layout_width="30dp"
-                            android:layout_height="30dp"
-                            android:background="@drawable/ic_keyboard_arrow_down_black_24dp" />
-                    </LinearLayout>
-                </RelativeLayout>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerView"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/LinearLayout_first"
-                android:orientation="vertical">
+                android:layout_marginTop="20dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView6" />
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recyclerView"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
-            </LinearLayout>
-        </RelativeLayout>
-    </RelativeLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!--SlidingUpPanelLayout의 두번째 뷰 끝 -->
 
