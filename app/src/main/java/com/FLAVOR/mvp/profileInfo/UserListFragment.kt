@@ -91,16 +91,20 @@ class UserListFragment(var server: retrofit_service) : Fragment() {
             //리사이클러뷰 만들고 카톡친구가져오기 로직 진행.
             userList = ArrayList()
             userListAdapter = UserListAdapter(requireActivity(), userList!!, onFriendsAddListener)
+
             val recyclerView = binding.recyclerView
             recyclerView.setHasFixedSize(true)
             recyclerView.layoutManager = LinearLayoutManager(requireActivity())
             recyclerView.adapter = userListAdapter
-            thread_start()
+            thread_start()  //내 팔로잉목록, 내 카톡친구목록가져와서 비교 마치고 친구목록리사이클러뷰에 notify해줌
+
             //패널 열고 닫기
             val state = slidePanel.panelState
             // 닫힌 상태일 경우 열기
             if (state == SlidingUpPanelLayout.PanelState.COLLAPSED) {
                 slidePanel.panelState = SlidingUpPanelLayout.PanelState.ANCHORED
+            }else {  // 열린 상태일 경우 닫기
+                slidePanel.panelState = SlidingUpPanelLayout.PanelState.COLLAPSED
             }
         }
         //슬라이드 열린거 내려주는 버튼
@@ -260,6 +264,15 @@ class UserListFragment(var server: retrofit_service) : Fragment() {
                 //데이터 가져오는 작업 다 끝나고 실행시킬 내용들
                 Log.e("태그","카톡 친구목록 가져오기 끝낫으면 핸들러에서  userListAdapter!!.notifyDataSetChanged() 해서 업데이트")
                 userListAdapter!!.notifyDataSetChanged()  //리사이클러뷰에 바뀐 데이터값 다시 업데이트
+
+                //만약 카톡친구목록에 아무도없으면 nofriendTextView를 보여줌
+                if(userList!!.isEmpty()){
+                    binding.nofriendTextView.visibility = View.VISIBLE
+                }else{
+                    binding.nofriendTextView.visibility = View.GONE
+                }
+
+
             }
         }
         handler.obtainMessage().sendToTarget()

@@ -199,11 +199,13 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
                 contentsLayout.addView(contentsItemView)
                 contentsItemView.setImage(path)
 
+                /*
+                //이미지를 삭제or수정하려고 눌렀을때
                 contentsItemView.setOnClickListener {
-                    buttonsBackgroundlayout.visibility = View.VISIBLE       //이미지를 삭제or수정하려고 눌렀을때
+                    buttonsBackgroundlayout.visibility = View.VISIBLE
                     selectedImageView = it as ImageView
                 }
-
+                 */
                 //프래그먼트에서 intent에  jsonarray를 string값으로 바꿔서 날렸고, 그 string값을 이 액티비티에서 받음. 여기서 또 다른 프래그먼트로 날려준후 다시 jsonarray객체로 만들거임
                 namelist_string =
                     data.getStringExtra("restaurant_name_list").toString()  //주변식당명리스트(string으로 되어있는)가 인텐트에 실려서 날아옴

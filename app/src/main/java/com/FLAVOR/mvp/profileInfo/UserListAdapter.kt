@@ -3,6 +3,7 @@ package com.FLAVOR.mvp.profileInfo
 import android.app.Activity
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
@@ -10,6 +11,7 @@ import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.FLAVOR.mvp.R
+import kotlinx.android.synthetic.main.fragment_user_list.view.*
 import kotlinx.android.synthetic.main.item_user_list.view.*
 
 //userList프래그먼트의 슬라이드업패널에 있는 카톡친구목록 보여주는 리사이클러뷰의 어댑터
@@ -29,10 +31,20 @@ class UserListAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MainViewHolder {
         val cardView = LayoutInflater.from(parent.context)
-            .inflate(com.FLAVOR.mvp.R.layout.item_user_list, parent, false) as CardView
+            .inflate(R.layout.item_user_list, parent, false) as CardView
 
         //밑의 setOnClickListener에서 사용자가 선택한 특정뷰의 위치값 알아야해서 여기서 뷰홀더객체생성
         val mainViewHolder = MainViewHolder(cardView)
+
+        /*
+        //카톡친구목록에 친구가 하나도 안뜰때 텍스트뷰 띄워줌
+        if(itemCount==0){
+            cardView.nofriend_textView.visibility = View.VISIBLE
+        }else{
+            cardView.nofriend_textView.visibility = View.GONE
+        }
+
+         */
 
         //친구추가버튼 클릭시 이벤트
         cardView.FriendAdd_button.setOnClickListener {
@@ -41,7 +53,6 @@ class UserListAdapter(
             Log.e("태그","followed_id: "+followed_id)
             onFriendsAddListener.onAdd(followed_id)  //userList프래그먼트에 내가 친추할 유저의 카카오id값 보내줌
             //친추버튼에 이미 친구라는 표시로 바꿔주는 로직
-
          }
         return mainViewHolder
     }

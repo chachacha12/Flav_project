@@ -107,7 +107,7 @@ class HomeAdapter(
 
         //받아온 지하철역, 거리정보 넣어주기
         val location_textView = cardView.location_textView
-        location_textView.text = contents.near_station + "역에서 "+contents.station_distance
+        location_textView.text = contents.near_station + "에서 "+contents.station_distance
 
 
         //게시물 하단의 태그3개 생성일을 채워줄 로직 - readContentsView는 view_post안의 뷰들을 채워줌
