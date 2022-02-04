@@ -6,6 +6,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.drawable.BitmapDrawable
 import android.os.Build
 import android.os.Bundle
 import android.util.DisplayMetrics
@@ -209,8 +210,9 @@ class mapFragment : Fragment(), OnMapReadyCallback {
             textView.text = username
             markerOptions.position(pos)
             markerOptions.title(restaurant_name)
-            markerOptions.snippet(near_station+"역에서 "+distance)
+            markerOptions.snippet(near_station+"에서 "+distance)
             //마커 아이콘을 커스텀마커로 바꿔줌
+
             markerOptions.icon(
                 BitmapDescriptorFactory.fromBitmap(
                     createDrawableFromView(
@@ -219,6 +221,7 @@ class mapFragment : Fragment(), OnMapReadyCallback {
                     )!!
                 )
             )
+
             mMap.addMarker(markerOptions)
             //map의 키로 마커좌표값, value로 해당 좌표의 컨텐츠값을 넣어줌
             markerpos_contents_map.put(markerOptions.position, MapContentsList[i])
@@ -249,7 +252,7 @@ class mapFragment : Fragment(), OnMapReadyCallback {
 
             binding?.titleTextView?.text  =  contents.restname //식당명
             binding?.nameTextView?.text   =  contents.User.getString("username") //유저네임
-            binding?.locationTextView?.text  =  contents.near_station+"역에서 "+contents.station_distance
+            binding?.locationTextView?.text  =  contents.near_station+"에서 "+contents.station_distance
             binding?.titleTextView?.text  =  contents.restname //식당명
             binding?.nameTextView?.text   =  contents.User.getString("username") //유저네임
             //음식사진 삽입

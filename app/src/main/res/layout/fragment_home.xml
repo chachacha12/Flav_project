@@ -25,11 +25,12 @@
             android:layout_height="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0"
             tools:layout_conversion_absoluteHeight="731dp"
-            tools:layout_conversion_absoluteWidth="411dp">
-        </androidx.recyclerview.widget.RecyclerView>
+            tools:layout_conversion_absoluteWidth="411dp"></androidx.recyclerview.widget.RecyclerView>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/floatingActionButton"
@@ -38,12 +39,28 @@
             android:layout_marginRight="10dp"
             android:layout_marginBottom="10dp"
             android:clickable="true"
-            android:src="@drawable/ic_add_black_24dp"
+            android:src="@drawable/ic_create"
             app:backgroundTint="#00aded"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             tools:layout_conversion_absoluteHeight="56dp"
             tools:layout_conversion_absoluteWidth="56dp" />
+
+        <TextView
+            android:id="@+id/floating_TextView"
+            android:layout_width="188dp"
+            android:layout_height="114dp"
+
+            android:layout_marginRight="44dp"
+
+            android:background="@drawable/ic_mode_comment2"
+            android:gravity="center_horizontal|center_vertical"
+            android:text="기억하고싶은 맛집을\n☆저장☆ 해보세요\n"
+            android:textColor="#202020"
+            android:textSize="14sp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@+id/floatingActionButton"
+            app:layout_constraintRight_toRightOf="parent" />
 
         <include
             layout="@layout/view_loader"

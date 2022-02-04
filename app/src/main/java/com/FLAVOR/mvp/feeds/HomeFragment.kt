@@ -1,5 +1,6 @@
 package com.FLAVOR.mvp.feeds
 
+import android.R.anim
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -7,7 +8,11 @@ import android.os.Handler
 import android.os.Looper
 import android.os.Message
 import android.util.Log
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.view.animation.AlphaAnimation
+import android.view.animation.Animation
 import android.widget.RelativeLayout
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -27,13 +32,12 @@ import org.json.JSONArray
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import kotlin.collections.ArrayList
 
 
 /**
  * A simple [Fragment] subclass.
  */
-class HomeFragment(var server:retrofit_service) : Fragment() {
+class HomeFragment(var server: retrofit_service) : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
@@ -63,7 +67,11 @@ class HomeFragment(var server:retrofit_service) : Fragment() {
             Log.e("태그", "패널 슬라이드")
         }
         // 패널의 상태가 변했을 때
-        override fun onPanelStateChanged(panel: View?, previousState: SlidingUpPanelLayout.PanelState?, newState: SlidingUpPanelLayout.PanelState?) {
+        override fun onPanelStateChanged(
+            panel: View?,
+            previousState: SlidingUpPanelLayout.PanelState?,
+            newState: SlidingUpPanelLayout.PanelState?
+        ) {
             if (newState == SlidingUpPanelLayout.PanelState.COLLAPSED) {
                 Log.e("태그", "열기")
                 // binding.btnToggle.text = "열기"
@@ -82,7 +90,7 @@ class HomeFragment(var server:retrofit_service) : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = FragmentHomeBinding.inflate(inflater, container,false)
+        _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val view = binding.root
 
         //로딩화면뷰 초기화
@@ -91,9 +99,11 @@ class HomeFragment(var server:retrofit_service) : Fragment() {
 
         contentsList = ArrayList()  //초기화  - 이거안하면 null에러남
         update_contentsList = ArrayList()  //초기화
-        homeAdapter = HomeAdapter(requireActivity(), contentsList!!,server, onPostListener)  //어댑터에서도 server통신위해 server를 인자에 넣어줌
+        homeAdapter = HomeAdapter(requireActivity(), contentsList!!, server, onPostListener)  //어댑터에서도 server통신위해 server를 인자에 넣어줌
         recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
-        view.findViewById<FloatingActionButton>(R.id.floatingActionButton).setOnClickListener(onClickListener)
+        view.findViewById<FloatingActionButton>(R.id.floatingActionButton).setOnClickListener(
+            onClickListener
+        )
         recyclerView.setHasFixedSize(true)
         recyclerView.layoutManager = LinearLayoutManager(activity)
         recyclerView.adapter = homeAdapter
@@ -110,7 +120,7 @@ class HomeFragment(var server:retrofit_service) : Fragment() {
                 slidePanel.panelState = SlidingUpPanelLayout.PanelState.COLLAPSED
             }
         }
-        //슬라이드 열렸을때 약속목록 모두 지우기 버튼
+        //슬라이드 열린상태에서 약속목록 모두 지우기 버튼 클릭시
         binding.DeleteAllButton.setOnClickListener {
             if(Home_appointment_list.isEmpty()) {  //약속목록 아예 없을떄
                 Toast.makeText(activity, "존재하는 약속이 없습니다.", Toast.LENGTH_SHORT).show()
@@ -126,29 +136,42 @@ class HomeFragment(var server:retrofit_service) : Fragment() {
         return view
     }
 
+    //플로팅텍스트에 애니메이션 줌
+    //AlphaAnimation클래스를 이용하여 깜빡이는 애니메이션 사용
+    fun check_floatingAnimaion(){
+        val anim:Animation
+        anim = AlphaAnimation(0.0f, 1.0f)
+        anim.setDuration(200) //좀 더 천천히 깜빡거리고 싶으면 이 값을 높이기
+        anim.setStartOffset(200)  //한번 애니메이션 끝나고 다시 시작동안 대기하는 시간
+        anim.setRepeatMode(Animation.REVERSE)
+        anim.setRepeatCount(Animation.INFINITE)
+        binding.floatingTextView.startAnimation(anim)
+    }
+
     //약속목록 삭제
     fun delete_appointmentList(){
         server.delete_appointmentlist_Request(Usersingleton.kakao_id.toString())
             .enqueue(object : Callback<Msg> {
                 override fun onFailure(call: Call<Msg>, t: Throwable) {
                 }
+
                 override fun onResponse(call: Call<Msg>, response: Response<Msg>) {
                     if (response.isSuccessful) {
                         Toast.makeText(activity, "모든 약속을 삭제했습니다.", Toast.LENGTH_SHORT).show()
-                        Log.e("태그",  "약속목록 삭제성공: "+response.body()?.msg)
+                        Log.e("태그", "약속목록 삭제성공: " + response.body()?.msg)
                         appointmentAdapter?.notifyDataSetChanged()
                         //main액티비티로 빈 알림버튼으로 변경하라는 데이터를 보냄(true값) - 인터페이스 이용
                         onAppointment_noexistListener?.exist_appointment(true)
                     } else {
                         Toast.makeText(activity, "삭제에 실패하였습니다.", Toast.LENGTH_SHORT).show()
-                        Log.e("태그",  "약속목록 삭제실패: "+response.errorBody()?.string())
+                        Log.e("태그", "약속목록 삭제실패: " + response.errorBody()?.string())
                     }
                 }
             })
     }
 
     //약속리스트 보여주는 슬라이드패널 만들어서 보여줌. 부모인 main액티비티에서 실행될거임
-    fun make_appointmentSlide(list:java.util.ArrayList<appointentInfoo>){
+    fun make_appointmentSlide(list: java.util.ArrayList<appointentInfoo>){
         Home_appointment_list.clear()
         Home_appointment_list.addAll(list)  //Home_appointment_list는 약속목록 모두 삭제 버튼 눌렀을때 리사이클러뷰를 바로 업데이트 해주기위한 전역변수 리스트.
 
@@ -199,7 +222,9 @@ class HomeFragment(var server:retrofit_service) : Fragment() {
     var onClickListener =
         View.OnClickListener { v ->
             when (v.id) {
-                R.id.floatingActionButton ->  { myStartActivity(WritePostActivity::class.java)}
+                R.id.floatingActionButton -> {
+                    myStartActivity(WritePostActivity::class.java)
+                }
             }
         }
 
@@ -220,13 +245,14 @@ class HomeFragment(var server:retrofit_service) : Fragment() {
             //밥약속 신청로직
             var requested_kakaoid = contentsList?.get(position)?.User?.getString("kakao_id")            //선택한 컨텐츠에서 그 컨텐츠 작성자의 카카오 id값 알아오기
             var restname = contentsList?.get(position)?.restname        //선택한 컨텐츠에 있는 식당이름값 가져옴
-            make_appointment(requested_kakaoid!! ,restname!!)
+            make_appointment(requested_kakaoid!!, restname!!)
         }
     }
 
     //특정 유저에게 약속신청
-    fun make_appointment(requested_kakaoid:String, restname:String ){
-        server.make_appointment_Request(Usersingleton.kakao_id.toString(), requested_kakaoid, restname
+    fun make_appointment(requested_kakaoid: String, restname: String){
+        server.make_appointment_Request(
+            Usersingleton.kakao_id.toString(), requested_kakaoid, restname
         ).enqueue(object : Callback<Msg> {
             override fun onFailure(
                 call: Call<Msg>,
@@ -235,24 +261,39 @@ class HomeFragment(var server:retrofit_service) : Fragment() {
                 Log.e("태그", "약속신청 통신 아예실패  ,t.message: " + t.message)
                 Toast.makeText(activity, "밥약속 신청에 실패하셨습니다.", Toast.LENGTH_SHORT).show()
             }
+
             override fun onResponse(
                 call: Call<Msg>,
                 response: Response<Msg>
             ) {
-                if(response.isSuccessful) {
-                    Log.e("태그", "약속신청 통신 성공  ,msg: "+response.body()?.msg)
-                    Log.e("태그", "약속신청 통신 성공  ,msg: "+response.body()?.toString())
+                if (response.isSuccessful) {
+                    Log.e("태그", "약속신청 통신 성공  ,msg: " + response.body()?.msg)
+                    Log.e("태그", "약속신청 통신 성공  ,msg: " + response.body()?.toString())
                     Toast.makeText(activity, "밥약속 신청 완료!", Toast.LENGTH_SHORT).show()
-                 } else {
-                    if(response.errorBody()?.string() == "{\"msg\":\"ER_DUP_ENTRY\"}"){   // 이미 그 게시물에 약속 신청했던 상태일때
+                } else {
+                    if (response.errorBody()
+                            ?.string() == "{\"msg\":\"ER_DUP_ENTRY\"}"
+                    ) {   // 이미 그 게시물에 약속 신청했던 상태일때
                         Toast.makeText(activity, "이미 약속한 게시물 입니다.", Toast.LENGTH_SHORT).show()
-                        Log.e("태그", "이미 약속한 게시물: response.errorBody()?.string():"+response.errorBody()?.string())
-                        Log.e("태그", "이미 약속한 게시물: response.body()?.msg"+response.body()?.msg)
-                    }else{
-                        Log.e("태그", "약속신청 서버접근했지만 실패: response.errorBody()?.string()"+response.errorBody()?.string())
+                        Log.e(
+                            "태그",
+                            "이미 약속한 게시물: response.errorBody()?.string():" + response.errorBody()
+                                ?.string()
+                        )
+                        Log.e("태그", "이미 약속한 게시물: response.body()?.msg" + response.body()?.msg)
+                    } else {
+                        Log.e(
+                            "태그",
+                            "약속신청 서버접근했지만 실패: response.errorBody()?.string()" + response.errorBody()
+                                ?.string()
+                        )
                         Toast.makeText(activity, "밥약속 신청에 실패하셨습니다.", Toast.LENGTH_SHORT).show()
-                        Log.e("태그", "이미 약속한 게시물: response.errorBody()?.string():"+response.errorBody()?.string())
-                        Log.e("태그", "이미 약속한 게시물: response.body()?.msg"+response.body()?.msg)
+                        Log.e(
+                            "태그",
+                            "이미 약속한 게시물: response.errorBody()?.string():" + response.errorBody()
+                                ?.string()
+                        )
+                        Log.e("태그", "이미 약속한 게시물: response.body()?.msg" + response.body()?.msg)
                     }
 
                 }
@@ -264,13 +305,17 @@ class HomeFragment(var server:retrofit_service) : Fragment() {
     fun storageDelete(filename: String) {
         successCount++  //삭제로직 시작전에
         //이미지 s3 삭제로직
-        Log.e("태그", "s3 삭제시 필요한 인자들 Usersingleton.kakao_id, contents.filename : "+Usersingleton.kakao_id+" ,"+choosen_filename)
-        server.deleteS3_Request( Usersingleton.kakao_id!!, filename)
+        Log.e(
+            "태그",
+            "s3 삭제시 필요한 인자들 Usersingleton.kakao_id, contents.filename : " + Usersingleton.kakao_id + " ," + choosen_filename
+        )
+        server.deleteS3_Request(Usersingleton.kakao_id!!, filename)
             .enqueue(object : Callback<Msg> {
                 override fun onFailure(call: Call<Msg>, t: Throwable) {
                     Toast.makeText(activity, "삭제 실패.", Toast.LENGTH_SHORT).show()
                     Log.e("삭제태그", "s3 삭제실패 - 통신 아예 실패")
                 }
+
                 override fun onResponse(call: Call<Msg>, response: Response<Msg>) {
                     if (response.isSuccessful) {
                         successCount--
@@ -278,7 +323,7 @@ class HomeFragment(var server:retrofit_service) : Fragment() {
                         Log.e("삭제태그", "s3 삭제성공")
                     } else {
                         Toast.makeText(activity, "삭제 실패.", Toast.LENGTH_SHORT).show()
-                        Log.e("삭제태그", "서버 접근했지만 s3 삭제실패: "+response.body()?.msg)
+                        Log.e("삭제태그", "서버 접근했지만 s3 삭제실패: " + response.body()?.msg)
                     }
                 }
             })
@@ -289,12 +334,13 @@ class HomeFragment(var server:retrofit_service) : Fragment() {
     private fun storeDelete(contents_id: Int) {
         if (successCount == 0) {
             //게시물 삭제로직
-            server.deleteContents_Request( contents_id!!)
+            server.deleteContents_Request(contents_id!!)
                 .enqueue(object : Callback<Msg> {
                     override fun onFailure(call: Call<Msg>, t: Throwable) {
                         Toast.makeText(activity, "삭제 실패.", Toast.LENGTH_SHORT).show()
                         Log.e("삭제태그", "rds 삭제 통신 아예 실패")
                     }
+
                     override fun onResponse(call: Call<Msg>, response: Response<Msg>) {
                         if (response.isSuccessful) {
                             Toast.makeText(activity, "게시물을 삭제하였습니다.", Toast.LENGTH_SHORT).show()
@@ -304,7 +350,7 @@ class HomeFragment(var server:retrofit_service) : Fragment() {
 
                         } else {
                             Toast.makeText(activity, "DB에서 게시물 삭제 실패", Toast.LENGTH_SHORT).show()
-                            Log.e("삭제태그", "rds 삭제실패: "+response.body()?.msg)
+                            Log.e("삭제태그", "rds 삭제실패: " + response.body()?.msg)
                         }
                     }
                 })
@@ -314,7 +360,7 @@ class HomeFragment(var server:retrofit_service) : Fragment() {
 
 
     fun ContentsUpdate() {
-        Log.e("태그","홈프래그먼트에서 피드 가져올때 Usersingleton.kakao_id: "+Usersingleton.kakao_id)
+        Log.e("태그", "홈프래그먼트에서 피드 가져올때 Usersingleton.kakao_id: " + Usersingleton.kakao_id)
         //서버로부터 컨텐츠 값 가져오는 로직 + contentslist에 값 넣어주기
         thread_start()
     }
@@ -327,6 +373,7 @@ class HomeFragment(var server:retrofit_service) : Fragment() {
                 override fun onFailure(call: Call<Result_response>, t: Throwable) {
                     Log.e("관련 컨텐츠 태그", "피드 컨텐츠 서버 통신 아예 실패" + t.message)
                 }
+
                 override fun onResponse(
                     call: Call<Result_response>,
                     response: Response<Result_response>
@@ -334,26 +381,54 @@ class HomeFragment(var server:retrofit_service) : Fragment() {
                     if (response.isSuccessful) {
                         Log.e(
                             "관련 컨텐츠 태그",
-                            " 통신성공 - 피드에 컨텐츠 채워줌 ")
+                            " 통신성공 - 피드에 컨텐츠 채워줌 "
+                        )
                         var jsonarray = JSONArray(response.body()?.result)
                         var i = 0
                         repeat(jsonarray.length()) {
                             val Object = jsonarray.getJSONObject(i)  //각각 하나의 컨텐츠씩 가져옴
                             //contentsList안에 가져오는 컨텐츠들 다 넣어줌
-                            update_contentsList!!.add( Contents( Object.getInt("id"), Object.getString("date"),
-                                Object.getString("filename"),  Object.getString("filepath"),  Object.getString("restname"),
-                                Object.getInt("user_id"),  Object.getInt("adj1_id"),  Object.getInt("adj2_id"),
-                                Object.getInt("locationtag_id"),  Object.getString("lat"), Object.getString("lng"),
-                                Object.getString("near_station"), Object.getString("station_distance"), Object.getJSONObject("User"),
-                                Object.getJSONObject("Tag_FirstAdj"), Object.getJSONObject("Tag_SecondAdj"),Object.getJSONObject("Tag_Location")
-                            )  )
+                            update_contentsList!!.add(
+                                Contents(
+                                    Object.getInt("id"),
+                                    Object.getString(
+                                        "date"
+                                    ),
+                                    Object.getString("filename"),
+                                    Object.getString("filepath"),
+                                    Object.getString(
+                                        "restname"
+                                    ),
+                                    Object.getInt("user_id"),
+                                    Object.getInt("adj1_id"),
+                                    Object.getInt(
+                                        "adj2_id"
+                                    ),
+                                    Object.getInt("locationtag_id"),
+                                    Object.getString("lat"),
+                                    Object.getString(
+                                        "lng"
+                                    ),
+                                    Object.getString("near_station"),
+                                    Object.getString("station_distance"),
+                                    Object.getJSONObject(
+                                        "User"
+                                    ),
+                                    Object.getJSONObject("Tag_FirstAdj"),
+                                    Object.getJSONObject("Tag_SecondAdj"),
+                                    Object.getJSONObject(
+                                        "Tag_Location"
+                                    )
+                                )
+                            )
                             i++
                         } //repeat
                         handler()  //서버통해 데이터 가져오는 거 성공하면 핸들러함수 통해서 다음작업 수행
                     } else {
                         Log.e(
                             "관련 컨텐츠 태그",
-                            "관련 컨텐츠 / 서버접근 성공했지만 올바르지 않은 response값" + response.body()?.result.toString() + "에러: " + response.errorBody()?.string()
+                            "관련 컨텐츠 / 서버접근 성공했지만 올바르지 않은 response값" + response.body()?.result.toString() + "에러: " + response.errorBody()
+                                ?.string()
                                 .toString()
                         )
                         handler()
@@ -391,9 +466,17 @@ class HomeFragment(var server:retrofit_service) : Fragment() {
                 update_contentsList?.clear()  //피드 업데이트될때 다시 여기로 받아와야 해서 비워줌
                 homeAdapter!!.notifyDataSetChanged()
 
+                //컨텐츠없을시 애니메이션 텍스트뷰 보여줌
+                if(contentsList!!.isEmpty()){
+                    binding.floatingTextView.visibility = View.VISIBLE
+                    check_floatingAnimaion()  //애니메이션 효과줌
+                }else{
+                    binding.floatingTextView.visibility = View.GONE
+                }
+
                 //인터페이스객체를 통해 액티비티에 있는 onCommand함수 실행-> 최종적으론 mapfragment에 데이터 전달할거임
                 homeMapListener?.onCommand(contentsList!!)
-                Log.e("태그","홈프래그먼트에서 액티비티로 컨텐츠리스트 줌")
+                Log.e("태그", "홈프래그먼트에서 액티비티로 컨텐츠리스트 줌")
             }
         }
         handler.obtainMessage().sendToTarget()
