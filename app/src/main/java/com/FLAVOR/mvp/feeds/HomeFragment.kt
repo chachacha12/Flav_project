@@ -148,7 +148,7 @@ class HomeFragment(var server: retrofit_service, var floating_anim:Boolean) : Fr
     fun check_floatingAnimaion(){
         val anim:Animation
         anim = AlphaAnimation(0.0f,1.0f)
-        anim.setDuration(200) //좀 더 천천히 깜빡거리고 싶으면 이 값을 높이기  // 에니메이션 동작 주기임
+        anim.setDuration(500) //좀 더 천천히 깜빡거리고 싶으면 이 값을 높이기  // 에니메이션 동작 주기임
         anim.setStartOffset(200)  //한번 애니메이션 끝나고 다시 시작동안 대기하는 시간
         anim.setRepeatMode(Animation.REVERSE)
         anim.setRepeatCount(15)

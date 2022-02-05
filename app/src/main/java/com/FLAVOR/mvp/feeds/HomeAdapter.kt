@@ -91,6 +91,13 @@ class HomeAdapter(
         titletextView.text = contents.restname  //컨텐츠의 식당명값을 제목에 넣어줌
         Log.e("태그","피드 만들어주는 홈프래그먼트의 onbindView안의 contents.restname"+contents.restname)
 
+        //내 게시물일때랑 친구게시물일때 나눠서 각각 다른 이미지 넣어줄거임
+        if(contents.User.getString("kakao_id") == Usersingleton.kakao_id!!){  //내 게시물
+            cardView.threePoint_button.setBackgroundResource(R.drawable.ic_more_vert2)
+        }else{
+            cardView.threePoint_button.setBackgroundResource(R.drawable.meeting)
+        }
+
         //받아온 유저이름, 프로필 넣어주기
         var nameTextView = cardView.nameTextView
         nameTextView.text = contents.User.getString("username")  //contents.User로 서버로부터 받아온 값이jsonobject라서 getString()~ 이걸 더 추가함
@@ -108,8 +115,7 @@ class HomeAdapter(
         //받아온 지하철역, 거리정보 넣어주기
         val location_textView = cardView.location_textView
         location_textView.text = contents.near_station + "에서 "+contents.station_distance
-
-
+        
         //게시물 하단의 태그3개 생성일을 채워줄 로직 - readContentsView는 view_post안의 뷰들을 채워줌
         val readContentsVIew: ReadContentsVIew = cardView.findViewById(R.id.readContentsView)
         var contentsLayout = cardView.contentsLayout  //여기안에 contentsList의 내용들(사진 ) 등을 넣을거임
