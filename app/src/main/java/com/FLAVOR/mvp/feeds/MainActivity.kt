@@ -146,7 +146,7 @@ class MainActivity : BasicActivity(), home_map_Listener, OnAppointment_noexistLi
     fun init() {
         check_appointment_list()  //약속목록 잇는지 체크해줌. 잇으면 check_appointment변수 true
 
-         homeFragment = HomeFragment(server)
+         homeFragment = HomeFragment(server, true)
         supportFragmentManager.beginTransaction()
             .replace(R.id.container, homeFragment!!)
             .commit()
@@ -161,7 +161,7 @@ class MainActivity : BasicActivity(), home_map_Listener, OnAppointment_noexistLi
                         View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR  //글씨색은 검은색으로
                     window.statusBarColor = Color.WHITE
 
-                    homeFragment = HomeFragment(server)  //프래그먼트가 교체될때마다 약속목록 보내줌
+                    homeFragment = HomeFragment(server, false)  //프래그먼트가 교체될때마다 약속목록 보내줌
                     supportFragmentManager.beginTransaction()
                         .replace(com.FLAVOR.mvp.R.id.container, homeFragment!!)
                         .commit()

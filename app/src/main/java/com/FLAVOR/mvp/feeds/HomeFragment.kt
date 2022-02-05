@@ -28,16 +28,15 @@ import com.FLAVOR.mvp.retrofit_service
 import com.FLAVOR.mvp.writepost.WritePostActivity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
+import kotlinx.android.synthetic.main.view_loader.*
 import org.json.JSONArray
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 
-/**
- * A simple [Fragment] subclass.
- */
-class HomeFragment(var server: retrofit_service) : Fragment() {
+//두번째 인자인 floating_anim는 유저가 앱 첫실행시 true값을 줘서 floating_TextView가 깜빡이는 애니메이션을 주기위함
+class HomeFragment(var server: retrofit_service, var floating_anim:Boolean) : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
@@ -84,6 +83,7 @@ class HomeFragment(var server: retrofit_service) : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
     }
 
     override fun onCreateView(
@@ -108,6 +108,13 @@ class HomeFragment(var server: retrofit_service) : Fragment() {
         recyclerView.layoutManager = LinearLayoutManager(activity)
         recyclerView.adapter = homeAdapter
         loaderLayout.visibility = View.GONE  //로딩화면
+
+        if(floating_anim){  //앱 첫실행한 경우라면 깜빡이는 애니메이션
+            check_floatingAnimaion()
+            Handler().postDelayed({
+                binding.floatingTextView.visibility = View.GONE
+            }, 7000)  //5초가 지났을때 {}괄호안의 내용을 수행하게되는 명령임.
+        }
 
         slidePanel = binding?.SlideUpPannerLayout!!   //fragment_home.xml의 가장 최상단 레이아웃을 가져옴
         slidePanel.addPanelSlideListener(PanelEventListener()) //슬라이드업파넬 이벤트 리스너 추가
@@ -140,11 +147,12 @@ class HomeFragment(var server: retrofit_service) : Fragment() {
     //AlphaAnimation클래스를 이용하여 깜빡이는 애니메이션 사용
     fun check_floatingAnimaion(){
         val anim:Animation
-        anim = AlphaAnimation(0.0f, 1.0f)
-        anim.setDuration(200) //좀 더 천천히 깜빡거리고 싶으면 이 값을 높이기
+        anim = AlphaAnimation(0.0f,1.0f)
+        anim.setDuration(200) //좀 더 천천히 깜빡거리고 싶으면 이 값을 높이기  // 에니메이션 동작 주기임
         anim.setStartOffset(200)  //한번 애니메이션 끝나고 다시 시작동안 대기하는 시간
         anim.setRepeatMode(Animation.REVERSE)
-        anim.setRepeatCount(Animation.INFINITE)
+        anim.setRepeatCount(15)
+        binding.floatingTextView.visibility = View.VISIBLE
         binding.floatingTextView.startAnimation(anim)
     }
 
@@ -216,7 +224,6 @@ class HomeFragment(var server: retrofit_service) : Fragment() {
         super.onResume()
         Log.e("태그", "homefragment에서 onResume이 실행됨")
         ContentsUpdate()
-        Log.e("ContentsUpdate태그", "onResume -- ContentsUpdate진행 ")
     }
 
     var onClickListener =
@@ -355,9 +362,7 @@ class HomeFragment(var server: retrofit_service) : Fragment() {
                     }
                 })
         }
-
     }
-
 
     fun ContentsUpdate() {
         Log.e("태그", "홈프래그먼트에서 피드 가져올때 Usersingleton.kakao_id: " + Usersingleton.kakao_id)
@@ -447,7 +452,7 @@ class HomeFragment(var server: retrofit_service) : Fragment() {
             try {
                 //원하는 자료처리(데이터 로딩 등)
                 getRelevant_Contents_Request()    //서버로부터 피드 컨텐츠 가져옴
-                Log.e("태그", "getRelevant_Contents_Request 성공 . ")
+                Log.e("태그", "getRelevant_Contents_Request 성공.")
 
             } catch (e: Exception) {
                 Log.e("태그", "getRelevant_Contents_Request 실패 ")
@@ -465,14 +470,6 @@ class HomeFragment(var server: retrofit_service) : Fragment() {
                 update_contentsList?.let { contentsList?.addAll(it) }
                 update_contentsList?.clear()  //피드 업데이트될때 다시 여기로 받아와야 해서 비워줌
                 homeAdapter!!.notifyDataSetChanged()
-
-                //컨텐츠없을시 애니메이션 텍스트뷰 보여줌
-                if(contentsList!!.isEmpty()){
-                    binding.floatingTextView.visibility = View.VISIBLE
-                    check_floatingAnimaion()  //애니메이션 효과줌
-                }else{
-                    binding.floatingTextView.visibility = View.GONE
-                }
 
                 //인터페이스객체를 통해 액티비티에 있는 onCommand함수 실행-> 최종적으론 mapfragment에 데이터 전달할거임
                 homeMapListener?.onCommand(contentsList!!)

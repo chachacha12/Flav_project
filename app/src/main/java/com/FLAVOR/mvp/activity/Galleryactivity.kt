@@ -54,11 +54,6 @@ class Galleryactivity : BasicActivity() {
                     arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.ACCESS_MEDIA_LOCATION),
                     1
                 )  //권한요청창 띄움
-                Toast.makeText(
-                    this,
-                    resources.getString(R.string.please_grant_permission),
-                    Toast.LENGTH_SHORT
-                ).show()
             }
         } //when
     }
@@ -86,16 +81,11 @@ class Galleryactivity : BasicActivity() {
                     //백스택들 다 지워주는듯
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                     startActivity(intent)
-
-                    Toast.makeText(
-                        this,
-                        resources.getString(R.string.please_grant_permission),
-                        Toast.LENGTH_SHORT
-                    ).show()
                 }
             }
         }
     }
+
     private fun recyclerInit() {
         val numberOfColumns = 3      //리사이클러뷰를 통해 사진들 띄울때 가로에 사진을 3개씩 보여줄거임
         var viewAdapter = GalleryAdapter(

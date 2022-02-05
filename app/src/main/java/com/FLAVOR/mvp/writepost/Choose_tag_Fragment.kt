@@ -155,6 +155,7 @@ class Choose_tag_Fragment : Fragment() {
             val tagitem_textView = TextView(activity)  //텍스트뷰 하나 생성
             tagitem_textView.setTextColor(resources.getColor(R.color.colorBlack))  //태그 글씨색
             tagitem_textView.textSize =  18.0f
+            tagitem_textView.text
             tagitem_textView.setPaddingVertical(15)  //태그텍스트들 사이의 간격 padding값 조절
             tagitem_textView.text = list[i]
 
