@@ -176,7 +176,7 @@ class HomeAdapter(
                     R.id.appointment -> {
                         var builder = AlertDialog.Builder(activity)
                         builder.setMessage(myDataset[position].User.getString("username")+"님에게 <" +
-                                myDataset[position].restname+">에 같이 가지고 할까요?")
+                                myDataset[position].restname+">에 같이 가자고 밥약속을 신청할까요?")
                         builder.setCancelable(false) // 다이얼로그 화면 밖 터치 방지
                         builder.setPositiveButton(
                             "예"

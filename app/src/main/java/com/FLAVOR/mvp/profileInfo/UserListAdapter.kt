@@ -36,16 +36,6 @@ class UserListAdapter(
         //밑의 setOnClickListener에서 사용자가 선택한 특정뷰의 위치값 알아야해서 여기서 뷰홀더객체생성
         val mainViewHolder = MainViewHolder(cardView)
 
-        /*
-        //카톡친구목록에 친구가 하나도 안뜰때 텍스트뷰 띄워줌
-        if(itemCount==0){
-            cardView.nofriend_textView.visibility = View.VISIBLE
-        }else{
-            cardView.nofriend_textView.visibility = View.GONE
-        }
-
-         */
-
         //친구추가버튼 클릭시 이벤트
         cardView.FriendAdd_button.setOnClickListener {
             Log.e("태그","친구추가하기 누름")

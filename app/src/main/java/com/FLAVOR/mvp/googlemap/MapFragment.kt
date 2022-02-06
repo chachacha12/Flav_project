@@ -6,7 +6,6 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
-import android.graphics.drawable.BitmapDrawable
 import android.os.Build
 import android.os.Bundle
 import android.util.DisplayMetrics
@@ -23,8 +22,8 @@ import androidx.core.graphics.scale
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.FLAVOR.mvp.R
+import com.FLAVOR.mvp.classes.Usersingleton
 import com.FLAVOR.mvp.databinding.FragmentMapBinding
-
 import com.FLAVOR.mvp.feeds.Contents
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -39,9 +38,6 @@ import java.time.Instant
 import java.util.*
 import kotlin.collections.ArrayList
 
-/**
- * A simple [Fragment] subclass.
- */
 class mapFragment : Fragment(), OnMapReadyCallback {
 
     //Homefragment에서 넘어온 컨텐츠리스트값 받는 전역변수. 이 프래그먼트가 만들어지기전에 이 변수는 날아오는 데이터받아야해서 지금 초기화
@@ -68,7 +64,6 @@ class mapFragment : Fragment(), OnMapReadyCallback {
         if(MapContentsList.isNotEmpty()){
             mapView.onStart()
             (requireActivity() as AppCompatActivity?)!!.supportActionBar!!.hide()
-
 
             //여기서 이거 넣는 이유는 사용자가 패널 연상태로 다른곳 갔다가 다시 mapfrag왔을때 state저장안되서 이상한값이 패널 뷰들에 들어가는 오류때문
             val state = slidePanel.panelState
@@ -186,7 +181,6 @@ class mapFragment : Fragment(), OnMapReadyCallback {
             Log.e("태그", "mapfragment에서 받아온 유저프사photourl:  " + photourl)
             var username: String = MapContentsList[i].User.getString("username")  //유저이름가져옴
 
-
             if(photourl == "null"){  //프사없을땐 기본이미지로
                 Log.e("태그", "맛지도에서 프사가 없을때는 기본 이미지")
                 tv_marker.visibility = View.VISIBLE  // tv_marker는 기본이미지
@@ -196,9 +190,7 @@ class mapFragment : Fragment(), OnMapReadyCallback {
                 Log.e("태그", "맛지도에서 프사가 있을때")
                 tv_marker.visibility = View.GONE
                 tv_marker2.visibility = View.VISIBLE
-
                 tv_marker2.setImageResource(R.drawable.ic_logo)
-
                 /*
                 //이미지뷰 완전 둥글게 해주는 작업
                 //tv_marker2.background =  ShapeDrawable(OvalShape())
@@ -207,12 +199,18 @@ class mapFragment : Fragment(), OnMapReadyCallback {
                     .into(tv_marker2)
                  */
             }
+
             textView.text = username
+            //내 게시물일때와 친구 게시물일때 구분해서 다른 색상 텍스트뷰 주기위함
+            if(MapContentsList[i].User.getString("kakao_id")!=Usersingleton.kakao_id) {
+                textView.setTextColor(resources.getColor(R.color.colorgreen))
+                textView.setShadowLayer(8F, 0.0F, 0.0F, R.color.colorshadowGreen)
+            }
             markerOptions.position(pos)
             markerOptions.title(restaurant_name)
             markerOptions.snippet(near_station+"에서 "+distance)
-            //마커 아이콘을 커스텀마커로 바꿔줌
 
+            //마커 아이콘을 커스텀마커로 바꿔줌
             markerOptions.icon(
                 BitmapDescriptorFactory.fromBitmap(
                     createDrawableFromView(

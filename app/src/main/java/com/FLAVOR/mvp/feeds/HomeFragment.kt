@@ -185,6 +185,13 @@ class HomeFragment(var server: retrofit_service, var floating_anim:Boolean) : Fr
         Home_appointment_list.clear()
         Home_appointment_list.addAll(list)  //Home_appointment_list는 약속목록 모두 삭제 버튼 눌렀을때 리사이클러뷰를 바로 업데이트 해주기위한 전역변수 리스트.
 
+        //만약 카톡친구목록에 아무도없으면 nofriendTextView를 보여줌
+        if(Home_appointment_list!!.isEmpty()){
+            binding.noappointmentTextView.visibility = View.VISIBLE
+        }else{
+            binding.noappointmentTextView.visibility = View.GONE
+        }
+
         //리사이클러뷰 만들고 인자로 받은 약속 리스트 띄우기 로직 진행.
         appointmentAdapter = AppointmentAdapter(requireActivity(), Home_appointment_list)
         slide_recyclerView = binding.appointmentRecyclerView
