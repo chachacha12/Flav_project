@@ -41,16 +41,17 @@ class MainActivity : BasicActivity(), home_map_Listener, OnAppointment_noexistLi
     //서버로부터 가져온 내 약속목록 저장할 리스트
     var appointment_list:ArrayList<appointentInfoo> = ArrayList()
     var check_appointment:Boolean = false  //약속있는지 판별하는 변수
+    var check_floating_anim:Boolean? = null
     //빈알림, 꽉찬알림버튼 2개 전역으로
     private lateinit var noticebutton:View
     private lateinit var noticebutton2:View
+
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(com.FLAVOR.mvp.R.layout.activity_main)
         setToolbarTitle("  Foowinkle")
-
 
         //알림버튼 초기화해주고 로딩중일때 가려줌
         noticebutton = findViewById<View>(R.id.notice_button)  //알림버튼뷰를 가져옴
@@ -64,13 +65,13 @@ class MainActivity : BasicActivity(), home_map_Listener, OnAppointment_noexistLi
         strNick = intent.getStringExtra("name")
         strprofileImg= intent.getStringExtra("profileImg")
         strEmail= intent.getStringExtra("email")
+        check_floating_anim = intent.getBooleanExtra("floating_anim",false)  //앱 첫실행해서 로그인해서 온 경우에만 깜빡이는 애니메이션 해줄거라
         Log.e(
             "태그", "main에서의 카카오,   strNick: $strNick" + "  strprofileImg: $strprofileImg" +
                     "  strEmail: $strEmail"
         )
         init()
     }
-
 
     //게시물 추가하거나 등등 할때마다 피드 갱신
     override fun onRestart() {
@@ -146,7 +147,7 @@ class MainActivity : BasicActivity(), home_map_Listener, OnAppointment_noexistLi
     fun init() {
         check_appointment_list()  //약속목록 잇는지 체크해줌. 잇으면 check_appointment변수 true
 
-         homeFragment = HomeFragment(server, true)
+        homeFragment = HomeFragment(server, check_floating_anim!!)
         supportFragmentManager.beginTransaction()
             .replace(R.id.container, homeFragment!!)
             .commit()

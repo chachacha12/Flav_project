@@ -2,6 +2,8 @@ package com.FLAVOR.mvp.Adapter        //아래는 developer사이트의 문서�
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
@@ -39,6 +41,7 @@ class GalleryAdapter(var activity: Activity, private val myDataset: ArrayList<St
     var resultIntent = Intent()  //writepostactivity로 데이터 실어서 보내줄 인텐트
     lateinit var file:MultipartBody.Part  //이미지파일 담을 곳
 
+
     class GalleryViewHolder(val cardView: CardView) : RecyclerView.ViewHolder(cardView)   //뷰홀더에 텍스트뷰말고 카드뷰를 넣음
 
     //온크리에이트뷰홀더함수안에서 사용자가 특정 사진 선택했을때 프로필사진으로 등록되는 기능 여기서 해줄거임
@@ -48,10 +51,12 @@ class GalleryAdapter(var activity: Activity, private val myDataset: ArrayList<St
     ): GalleryViewHolder {
         val cardView: CardView = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_gallery, parent, false) as CardView   //inflate에 들어간 레이아웃은 row파일과 같은거임.
-
         val galleryViewHolder = GalleryViewHolder(cardView)  //밑의 setOnClickListener에서 사용자가 선택한 특정뷰의 위치값 알아야해서 여기서 뷰홀더객체생성
+
+
         cardView.setOnClickListener {                //사용자가 갤러리에서 특정 사진을 클릭해서 선택했을때
             activity.loaderLayout.visibility = View.VISIBLE //갤러리 액티비티객체를 통해 로딩화면 xml보여줌
+
             //레트로핏 post image 업로드
             var imageFile = File(myDataset!![galleryViewHolder.adapterPosition]!!)
             Log.e("태그", "이미지 uri: " + myDataset!![galleryViewHolder.adapterPosition])
@@ -176,6 +181,8 @@ class GalleryAdapter(var activity: Activity, private val myDataset: ArrayList<St
                 Log.e("갤러리태그","3")
                 activity.setResult(Activity.RESULT_OK, resultIntent)   //onActivityResult함수로 인텐트 보냄.
                 activity.loaderLayout.visibility = View.GONE //갤러리 액티비티객체를 통해 로딩화면 xml보여줌
+
+
                 activity.finish()  //갤러리액티비티 닫아줌
             }
         }

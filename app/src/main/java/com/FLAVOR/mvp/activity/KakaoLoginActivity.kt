@@ -1,6 +1,8 @@
 package com.FLAVOR.mvp.activity
 
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -41,8 +43,11 @@ class KakaoLoginActivity: BasicActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login_kakao)
 
+
         //로딩화면보여줌
         loaderLayout.visibility = View.VISIBLE
+
+
         //나머지 뷰들은 가려줌
         logo_image.visibility  = View.INVISIBLE
         login_Text.visibility  = View.INVISIBLE
@@ -94,7 +99,8 @@ class KakaoLoginActivity: BasicActivity() {
                             "토큰에 오류가 있습니다. 로그인해주세요.",
                             Toast.LENGTH_SHORT
                         ).show()
-                        loaderLayout.visibility = View.GONE  //로딩화면제거
+                      loaderLayout.visibility = View.GONE  //로딩화면제거
+
                         //나머지 뷰들 다 보여줌
                         logo_image.visibility  = View.VISIBLE
                         login_Text.visibility  = View.VISIBLE
@@ -102,6 +108,7 @@ class KakaoLoginActivity: BasicActivity() {
                     } else {
                         //기타 다른 토큰 에러
                         Log.e("태그", "UpdateKakakotalkUI/   기타 에러남 ")
+
                         loaderLayout.visibility = View.GONE  //로딩화면제거
                         //나머지 뷰들 다 보여줌
                         logo_image.visibility  = View.VISIBLE
@@ -125,6 +132,8 @@ class KakaoLoginActivity: BasicActivity() {
                 Toast.makeText(this@KakaoLoginActivity, "로그인 해주세요.", Toast.LENGTH_SHORT).show()
                 Log.e("태그", "UpdateKakakotalkUI/ 앱소개화면엔 갔다왔고,  토큰이 없습니다. 로그인 해주세요")
                 loaderLayout.visibility = View.GONE  //로딩화면제거
+
+
                 //나머지 뷰들 다 보여줌
                 logo_image.visibility  = View.VISIBLE
                 login_Text.visibility  = View.VISIBLE
@@ -160,6 +169,8 @@ class KakaoLoginActivity: BasicActivity() {
                 MainAct_Intent.putExtra("name", strNick)  //프로필이름
                 MainAct_Intent.putExtra("profileImg", strprofileImg)  //프로필이미지url
                 MainAct_Intent.putExtra("email", strEmail)  //이메일정보 넘겨줌
+                MainAct_Intent.putExtra("floating_anim",true)
+
                 //백스택 값들을 다 지워준다는뜻. 즉 이동후에 뒤로버튼 눌러도 다시 이 액티비티로 안오고 앱종료됨
                 MainAct_Intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
                 thread_start()  // 서버에 위에서 만든 신규유저 등록해주고 main화면으로 이동시키는 작업
@@ -203,7 +214,7 @@ class KakaoLoginActivity: BasicActivity() {
                 MainAct_Intent.putExtra("name", strNick)  //프로필이름
                 MainAct_Intent.putExtra("profileImg", strprofileImg)  //프로필이미지url
                 MainAct_Intent.putExtra("email", strEmail)  //이메일정보 넘겨줌
-
+                MainAct_Intent.putExtra("floating_anim",true)
                 Log.e(
                     "태그", "UserinfoCall_hastoken :   사용자 정보 요청 성공" +
                             "\n회원번호: ${user.id}" +

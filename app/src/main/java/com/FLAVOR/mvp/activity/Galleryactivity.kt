@@ -25,6 +25,7 @@ import com.FLAVOR.mvp.feeds.MainActivity
 
 
 class Galleryactivity : BasicActivity() {
+
     //아래의 코드 틀은 구글에(create a list RecyclerView)라고 쳐서 들어간 안드 developer사이트 문서에 있는 코드가져옴
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -64,6 +65,7 @@ class Galleryactivity : BasicActivity() {
         //백스택들 다 지워주는듯
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         startActivity(intent)
+
     }
     //권한요청에 대한 사용자 응답에 따른 결과
     override fun onRequestPermissionsResult(

@@ -67,6 +67,7 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
     var name_fragment: Choose_name_Fragment? = null
     var tag_fragment: Choose_tag_Fragment? =null
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_write_post)
@@ -223,13 +224,6 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
                     init_viewpager()  //위에서 받은 식당명을 가지고 뷰페이저를 만들어줌.. 프래그먼트 2개 만들고 어댑터 붙히고 등등해서
                 }
             }
-            /*
-            1 -> if (resultCode == Activity.RESULT_OK) {    //이미지를 수정하려고 새 이미지를 선택했을때
-                 path = data!!.getStringExtra("profilePath")
-                 Glide.with(this).load(path).override(1000)
-                    .into(selectedImageView)   //이미지를 수정해줌
-            }
-             */
         }
     }
 
@@ -303,6 +297,7 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
         } else {  //사용자가 태그,식당명 등 중에서 선택 안한거 있을때
             Toast.makeText(this, "식당이름과 태그를 모두 선택해주세요.", Toast.LENGTH_SHORT).show()
             loaderLayout.visibility = View.GONE
+
         }
     }
 
@@ -343,7 +338,7 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
                         "컨텐츠 업로드 통신 성공!!"
                     )
                     Toast.makeText(this@WritePostActivity, "게시물 업로드 성공!", Toast.LENGTH_SHORT).show()
-                    loaderLayout.visibility = View.GONE
+                   loaderLayout.visibility = View.GONE
                 } else {
                     Log.e(
                         "태그",
@@ -351,7 +346,8 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
                             ?.string()
                     )
                     Toast.makeText(this@WritePostActivity, "게시물 업로드 실패", Toast.LENGTH_SHORT).show()
-                    loaderLayout.visibility = View.GONE
+
+                     loaderLayout.visibility = View.GONE
                 }
                 finish()
             }

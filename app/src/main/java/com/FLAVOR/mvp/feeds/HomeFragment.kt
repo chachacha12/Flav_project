@@ -3,6 +3,7 @@ package com.FLAVOR.mvp.feeds
 import android.R.anim
 import android.content.Context
 import android.content.Intent
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -47,6 +48,7 @@ class HomeFragment(var server: retrofit_service, var floating_anim:Boolean) : Fr
     private var update_contentsList: java.util.ArrayList<Contents>? = null
     lateinit var recyclerView:RecyclerView  //서버로부터 컨텐츠들 다 가져오는 로직 끝난후에 handler함수에서 만들어줄거임
     lateinit var loaderLayout:RelativeLayout  //전역으로둬야 모든 함수에서 쓸수있어서
+
     //이 프래그먼트의 컨텐츠값들을 mapfragment에 주기위해 만든 인터페이스 객체
     var homeMapListener:home_map_Listener? = null
     //슬라이드업패널관련
