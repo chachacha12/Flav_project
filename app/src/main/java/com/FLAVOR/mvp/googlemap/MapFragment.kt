@@ -200,7 +200,6 @@ class mapFragment : Fragment(), OnMapReadyCallback {
                  */
             }
 
-
             textView.text = username
             //내 게시물일때와 친구 게시물일때 구분해서 다른 색상 텍스트뷰 주기위함
             if(MapContentsList[i].User.getString("kakao_id")!=Usersingleton.kakao_id) {
@@ -330,7 +329,7 @@ class mapFragment : Fragment(), OnMapReadyCallback {
             view.measuredWidth,
             view.measuredHeight,
             Bitmap.Config.ARGB_8888
-        ).scale(160, 250, false)  //여기서 마커의 크기를 조절가능
+        ).scale( view.measuredWidth, view.measuredHeight, false)  //여기서 마커의 크기를 조절가능
         val canvas = Canvas(bitmap)
         view.draw(canvas)
         return bitmap
