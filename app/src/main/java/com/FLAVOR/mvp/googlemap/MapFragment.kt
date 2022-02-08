@@ -202,10 +202,10 @@ class mapFragment : Fragment(), OnMapReadyCallback {
 
             textView.text = username
             //내 게시물일때와 친구 게시물일때 구분해서 다른 색상 텍스트뷰 주기위함
-            if(MapContentsList[i].User.getString("kakao_id")!=Usersingleton.kakao_id) {
+            if(MapContentsList[i].User.getString("kakao_id")!=Usersingleton.kakao_id) {  //친구
                 textView.setTextColor(resources.getColor(R.color.colorgreen))
                 textView.setShadowLayer(8F, 0.0F, 0.0F, R.color.colorshadowGreen)
-            }else{
+            }else{  //본인
                 textView.setTextColor(resources.getColor(R.color.colorFlav))
                 textView.setShadowLayer(8F, 0.0F, 0.0F, R.color.colorAccent)
             }

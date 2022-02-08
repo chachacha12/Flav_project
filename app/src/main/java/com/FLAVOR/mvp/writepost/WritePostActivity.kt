@@ -393,7 +393,7 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
         TabLayoutMediator(tabLayout, viewpager2){ tab, position -> tab.text = textArray[position]
         }.attach()
 
-        tag_fragment?.gettag1(server)  //태그 프래그먼트 객체통해 서버로부터 태그1값 가져오기
+        tag_fragment?.gettag1(server)  //태그 프래그먼트 객체통해 서버로부터 태그1값들 가져오기
         tag_fragment?.gettag2(server)
         tag_fragment?.gettag3(server)
 

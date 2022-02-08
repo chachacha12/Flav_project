@@ -182,7 +182,6 @@ class GalleryAdapter(var activity: Activity, private val myDataset: ArrayList<St
                 activity.setResult(Activity.RESULT_OK, resultIntent)   //onActivityResult함수로 인텐트 보냄.
                 activity.loaderLayout.visibility = View.GONE //갤러리 액티비티객체를 통해 로딩화면 xml보여줌
 
-
                 activity.finish()  //갤러리액티비티 닫아줌
             }
         }
