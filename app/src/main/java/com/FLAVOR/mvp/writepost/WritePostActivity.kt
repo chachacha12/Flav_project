@@ -244,6 +244,10 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
     {
         //만약 사용자가 태그, 식당명 등을 선택안했으면 플레브서버 다 저장안됨
         if (restname != null && adj1_id != null && adj2_id != null && locationtag_id != null && lat != null && lng != null) {
+
+            selfbutton.isClickable = false
+            checkButton.isClickable = false
+
             loaderLayout.visibility = View.VISIBLE
 
             val linearLayout =
@@ -361,13 +365,6 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
     }
 
 
-    //다른 액티비티로 데이터가지고 이동시켜주는 함수
-    private fun myStartActivity(c: Class<*>, media: String, requestCode: Int) {
-        val intent = Intent(this, c)
-        intent.putExtra("media", media)
-        startActivityForResult(intent, requestCode)
-    }
-
     //************************taplayout과 뷰페이저 관련 내용******************************
     override fun onBackPressed() {
         super.onBackPressed()
@@ -376,7 +373,7 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
 
     fun init_viewpager(){
         //프래그먼트들 여기서 초기화
-        name_fragment = Choose_name_Fragment()
+        name_fragment = Choose_name_Fragment(server, default_lat, default_lng) //식당프래그먼트에서 확장된 식당리스트 가져와야해서 레트로핏객체줌
         tag_fragment = Choose_tag_Fragment()
 
         //프래그먼트로 식당명 데이터 전달
