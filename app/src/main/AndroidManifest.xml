@@ -35,6 +35,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity android:name="com.FLAVOR.mvp.activity.FaceBookActivity">
         </activity>
 
@@ -49,14 +50,14 @@
             android:value="@string/facebook_app_id" />       <!-- 페이스북 sdk 광고모니터링을 위한것 -->
 
         <activity android:name="com.FLAVOR.mvp.feeds.PostActivity" />
-        <activity android:name="com.FLAVOR.mvp.feeds.MainActivity" />
-        <activity android:name="com.FLAVOR.mvp.activity.CameraActivity" />
-        <activity android:name="com.FLAVOR.mvp.activity.Galleryactivity" />
-        <activity android:name="com.FLAVOR.mvp.activity.BasicActivity" />
-        <activity android:name="com.FLAVOR.mvp.writepost.WritePostActivity" />
+        <activity android:name="com.FLAVOR.mvp.feeds.MainActivity"/>
+        <activity android:name="com.FLAVOR.mvp.activity.CameraActivity"/>
+        <activity android:name="com.FLAVOR.mvp.activity.Galleryactivity"/>
+        <activity android:name="com.FLAVOR.mvp.activity.BasicActivity"/>
+        <activity android:name="com.FLAVOR.mvp.writepost.WritePostActivity"/>
         <activity android:name="com.FLAVOR.mvp.activity.KakaoLoginActivity">
         </activity>
-        <activity android:name="com.FLAVOR.mvp.appIntro.AppIntroActivity" /> <!-- 리다이렉트url을 위한 부분임.AuthCodeHandlerActivity는 카카오에서 제공하는 액티비티임. -->
+        <activity android:name="com.FLAVOR.mvp.appIntro.AppIntroActivity"/>   <!-- 리다이렉트url을 위한 부분임.AuthCodeHandlerActivity는 카카오에서 제공하는 액티비티임. -->
         <activity
             android:name="com.kakao.sdk.auth.AuthCodeHandlerActivity"
             android:exported="true">

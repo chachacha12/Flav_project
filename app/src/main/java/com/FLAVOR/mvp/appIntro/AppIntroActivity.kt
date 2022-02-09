@@ -1,5 +1,6 @@
 package com.FLAVOR.mvp.appIntro
 
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -14,6 +15,8 @@ import kotlinx.android.synthetic.main.activity_appintro.*
 
 class AppIntroActivity: BasicActivity() {
 
+
+
     companion object{
         const val TAG:String = "로그"
     }
@@ -25,6 +28,10 @@ class AppIntroActivity: BasicActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_appintro)
+
+        // 화면을 portrait(세로) 화면으로 고정하고 싶은 경우
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+
         Log.d(TAG, "앱소개액티비티 - OnCreate 실행")
 
         //버튼 누를때 이벤트 처리

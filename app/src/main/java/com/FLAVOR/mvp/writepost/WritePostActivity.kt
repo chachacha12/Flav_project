@@ -7,6 +7,7 @@ package com.FLAVOR.mvp.writepost
 import android.app.Activity
 import android.app.Dialog
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -23,6 +24,7 @@ import com.FLAVOR.mvp.view.ContentsItemView
 import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.android.synthetic.main.activity_write_post.*
 import kotlinx.android.synthetic.main.dialog_selfname.*
+import kotlinx.android.synthetic.main.fragment_choose_name.*
 import kotlinx.android.synthetic.main.view_loader.*
 import okhttp3.MediaType
 import okhttp3.MultipartBody
@@ -73,6 +75,9 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
         setContentView(R.layout.activity_write_post)
         setToolbarTitle("게시글 작성")
 
+        // 화면을 portrait(세로) 화면으로 고정하고 싶은 경우
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+
         Modify_contentsinfo =
             (intent.getSerializableExtra("postInfo") as? Contents)  //MainActivity에서 게시글 수정버튼을 눌러서 보낸 인텐트에 실린 값(수정하고자하는 게시물 객체)를 받음. 인텐트를 받을땐 getIntent() 또는 Intent 이용.
         //getSerializable은 보내는, 받는 데이터가 내가 만든 클래스의 객체일때 사용함.
@@ -90,7 +95,6 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
     override fun onCommand(message: String) {
         tag_fragment?.display(message)
     }
-
 
     //수정하기버튼눌러서 이 액티비티 온 경우 등엔 게시글의 editText가 원래 수정전 내용으로 차있도록 하게할거임.
     private fun postinit() {
@@ -130,6 +134,7 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
     }
 
     private fun init() {
+
         //다이얼로그 초기화
         dilaog01 =  Dialog(this)
 
@@ -144,9 +149,10 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
         }
 
         //확인버튼 클릭시
-        checkButton2.setOnClickListener {
+        checkButton.setOnClickListener {
             storageUpload()                     //이걸 누르면 파이어베이스로 게시글 쓴거 저장됨
         }
+
 
         buttonsBackgroundlayout =
             buttonsBackgroundLayout    //게시글 올린 이미지 삭제or수정 창 끄려고할때 .  //전역변수를 초기화해줌.
@@ -230,7 +236,7 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
     var onClickListener =
         View.OnClickListener { v ->
             when (v.id) {
-                R.id.checkButton2 -> storageUpload()
+                R.id.checkButton -> storageUpload()
             }
         }
 

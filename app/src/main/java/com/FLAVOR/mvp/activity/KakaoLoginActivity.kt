@@ -1,6 +1,7 @@
 package com.FLAVOR.mvp.activity
 
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -43,6 +44,8 @@ class KakaoLoginActivity: BasicActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login_kakao)
 
+        // 화면을 portrait(세로) 화면으로 고정하고 싶은 경우
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
         //로딩화면보여줌
         loaderLayout.visibility = View.VISIBLE

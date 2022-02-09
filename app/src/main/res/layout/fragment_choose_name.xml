@@ -15,7 +15,7 @@
         android:layout_marginBottom="5dp"
         android:background="#ffffff"
         android:orientation="vertical"
-        app:layout_constraintBottom_toTopOf="@+id/extend_constraint"
+        app:layout_constraintBottom_toTopOf="@id/expand_constraint"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -30,21 +30,22 @@
     </ScrollView>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/extend_constraint"
+        android:id="@+id/expand_constraint"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
-        <TextView
-            android:id="@+id/extend_textView"
+        <Button
+            android:id="@+id/expand_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
             android:layout_marginTop="5dp"
             android:layout_marginBottom="5dp"
+            android:background="#00ff0000"
             android:text="▶ 식당정보 더 받아오기 ◀"
-            android:textColor="#222222"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

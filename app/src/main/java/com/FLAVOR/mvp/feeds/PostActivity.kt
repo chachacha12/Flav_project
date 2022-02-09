@@ -1,6 +1,7 @@
 package com.FLAVOR.mvp.feeds
 
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -24,6 +25,8 @@ class PostActivity : BasicActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_post)
 
+        // 화면을 portrait(세로) 화면으로 고정하고 싶은 경우
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
         contents = intent.getSerializableExtra("postInfo") as Contents
         Log.e("태그", "포스트액티비티로 받아온 intent.getSerializableExtra(\"postInfo\") as Contents: "+contents)

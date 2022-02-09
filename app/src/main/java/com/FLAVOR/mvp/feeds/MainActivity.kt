@@ -8,6 +8,7 @@ package com.FLAVOR.mvp.feeds
 
 import android.app.AlertDialog
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.graphics.Color
 import android.os.*
 import android.util.Log
@@ -52,6 +53,9 @@ class MainActivity : BasicActivity(), home_map_Listener, OnAppointment_noexistLi
         super.onCreate(savedInstanceState)
         setContentView(com.FLAVOR.mvp.R.layout.activity_main)
         setToolbarTitle("  Foowinkle")
+
+        // 화면을 portrait(세로) 화면으로 고정하고 싶은 경우
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
         //알림버튼 초기화해주고 로딩중일때 가려줌
         noticebutton = findViewById<View>(R.id.notice_button)  //알림버튼뷰를 가져옴

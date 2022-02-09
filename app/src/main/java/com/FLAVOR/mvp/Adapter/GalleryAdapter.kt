@@ -111,7 +111,7 @@ class GalleryAdapter(var activity: Activity, private val myDataset: ArrayList<St
 
     //서버로부터 주변 식당명리스트 받아옴
     fun RESTAURANT_NAME_API_REPUEST(){
-        server.getAllrestaurant_Request(default_lat, default_lng ).enqueue(object : Callback<Name> {
+        server.getAllrestaurant_Request(default_lat, default_lng, "just once" ).enqueue(object : Callback<Name> {
             override fun onFailure(call: Call<Name>, t: Throwable) {
                 Log.e("태그", "갤러리서버 통신 아예 실패" + t.message)
 
