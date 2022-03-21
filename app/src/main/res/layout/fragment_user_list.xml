@@ -34,14 +34,14 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-
         <androidx.cardview.widget.CardView
             android:id="@+id/CardView_photo"
             android:layout_width="80dp"
             android:layout_height="80dp"
-            android:layout_marginTop="60dp"
+            android:layout_marginStart="21dp"
+            android:layout_marginTop="55dp"
             app:cardCornerRadius="60dp"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/guideline2"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
@@ -58,7 +58,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="21dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="15dp"
             android:gravity="center_vertical"
             android:lineSpacingExtra="6sp"
             android:text="이름"
@@ -71,13 +71,27 @@
 
 
         <TextView
+            android:id="@+id/textView10"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:lineSpacingExtra="6sp"
+            android:text="내 맛집"
+            android:textColor="#151515"
+            android:textSize="12sp"
+            android:textStyle="normal"
+            app:layout_constraintBottom_toBottomOf="@+id/CardView_photo"
+            app:layout_constraintEnd_toEndOf="@id/myRest_num_textView"
+            app:layout_constraintStart_toStartOf="@id/myRest_num_textView"
+            app:layout_constraintTop_toBottomOf="@id/myRest_num_textView" />
+
+        <TextView
             android:id="@+id/name_TextView"
             android:layout_width="0dp"
             android:layout_height="30dp"
+
             android:layout_marginStart="21dp"
             android:layout_marginEnd="21dp"
-
-            android:layout_marginBottom="5dp"
             android:background="@drawable/name_text_round"
             android:gravity="center_vertical"
             android:lineSpacingExtra="6sp"
@@ -107,6 +121,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/name_TextView" />
 
+
         <TextView
             android:id="@+id/email_TextView"
             android:layout_width="0dp"
@@ -116,14 +131,15 @@
             android:background="@drawable/name_text_round"
             android:gravity="center_vertical"
             android:lineSpacingExtra="6sp"
-            android:text="aaa@gmail.com"
+            android:paddingLeft="3dp"
+            android:text="121212121212aaa@gmail.com"
             android:textColor="#333333"
             android:textSize="16sp"
             android:textStyle="normal"
+            app:layout_constraintBottom_toTopOf="@+id/textView4"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView2" />
-
 
         <TextView
             android:id="@+id/textView4"
@@ -174,6 +190,29 @@
                 android:background="#ffffff" />
         </LinearLayout>
 
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_begin="96dp" />
+
+        <TextView
+            android:id="@+id/myRest_num_textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="75dp"
+            android:gravity="bottom|center_horizontal"
+            android:text="122"
+            android:textColor="#070707"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/textView10"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.189"
+            app:layout_constraintStart_toStartOf="@+id/guideline2"
+            app:layout_constraintTop_toTopOf="parent" />
+
 
         <!--SlidingUpPanelLayout의 두번째 뷰 - 슬라이드때 나오는 뷰 -->
     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -192,8 +231,10 @@
             android:background="@color/cardview_light_background"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0">
 
 
             <TextView

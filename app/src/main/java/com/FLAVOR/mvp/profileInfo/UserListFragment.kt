@@ -59,16 +59,16 @@ class UserListFragment(var server: retrofit_service) : Fragment() {
         // 패널이 슬라이드 중일 때
         override fun onPanelSlide(panel: View?, slideOffset: Float) {
             // binding.tvSlideOffset.text = slideOffset.toString()
-            Log.e("태그", "패널 슬라이드")
+            //Log.e("태그", "패널 슬라이드")
         }
         // 패널의 상태가 변했을 때
         override fun onPanelStateChanged(panel: View?, previousState: SlidingUpPanelLayout.PanelState?, newState: SlidingUpPanelLayout.PanelState?) {
             if (newState == SlidingUpPanelLayout.PanelState.COLLAPSED) {
-                Log.e("태그", "열기")
+               // Log.e("태그", "열기")
                 // binding.btnToggle.text = "열기"
             } else if (newState == SlidingUpPanelLayout.PanelState.EXPANDED) {
                 //binding.btnToggle.text = "닫기"
-                Log.e("태그", "닫기")
+                //Log.e("태그", "닫기")
             }
         }
     }
@@ -85,6 +85,14 @@ class UserListFragment(var server: retrofit_service) : Fragment() {
 
         slidePanel = binding?.SlideUpPannerLayout!!   //fragment_map.xml의 가장 최상단 레이아웃을 가져옴
         slidePanel.addPanelSlideListener(PanelEventListener()) //슬라이드업파넬 이벤트 리스너 추가
+
+
+        //내 게시물 숫자버튼 누른경우 - 내 게시물들 보여줌
+        binding.myRestNumTextView.setOnClickListener {
+
+
+        }
+
 
         //친구찾기 버튼 눌렀을때
         binding.friendsLookButton.setOnClickListener {
@@ -233,6 +241,7 @@ class UserListFragment(var server: retrofit_service) : Fragment() {
                     )
                     if( !(following_kakaoidList.contains(userInfo.kakaoid))  ) { //만약 내 팔로잉 목록중에 이 유저가 없을때만 리사이클러뷰에 추가
                         userList!!.add(userInfo)
+                        Log.e("태그", userInfo.toString()+" 이 유저 팔로잉목록에 없어서 친추목록에 추가")
                     }
                     i++
                 }
@@ -271,8 +280,6 @@ class UserListFragment(var server: retrofit_service) : Fragment() {
                 }else{
                     binding.nofriendTextView.visibility = View.GONE
                 }
-
-
             }
         }
         handler.obtainMessage().sendToTarget()
@@ -281,7 +288,7 @@ class UserListFragment(var server: retrofit_service) : Fragment() {
     //서버에서 내 팔로잉 목록 가져와서 following_userInfoList에 저장하는 함수
     fun get_myfollowing_Request(){
         server.get_following_Request(Usersingleton.kakao_id!!)
-            .enqueue(object : Callback<Result_response> {
+            .enqueue(object : Callback<Result_response>{
                 override fun onFailure(call: Call<Result_response>, t: Throwable) {
                     Log.e("태그", "유저리스트에서 친추목록 비교위한 팔로잉 목록 통신 아예 실패" + t.message)
                 }
@@ -297,7 +304,7 @@ class UserListFragment(var server: retrofit_service) : Fragment() {
                             val Object = jsonarray.getJSONObject(i)  //각각 하나의 컨텐츠씩 가져옴
                             //following_userInfoList안에 가져오는 팔로잉 유저들 다 넣어줌
                             following_userInfoList!!.add( UserInfo(Object.getString("username"),Object.getString("profileimg_path"),
-                                Object.getInt("kakao_id").toString() ))
+                                Object.getString("kakao_id") ))
                             i++
                         } //repeat
 
