@@ -47,6 +47,8 @@ class UserListAdapter(
         return mainViewHolder
     }
 
+
+
     //만약 contains 통해 봣을때 이미 친추한 유저라면 이미 친구임 표시해줄거임
     override fun onBindViewHolder(holder: MainViewHolder, position: Int) {
         val cardView = holder.cardView
@@ -56,7 +58,7 @@ class UserListAdapter(
         if (mDataset!![position].profileimage == "null") {  //프사없을경우
             photoImageVIew.setImageResource(R.drawable.ic_account_circle_black_24dp) //기본이미지
         }else{
-            Glide.with(activity!!).load(mDataset!![position].profileimage).centerCrop().override(500)
+            Glide.with(activity!!).load(mDataset!![position].profileimage).override(500).thumbnail(0.1f)
                 .into(photoImageVIew)
         }
         nameTextView.text = userInfo.name

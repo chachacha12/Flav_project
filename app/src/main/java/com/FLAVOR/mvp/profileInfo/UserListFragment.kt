@@ -87,12 +87,6 @@ class UserListFragment(var server: retrofit_service) : Fragment() {
         slidePanel.addPanelSlideListener(PanelEventListener()) //슬라이드업파넬 이벤트 리스너 추가
 
 
-        //내 게시물 숫자버튼 누른경우 - 내 게시물들 보여줌
-        binding.myRestNumTextView.setOnClickListener {
-
-
-        }
-
 
         //친구찾기 버튼 눌렀을때
         binding.friendsLookButton.setOnClickListener {
