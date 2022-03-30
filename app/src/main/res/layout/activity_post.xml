@@ -8,34 +8,120 @@
     android:layout_height="match_parent"
     android:background="#ffffff">
 
-    <include
-        layout="@layout/view_toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        tools:layout_constraintBottom_toTopOf="@+id/constraint_readContents"
-        tools:layout_constraintEnd_toEndOf="parent"
-        tools:layout_constraintStart_toStartOf="parent"
-        tools:layout_constraintTop_toTopOf="parent" />
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/constraint_readContents"
+    <ScrollView
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        tools:layout_constraintBottom_toBottomOf="parent"
         tools:layout_constraintEnd_toEndOf="parent"
+        tools:layout_constraintHorizontal_bias="0.0"
         tools:layout_constraintStart_toStartOf="parent"
-        tools:layout_constraintTop_toBottomOf="@+id/toolbar">
+        tools:layout_constraintTop_toTopOf="parent">
 
-        <com.FLAVOR.mvp.feeds.ReadContentsVIew
-            android:id="@+id/readContentsView"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            tools2:layout_conversion_absoluteHeight="64dp"
-            tools2:layout_conversion_absoluteWidth="392dp"
-            tools:layout_constraintEnd_toEndOf="@+id/constraint_readContents"
-            tools:layout_constraintStart_toStartOf="@+id/constraint_readContents"
-            tools:layout_constraintTop_toTopOf="@+id/constraint_readContents">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-        </com.FLAVOR.mvp.feeds.ReadContentsVIew>
+            <include
+                layout="@layout/view_toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:layout_constraintBottom_toTopOf="@+id/constraint_readContents"
+                tools:layout_constraintEnd_toEndOf="parent"
+                tools:layout_constraintStart_toStartOf="parent"
+                tools:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constraint_readContents"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="70dp"
+                tools:layout_constraintBottom_toBottomOf="parent"
+                tools:layout_constraintEnd_toEndOf="parent"
+                tools:layout_constraintStart_toStartOf="parent">
+
+                <com.FLAVOR.mvp.feeds.ReadContentsVIew
+                    android:id="@+id/readContentsView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    tools2:layout_conversion_absoluteHeight="64dp"
+                    tools2:layout_conversion_absoluteWidth="392dp"
+
+                    tools:layout_constraintEnd_toEndOf="@+id/constraint_readContents"
+                    tools:layout_constraintStart_toStartOf="@+id/constraint_readContents"
+                    tools:layout_constraintTop_toTopOf="@+id/constraint_readContents">
+
+                </com.FLAVOR.mvp.feeds.ReadContentsVIew>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/coments_recyclerView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="30dp"
+                    tools:layout_constraintBottom_toBottomOf="parent"
+                    tools:layout_constraintEnd_toEndOf="parent"
+                    tools:layout_constraintStart_toStartOf="parent"
+                    tools:layout_constraintTop_toBottomOf="@+id/readContentsView" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/writecomments_Constraint"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#ffffff"
+        tools:layout_constraintBottom_toBottomOf="parent"
+        tools:layout_constraintEnd_toEndOf="parent"
+        tools:layout_constraintHorizontal_bias="1.0"
+        tools:layout_constraintStart_toStartOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/inner_const"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="15dp"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/dialog_button_round"
+            android:backgroundTint="#D3FBFA"
+            tools:layout_constraintBottom_toBottomOf="parent"
+            tools:layout_constraintEnd_toEndOf="parent"
+            tools:layout_constraintStart_toStartOf="parent"
+            tools:layout_constraintTop_toTopOf="parent">
+
+            <EditText
+                android:id="@+id/wirtecomments_editText"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_margin="5dp"
+                android:layout_marginStart="30dp"
+                android:layout_marginEnd="10dp"
+                android:background="@android:color/transparent"
+                android:ems="30"
+                android:hint="댓글을 입력하세요."
+                android:inputType="textPersonName"
+                android:textSize="15sp"
+                tools:layout_constraintBottom_toBottomOf="@+id/inner_const"
+                tools:layout_constraintEnd_toStartOf="@+id/imageButton"
+                tools:layout_constraintStart_toStartOf="parent"
+                tools:layout_constraintTop_toTopOf="@+id/inner_const" />
+
+            <ImageButton
+                android:id="@+id/imageButton"
+                android:layout_width="40dp"
+                android:layout_height="0dp"
+                android:backgroundTint="@android:color/transparent"
+                android:foregroundGravity="right"
+                tools:layout_constraintBottom_toBottomOf="@+id/inner_const"
+
+                tools:layout_constraintRight_toRightOf="@+id/inner_const"
+                tools:layout_constraintTop_toTopOf="@+id/inner_const"
+                tools:srcCompat="@drawable/ic_send_black_24dp" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -64,6 +64,7 @@ class HomeAdapter(
             intent.putExtra("tag1", myDataset[mainViewHolder.adapterPosition].Tag_FirstAdj.toString())
             intent.putExtra("tag2", myDataset[mainViewHolder.adapterPosition].Tag_SecondAdj.toString())
             intent.putExtra("tag3", myDataset[mainViewHolder.adapterPosition].Tag_Location.toString())
+            intent.putExtra("comments", myDataset[mainViewHolder.adapterPosition].Comments.toString())
 
             Log.e("태그", "포스트액티빝에 보내줄 contents객체: "+myDataset[mainViewHolder.adapterPosition])
             activity.startActivity(intent)
@@ -85,9 +86,9 @@ class HomeAdapter(
 
         val safePosition: Int = holder.adapterPosition
 
-        var cardView = holder.cardView
-        var titletextView = cardView.titleTextView
-        var contents= myDataset[safePosition]
+        val cardView = holder.cardView
+        val titletextView = cardView.titleTextView
+        val contents= myDataset[safePosition]
         titletextView.text = contents.restname  //컨텐츠의 식당명값을 제목에 넣어줌
         Log.e("태그","피드 만들어주는 홈프래그먼트의 onbindView안의 contents.restname"+contents.restname)
 

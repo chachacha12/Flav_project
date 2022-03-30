@@ -432,7 +432,8 @@ class HomeFragment(var server: retrofit_service, var floating_anim:Boolean) : Fr
                                     Object.getJSONObject("Tag_SecondAdj"),
                                     Object.getJSONObject(
                                         "Tag_Location"
-                                    )
+                                    ),
+                                    Object.getJSONArray("Comments")
                                 )
                             )
                             i++

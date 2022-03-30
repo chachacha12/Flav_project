@@ -1,5 +1,6 @@
 package com.FLAVOR.mvp.feeds
 
+import org.json.JSONArray
 import org.json.JSONObject
 import java.io.Serializable
 
@@ -27,7 +28,12 @@ data class Contents(
     @Transient
     var Tag_SecondAdj:JSONObject,
     @Transient
-    var Tag_Location:JSONObject
+    var Tag_Location:JSONObject,
+
+    @Transient
+    var Comments:JSONArray
+
+
 
 ) : Serializable {
 
