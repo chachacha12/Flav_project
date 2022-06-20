@@ -1,21 +1,19 @@
 package com.FLAVOR.mvp.feeds  //이곳에서 댓글기능도 만들거임. Coments_RecyclerView와 ComentsAdapter는 여기에서 쓰임
 
-import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.os.Build
 import android.os.Bundle
-import android.util.AttributeSet
 import android.util.Log
 import android.view.Menu
-import android.view.View
 import android.widget.LinearLayout
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.FLAVOR.mvp.R
 import com.FLAVOR.mvp.activity.BasicActivity
-import com.google.gson.JsonObject
+import com.FLAVOR.mvp.feeds.ComentsAdapter
+import com.FLAVOR.mvp.feeds.Contents
+import com.FLAVOR.mvp.feeds.ReadContentsVIew
 import kotlinx.android.synthetic.main.activity_post.*
 import org.json.JSONObject
 
@@ -30,23 +28,9 @@ class PostActivity : BasicActivity() {
     private var comentsAdapter: ComentsAdapter? = null
     private var comments:String ? = null  //댓글리스트를 전역으로둠. 어댑터로 쉽게 보내기 위해
 
-    fun init(){  //댓글 리사이클러뷰 작업
-        //recyclerView = recyclerView_user  //화면에 보일 리사이클러뷰객체
-        coments_recyclerView.setHasFixedSize(true)
-        coments_recyclerView.layoutManager = LinearLayoutManager(this)
-    }
-
 
     @RequiresApi(Build.VERSION_CODES.O)
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_post)
-
-        // 화면을 portrait(세로) 화면으로 고정하고 싶은 경우
-        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-
-        init()
-
+    fun init(){
         //사용자가 선택한 컨텐츠 날라온 값을 받음
         contents = intent.getSerializableExtra("postInfo") as Contents
         Log.e("태그", "포스트액티비티로 받아온 intent.getSerializableExtra(\"postInfo\") as Contents: "+contents)
@@ -57,7 +41,7 @@ class PostActivity : BasicActivity() {
         var tag1 = intent.getStringExtra("tag1")
         var tag2 = intent.getStringExtra("tag2")
         var tag3 = intent.getStringExtra("tag3")
-         comments = intent.getStringExtra("comments")  //해당 게시물의 댓글들 목록 스트링으로 가져옴
+        comments = intent.getStringExtra("comments")  //해당 게시물의 댓글들 목록 스트링으로 가져옴
         Log.e("태그", "포스트액티비티로 받아온 유저, 태그값들: "+user+ tag1+tag2+tag3)
 
         var user_json = JSONObject(user)  //받아온 string값을 jsonobject로 변경
@@ -74,6 +58,32 @@ class PostActivity : BasicActivity() {
 
         //게시물 삭제,s3삭제로직 수행하는 객체 초기화
         uiUpdate()
+    } //init
+
+    //댓글기능 준비작업
+    fun coments_ready(){
+        //댓글 리사이클러뷰 작업
+        //recyclerView = recyclerView_user  //화면에 보일 리사이클러뷰객체
+        coments_recyclerView.setHasFixedSize(true)
+        coments_recyclerView.layoutManager = LinearLayoutManager(this)
+
+        //댓글등록버튼클릭
+        save_comment_button.setOnClickListener {
+
+
+        }
+
+    } //coments_ready
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_post)
+        // 화면을 portrait(세로) 화면으로 고정하고 싶은 경우
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+
+        init()  //사용자가 선택한 게시물의 데이터들을 받아서 ui로 보여줌
+        coments_ready()
     }
 
 
