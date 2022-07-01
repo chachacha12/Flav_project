@@ -34,7 +34,6 @@ data class Contents(
     var Comments:JSONArray
 
 
-
 ) : Serializable {
 
 

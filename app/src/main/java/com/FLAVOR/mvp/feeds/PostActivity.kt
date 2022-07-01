@@ -28,9 +28,10 @@ import retrofit2.Response
 
 class PostActivity : BasicActivity() {
 
-    private var contents: Contents? = null       //내가 선택해서 가져온 게시물 객체
+    private var contents: Contents? = null       //내가 선택해서 가져온 게시물 객체.  댓글리사이클러뷰에도 이거 보내줘서 댓글리스트 만들거임.
     private var readContentsVIew: ReadContentsVIew? = null
     private var contentsLayout: LinearLayout? = null
+
 
     //댓글기능을 위한 변수들
     private var comentsAdapter: ComentsAdapter? = null
@@ -43,13 +44,14 @@ class PostActivity : BasicActivity() {
         contents = intent.getSerializableExtra("postInfo") as Contents
         Log.e("태그", "포스트액티비티로 받아온 intent.getSerializableExtra(\"postInfo\") as Contents: "+contents)
 
+
         //Contents클래스객체의 jsonobject들은 intent로 받아올때 따로 string으로 변환 후 가져와야만 되었음
         //그 후 여기서 다시 jsonobject로 만들어줄거임
         var user = intent.getStringExtra("user")
         var tag1 = intent.getStringExtra("tag1")
         var tag2 = intent.getStringExtra("tag2")
         var tag3 = intent.getStringExtra("tag3")
-        comments = intent.getStringExtra("comments")  //해당 게시물의 댓글들 목록 스트링으로 가져옴
+        comments = intent.getStringExtra("comments") //해당 게시물의 댓글들 목록 스트링으로 가져옴
         Log.e("태그", "포스트액티비티로 받아온 유저, 태그값들: "+user+ tag1+tag2+tag3)
 
         var user_json = JSONObject(user)  //받아온 string값을 jsonobject로 변경
@@ -62,8 +64,7 @@ class PostActivity : BasicActivity() {
         contents!!.Tag_Location =tag3_json
 
         var comments_json = JSONArray(comments)
-        contents!!.Comments =comments_json
-
+        contents!!.Comments =comments_json        //게시물에 댓글jsonarray저장
 
         contentsLayout = findViewById(R.id.contentsLayout)
         readContentsVIew = findViewById(R.id.readContentsView)
@@ -84,7 +85,6 @@ class PostActivity : BasicActivity() {
             Log.e("태그", "댓글 업로드 버튼 클릭함")
 
             comments_Upload(Usersingleton.kakao_id.toString(),wirtecomments_editText.text.toString())
-
         }
 
     } //coments_ready
@@ -128,10 +128,6 @@ class PostActivity : BasicActivity() {
     }
 
 
-
-
-
-
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -140,9 +136,8 @@ class PostActivity : BasicActivity() {
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
         init()  //사용자가 선택한 게시물의 데이터들을 받아서 ui로 보여줌
-        coments_ready()
+        coments_ready() //댓글기능준비
     }
-
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onActivityResult(
@@ -171,11 +166,11 @@ class PostActivity : BasicActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     private fun uiUpdate() {
         setToolbarTitle(contents!!.restname)
-        readContentsVIew?.setContents(contents!!)
+        readContentsVIew?.setContents(contents!!,false)
 
         //리사이클러뷰를 여기서 제대로 만들어줌.
         comentsAdapter = ComentsAdapter(
-            this, comments!!, server
+            this, contents!!, server
         )
         coments_recyclerView.adapter = comentsAdapter    //리사이클러뷰의 어댑터에 내가 만든 어댑터 붙힘. 사용자가 게시글 지우거나 수정 등 해서 데이터 바뀌면 어댑터를 다른걸로 또 바꿔줘야함 ->notifyDataSetChanged()이용
 

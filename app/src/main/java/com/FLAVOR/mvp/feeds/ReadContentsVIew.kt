@@ -7,6 +7,7 @@ import android.util.AttributeSet
 import android.util.Log
 import android.util.Patterns
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -15,6 +16,7 @@ import androidx.annotation.Nullable
 import androidx.annotation.RequiresApi
 import com.FLAVOR.mvp.R
 import com.bumptech.glide.Glide
+import kotlinx.android.synthetic.main.view_post.view.*
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.util.*
@@ -54,13 +56,12 @@ class ReadContentsVIew : LinearLayout {
 
     //view_post의 컨텐츠값들 여기서 다 넣어줌
     @RequiresApi(Build.VERSION_CODES.O)
-    fun setContents(contents: Contents) {
+    fun setContents(contents: Contents, comment_num:Boolean) {  //홈어댑터에선 댓글갯수보여줘야해서 true. 포스트액티비티에선 false
         //받아온 게시물생성일값 넣어주기
         val createdAtTextView = findViewById<TextView>(com.FLAVOR.mvp.R.id.createAtTextView)
         val instant = Instant.parse(contents.date)  //contents.date가 string날짜값임.
         var date = Date.from(instant)   //기존 string날짜값을 date타입으로 만듬
         val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm")
-
 
         val cal = Calendar.getInstance()
         cal.time = date
@@ -72,11 +73,24 @@ class ReadContentsVIew : LinearLayout {
         val tag1_textView = findViewById<TextView>(com.FLAVOR.mvp.R.id.tag1_textView)
         val tag2_textView = findViewById<TextView>(com.FLAVOR.mvp.R.id.tag2_textView)
         val tag3_textView = findViewById<TextView>(com.FLAVOR.mvp.R.id.tag3_textView)
+        val comment_num_textView = findViewById<TextView>(com.FLAVOR.mvp.R.id.textView10)
 
         tag1_textView.text = contents.Tag_FirstAdj.getString("tagname")
         //jsonobject타입으로 result라는 jsonArray안에 담아져서 오는 인자는 이렇게 처리
         tag2_textView.text = contents.Tag_SecondAdj.getString("tagname")
         tag3_textView.text = contents.Tag_Location.getString("tagname")
+
+
+        if(comment_num){
+            comment_num_constraint.visibility = View.VISIBLE
+            //댓글몇개인지 보여주기
+            val comment_num = contents.Comments.length()
+            comment_num_textView.text = comment_num.toString()
+        }else{
+            comment_num_constraint.visibility = View.GONE
+        }
+
+
 
 
         //이미지넣어줄 부모뷰 세팅

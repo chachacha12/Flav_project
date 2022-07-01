@@ -23,12 +23,13 @@ import kotlinx.android.synthetic.main.item_post.view.*
 import kotlinx.android.synthetic.main.item_post.view.nameTextView
 import kotlinx.android.synthetic.main.item_post.view.photoImageVIew
 import kotlinx.android.synthetic.main.view_post.view.*
+import org.json.JSONArray
 import java.util.*
 
 // 댓글띄우는 리사이클러뷰의 어댑터
 class ComentsAdapter(
     var activity: Activity,
-    private var myDataset:String,
+    private var myDataset:Contents,
     var server:retrofit_service
 
 )  : RecyclerView.Adapter<ComentsAdapter.MainViewHolder>() {
@@ -63,23 +64,27 @@ class ComentsAdapter(
         Log.e("태그","피드 만들어주는 홈프래그먼트의 onbindView 시작")
         val safePosition: Int = holder.adapterPosition
 
-        var commmentsCardView = holder.cardView
+        val commmentsCardView = holder.cardView
         /*
         var photoimageView = commmentsCardView.photoImageVIew
         var usernameTextView = commmentsCardView.nameTextView
         var dateTextView = commmentsCardView.date_textView
          */
-        var commentTextView = commmentsCardView.coments_TextView
+        val commentTextView = commmentsCardView.coments_TextView
+        val comment_Jsonarray= myDataset.Comments   //댓글id , 카카오id, 내용 들어있는 jsonArray임
+        val comment_Object = comment_Jsonarray.getJSONObject(position)  //하나하나의 댓글 JsonObject를 가져옴
+        val contents = comment_Object.getString("content")  //댓글의 내용들을 하나씩 가져옴
+        commentTextView.text = contents.toString()  //텍스트뷰에 댓글 뛰움
 
-
-        var contents= myDataset[safePosition]
-
-
-
-
+        //val kakaoid = comment_Object.getString("kakao_id")  //댓글 쓴 사용자의 카카오id를 가져옴
+        //kakaoid얻은걸로 api호출해서 해당 유저의 프사, 이름 가져올거임....
 
     }
 
-    override fun getItemCount() = myDataset.length
+
+    override fun getItemCount() =
+        myDataset.Comments.length()
+
+
 
 }

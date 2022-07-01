@@ -178,16 +178,13 @@ class mapFragment : Fragment(), OnMapReadyCallback {
 
             pos = LatLng(lat!!.toDouble(), lng!!.toDouble())  //좌표값 객체
             photourl = MapContentsList[i].User.getString("profileimg_path")  //프사 가져옴
-            Log.e("태그", "mapfragment에서 받아온 유저프사photourl:  " + photourl)
             var username: String = MapContentsList[i].User.getString("username")  //유저이름가져옴
 
             if(photourl == "null"){  //프사없을땐 기본이미지로
-                Log.e("태그", "맛지도에서 프사가 없을때는 기본 이미지")
                 tv_marker.visibility = View.VISIBLE  // tv_marker는 기본이미지
                 tv_marker2.visibility = View.GONE  //tv_marker2는 내 얼굴 너을 이미지뷰
                 tv_marker.setImageResource(R.drawable.ic_logo)
             }else{     //프사있을때
-                Log.e("태그", "맛지도에서 프사가 있을때")
                 tv_marker.visibility = View.GONE
                 tv_marker2.visibility = View.VISIBLE
                 tv_marker2.setImageResource(R.drawable.ic_logo)
@@ -298,7 +295,6 @@ class mapFragment : Fragment(), OnMapReadyCallback {
     fun display(map_contentsList: ArrayList<Contents>){
         MapContentsList.clear()
         MapContentsList.addAll(map_contentsList)
-        Log.e("태그", "map프래그먼트로 최종적으로 받은 MapContentsList: " + MapContentsList)
     }
 
 

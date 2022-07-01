@@ -123,7 +123,7 @@ class HomeAdapter(
             contentsLayout.removeAllViews()   //액티비티 onResume()의 notifyDataSetChanged()를 통해 게시글 업데이트 해줄때마다 뷰 다 지우고 새롭게 만들어줄거임
 
             readContentsVIew.setMoreIndex(MORE_INDEX)
-            readContentsVIew.setContents(contents)
+            readContentsVIew.setContents(contents, true)
         }
     }
 
