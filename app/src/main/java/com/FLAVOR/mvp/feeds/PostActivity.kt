@@ -7,20 +7,28 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.FLAVOR.mvp.R
 import com.FLAVOR.mvp.activity.BasicActivity
+import com.FLAVOR.mvp.classes.CommentUpload_response
+import com.FLAVOR.mvp.classes.Msg
+import com.FLAVOR.mvp.classes.Usersingleton
 import com.FLAVOR.mvp.feeds.ComentsAdapter
 import com.FLAVOR.mvp.feeds.Contents
 import com.FLAVOR.mvp.feeds.ReadContentsVIew
 import kotlinx.android.synthetic.main.activity_post.*
+import org.json.JSONArray
 import org.json.JSONObject
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 
 class PostActivity : BasicActivity() {
 
-    private var contents: Contents? = null
+    private var contents: Contents? = null       //내가 선택해서 가져온 게시물 객체
     private var readContentsVIew: ReadContentsVIew? = null
     private var contentsLayout: LinearLayout? = null
 
@@ -53,6 +61,10 @@ class PostActivity : BasicActivity() {
         var tag3_json = JSONObject(tag3)
         contents!!.Tag_Location =tag3_json
 
+        var comments_json = JSONArray(comments)
+        contents!!.Comments =comments_json
+
+
         contentsLayout = findViewById(R.id.contentsLayout)
         readContentsVIew = findViewById(R.id.readContentsView)
 
@@ -69,11 +81,56 @@ class PostActivity : BasicActivity() {
 
         //댓글등록버튼클릭
         save_comment_button.setOnClickListener {
+            Log.e("태그", "댓글 업로드 버튼 클릭함")
 
+            comments_Upload(Usersingleton.kakao_id.toString(),wirtecomments_editText.text.toString())
 
         }
 
     } //coments_ready
+
+
+    //댓글업로드로직
+    fun comments_Upload(kakao_id: String, content: String){
+        server.comment_upload_Request(
+            contents?.contents_id.toString(), kakao_id,
+            content
+        ).enqueue(object : Callback<CommentUpload_response> {
+            override fun onFailure(
+                call: Call<CommentUpload_response>,
+                t: Throwable
+            ) {
+                Log.e("태그", "댓글 업로드 통신 아예실패  ,t.message: " + t.message)
+                Toast.makeText(this@PostActivity, "댓글 업로드 실패", Toast.LENGTH_SHORT).show()
+            }
+
+            override fun onResponse(
+                call: Call<CommentUpload_response>,
+                response: Response<CommentUpload_response>
+            ) {
+                if (response.isSuccessful) {
+                    Log.e("태그", "댓글업로드 통신성공 ,msg: " + response.body()?.msg)
+                    Log.e("태그", "댓글업로드 통신 성공  ,msg: " + response.body()?.toString())
+                    Toast.makeText(this@PostActivity, "댓글 업로드 완료", Toast.LENGTH_SHORT).show()
+                } else {
+                    Log.e(
+                        "태그",
+                        "댓글업로드 서버접근했지만 실패: response.errorBody()?.string()" + response.errorBody().toString()
+                    )
+                    Log.e(
+                        "태그",
+                        "  response.message()" + response.message()
+                    )
+                    Toast.makeText(this@PostActivity, "댓글 업로드 실패", Toast.LENGTH_SHORT).show()
+                }
+            }
+        })
+    }
+
+
+
+
+
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {

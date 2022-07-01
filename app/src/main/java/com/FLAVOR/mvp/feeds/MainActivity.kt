@@ -180,7 +180,6 @@ class MainActivity : BasicActivity(), home_map_Listener, OnAppointment_noexistLi
 
                     //mapfrag만 여기서 초기화 안해주는 이유는 피드에서 모든 컨텐츠값 가져온걸로 계속 맵 띄워줘야하는데, 초기화되면 값들 다 날라가니까..
                     //mapfragment = mapFragment()
-                    Log.e("태그", "mapfrag로 replace")
                     supportFragmentManager.beginTransaction()
                         .replace(com.FLAVOR.mvp.R.id.container, mapfragment!!)
                         .commit()
@@ -212,21 +211,18 @@ class MainActivity : BasicActivity(), home_map_Listener, OnAppointment_noexistLi
     //home_map_fragment를 상속받아서 implement해준 함수임. home과 map프래그먼트 사이 데이터 통신에 이용.
     override fun onCommand(map_contentsList: ArrayList<Contents>) {
         mapfragment?.display(map_contentsList)
-        Log.e("태그", "메인액티비티에서 onCommand함수 실행해서 컨텐츠리스트 mapfragment에 전달")
     }
 
     //약속목록 서버로부터 가져오는 함수
     private fun thread_start() {
         var thread = Thread(null, getData()) //스레드 생성후 스레드에서 작업할 함수 지정(getDATA)
         thread.start()
-        Log.e("태그", "약속목록 가져오는 thread_start시작됨.")
     }
     fun getData() = Runnable {
         kotlin.run {
             try {
                 get_myAppointmentList()  //내 약속목록 가져옴
             } catch (e: Exception) {
-                Log.e("태그", "getData실패 e"+e.message)
             }
         }
     }
@@ -234,7 +230,6 @@ class MainActivity : BasicActivity(), home_map_Listener, OnAppointment_noexistLi
         var handler = object : Handler(Looper.getMainLooper()) {
             override fun handleMessage(msg: Message) {
                 //데이터 가져오는 작업 다 끝나고 실행시킬 내용들
-                Log.e("태그","약속목록 가져오는거 끝낫으면 핸들러에서 notifyDataSetChanged() 해서 업데이트")
                 homeFragment?.make_appointmentSlide(appointment_list)  //자식 프래그먼트의 약속슬라이드 만드는 함수실행
             }
         }
@@ -246,7 +241,6 @@ class MainActivity : BasicActivity(), home_map_Listener, OnAppointment_noexistLi
         server.get_appointment_Request(Usersingleton.kakao_id.toString())
             .enqueue(object : Callback<Result_response> {
                 override fun onFailure(call: Call<Result_response>, t: Throwable) {
-                    Log.e("태그", "약속 목록 통신 아예 실패" + t.message)
                 }
                 override fun onResponse(
                     call: Call<Result_response>,

@@ -107,8 +107,9 @@ interface retrofit_service {
     @PATCH("app/kakao/token/{kakao_id}")  // @Query
     fun modify_kakaotoken(@Path("kakao_id") kakao_id: String, @Field("kakaotoken") kakaotoken: String) :Call<Msg>
 
-
-
-
+    //댓글 업로드
+    @FormUrlEncoded
+    @POST("app/comments/{content_id}")
+    fun comment_upload_Request(@Path("content_id") content_id:String,@Field("kakao_id") kakao_id: String, @Field("content") content: String   ): Call<CommentUpload_response>
 
 }

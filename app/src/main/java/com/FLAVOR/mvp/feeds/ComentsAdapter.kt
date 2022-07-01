@@ -33,7 +33,6 @@ class ComentsAdapter(
 
 )  : RecyclerView.Adapter<ComentsAdapter.MainViewHolder>() {
 
-
     //뷰홀더에 텍스트뷰말고 카드뷰를 넣음
     class MainViewHolder(val cardView: CardView) : RecyclerView.ViewHolder(cardView)
 
@@ -74,6 +73,9 @@ class ComentsAdapter(
 
 
         var contents= myDataset[safePosition]
+
+
+
 
 
     }

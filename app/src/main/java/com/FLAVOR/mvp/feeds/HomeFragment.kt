@@ -231,7 +231,6 @@ class HomeFragment(var server: retrofit_service, var floating_anim:Boolean) : Fr
     //게시물 등 업데이트 해줄때 씀 - 게시물삭제or수정했을때 여기서 게시물 업데이트
     override fun onResume() {
         super.onResume()
-        Log.e("태그", "homefragment에서 onResume이 실행됨")
         ContentsUpdate()
     }
 
@@ -274,7 +273,6 @@ class HomeFragment(var server: retrofit_service, var floating_anim:Boolean) : Fr
                 call: Call<Msg>,
                 t: Throwable
             ) {
-                Log.e("태그", "약속신청 통신 아예실패  ,t.message: " + t.message)
                 Toast.makeText(activity, "밥약속 신청에 실패하셨습니다.", Toast.LENGTH_SHORT).show()
             }
 
@@ -283,33 +281,15 @@ class HomeFragment(var server: retrofit_service, var floating_anim:Boolean) : Fr
                 response: Response<Msg>
             ) {
                 if (response.isSuccessful) {
-                    Log.e("태그", "약속신청 통신 성공  ,msg: " + response.body()?.msg)
-                    Log.e("태그", "약속신청 통신 성공  ,msg: " + response.body()?.toString())
                     Toast.makeText(activity, "밥약속 신청 완료!", Toast.LENGTH_SHORT).show()
                 } else {
                     if (response.errorBody()
                             ?.string() == "{\"msg\":\"ER_DUP_ENTRY\"}"
                     ) {   // 이미 그 게시물에 약속 신청했던 상태일때
                         Toast.makeText(activity, "이미 약속한 게시물 입니다.", Toast.LENGTH_SHORT).show()
-                        Log.e(
-                            "태그",
-                            "이미 약속한 게시물: response.errorBody()?.string():" + response.errorBody()
-                                ?.string()
-                        )
-                        Log.e("태그", "이미 약속한 게시물: response.body()?.msg" + response.body()?.msg)
+
                     } else {
-                        Log.e(
-                            "태그",
-                            "약속신청 서버접근했지만 실패: response.errorBody()?.string()" + response.errorBody()
-                                ?.string()
-                        )
-                        Toast.makeText(activity, "밥약속 신청에 실패하셨습니다.", Toast.LENGTH_SHORT).show()
-                        Log.e(
-                            "태그",
-                            "이미 약속한 게시물: response.errorBody()?.string():" + response.errorBody()
-                                ?.string()
-                        )
-                        Log.e("태그", "이미 약속한 게시물: response.body()?.msg" + response.body()?.msg)
+
                     }
 
                 }
@@ -321,25 +301,19 @@ class HomeFragment(var server: retrofit_service, var floating_anim:Boolean) : Fr
     fun storageDelete(filename: String) {
         successCount++  //삭제로직 시작전에
         //이미지 s3 삭제로직
-        Log.e(
-            "태그",
-            "s3 삭제시 필요한 인자들 Usersingleton.kakao_id, contents.filename : " + Usersingleton.kakao_id + " ," + choosen_filename
-        )
+
         server.deleteS3_Request(Usersingleton.kakao_id!!, filename)
             .enqueue(object : Callback<Msg> {
                 override fun onFailure(call: Call<Msg>, t: Throwable) {
                     Toast.makeText(activity, "삭제 실패.", Toast.LENGTH_SHORT).show()
-                    Log.e("삭제태그", "s3 삭제실패 - 통신 아예 실패")
                 }
 
                 override fun onResponse(call: Call<Msg>, response: Response<Msg>) {
                     if (response.isSuccessful) {
                         successCount--
                         storeDelete(choosen_contents_id)
-                        Log.e("삭제태그", "s3 삭제성공")
                     } else {
                         Toast.makeText(activity, "삭제 실패.", Toast.LENGTH_SHORT).show()
-                        Log.e("삭제태그", "서버 접근했지만 s3 삭제실패: " + response.body()?.msg)
                     }
                 }
             })
@@ -354,19 +328,15 @@ class HomeFragment(var server: retrofit_service, var floating_anim:Boolean) : Fr
                 .enqueue(object : Callback<Msg> {
                     override fun onFailure(call: Call<Msg>, t: Throwable) {
                         Toast.makeText(activity, "삭제 실패.", Toast.LENGTH_SHORT).show()
-                        Log.e("삭제태그", "rds 삭제 통신 아예 실패")
                     }
 
                     override fun onResponse(call: Call<Msg>, response: Response<Msg>) {
                         if (response.isSuccessful) {
                             Toast.makeText(activity, "게시물을 삭제하였습니다.", Toast.LENGTH_SHORT).show()
-                            Log.e("삭제태그", "rds 삭제성공: ")
                             ContentsUpdate()  //피드 업데이트 로직
-                            Log.e("ContentsUpdate태그", "게시물 삭제해서 --ContentsUpdate진행 ")
 
                         } else {
                             Toast.makeText(activity, "DB에서 게시물 삭제 실패", Toast.LENGTH_SHORT).show()
-                            Log.e("삭제태그", "rds 삭제실패: " + response.body()?.msg)
                         }
                     }
                 })
@@ -374,7 +344,6 @@ class HomeFragment(var server: retrofit_service, var floating_anim:Boolean) : Fr
     }
 
     fun ContentsUpdate() {
-        Log.e("태그", "홈프래그먼트에서 피드 가져올때 Usersingleton.kakao_id: " + Usersingleton.kakao_id)
         //서버로부터 컨텐츠 값 가져오는 로직 + contentslist에 값 넣어주기
         thread_start()
     }
@@ -385,7 +354,6 @@ class HomeFragment(var server: retrofit_service, var floating_anim:Boolean) : Fr
         server.get_ReleventsContents_Request(Usersingleton.kakao_id!!)  //2번째 인자는 가져올 게시물 최대갯수
             .enqueue(object : Callback<Result_response> {
                 override fun onFailure(call: Call<Result_response>, t: Throwable) {
-                    Log.e("관련 컨텐츠 태그", "피드 컨텐츠 서버 통신 아예 실패" + t.message)
                 }
 
                 override fun onResponse(
@@ -393,10 +361,6 @@ class HomeFragment(var server: retrofit_service, var floating_anim:Boolean) : Fr
                     response: Response<Result_response>
                 ) {
                     if (response.isSuccessful) {
-                        Log.e(
-                            "관련 컨텐츠 태그",
-                            " 통신성공 - 피드에 컨텐츠 채워줌 "
-                        )
                         var jsonarray = JSONArray(response.body()?.result)
                         var i = 0
                         repeat(jsonarray.length()) {
@@ -440,12 +404,6 @@ class HomeFragment(var server: retrofit_service, var floating_anim:Boolean) : Fr
                         } //repeat
                         handler()  //서버통해 데이터 가져오는 거 성공하면 핸들러함수 통해서 다음작업 수행
                     } else {
-                        Log.e(
-                            "관련 컨텐츠 태그",
-                            "관련 컨텐츠 / 서버접근 성공했지만 올바르지 않은 response값" + response.body()?.result.toString() + "에러: " + response.errorBody()
-                                ?.string()
-                                .toString()
-                        )
                         handler()
                     }
                 }
@@ -454,7 +412,6 @@ class HomeFragment(var server: retrofit_service, var floating_anim:Boolean) : Fr
     private fun thread_start() {
         var thread = Thread(null, getData()) //스레드 생성후 스레드에서 작업할 함수 지정(getDATA)
         thread.start()
-        Log.e("태그", "thread_start시작됨.")
     }
 
     fun getData() = Runnable {
@@ -462,10 +419,8 @@ class HomeFragment(var server: retrofit_service, var floating_anim:Boolean) : Fr
             try {
                 //원하는 자료처리(데이터 로딩 등)
                 getRelevant_Contents_Request()    //서버로부터 피드 컨텐츠 가져옴
-                Log.e("태그", "getRelevant_Contents_Request 성공.")
 
             } catch (e: Exception) {
-                Log.e("태그", "getRelevant_Contents_Request 실패 ")
             }
         }
     }
@@ -474,7 +429,6 @@ class HomeFragment(var server: retrofit_service, var floating_anim:Boolean) : Fr
     private fun handler() {
         var handler = object : Handler(Looper.getMainLooper()) {
             override fun handleMessage(msg: Message) {
-                Log.e("태그", "피드컨텐츠 다 get한 후에 지금 핸들러 함수 실행")
                 contentsList?.clear()  //contentslist값 비워주기
                 //contentslist에다가 새로 받아온 update_contentsList값들을 다 넣어줌
                 update_contentsList?.let { contentsList?.addAll(it) }
@@ -483,7 +437,6 @@ class HomeFragment(var server: retrofit_service, var floating_anim:Boolean) : Fr
 
                 //인터페이스객체를 통해 액티비티에 있는 onCommand함수 실행-> 최종적으론 mapfragment에 데이터 전달할거임
                 homeMapListener?.onCommand(contentsList!!)
-                Log.e("태그", "홈프래그먼트에서 액티비티로 컨텐츠리스트 줌")
             }
         }
         handler.obtainMessage().sendToTarget()

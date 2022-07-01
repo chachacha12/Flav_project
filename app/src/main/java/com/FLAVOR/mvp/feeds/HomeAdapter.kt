@@ -66,7 +66,6 @@ class HomeAdapter(
             intent.putExtra("tag3", myDataset[mainViewHolder.adapterPosition].Tag_Location.toString())
             intent.putExtra("comments", myDataset[mainViewHolder.adapterPosition].Comments.toString())
 
-            Log.e("태그", "포스트액티빝에 보내줄 contents객체: "+myDataset[mainViewHolder.adapterPosition])
             activity.startActivity(intent)
         }
 
@@ -82,7 +81,6 @@ class HomeAdapter(
      //액티비티에서 게시글 업데이트 해주려고 mainAdapter.notifyDataSetChanged() 하면 이 함수만 작동함.
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: MainViewHolder, position: Int) {
-        Log.e("태그","피드 만들어주는 홈프래그먼트의 onbindView 시작")
 
         val safePosition: Int = holder.adapterPosition
 
@@ -90,7 +88,6 @@ class HomeAdapter(
         val titletextView = cardView.titleTextView
         val contents= myDataset[safePosition]
         titletextView.text = contents.restname  //컨텐츠의 식당명값을 제목에 넣어줌
-        Log.e("태그","피드 만들어주는 홈프래그먼트의 onbindView안의 contents.restname"+contents.restname)
 
         //내 게시물일때랑 친구게시물일때 나눠서 각각 다른 이미지 넣어줄거임
         if(contents.User.getString("kakao_id") == Usersingleton.kakao_id!!){  //내 게시물
@@ -151,7 +148,6 @@ class HomeAdapter(
                         ) { dialog, which ->
                             //게시물 삭제로직
                             onPostListener.onDelete(position)  //인터페이스를 통해 홈프래그먼트에서 삭제로직 작동시킬거임
-                            Log.e("태그", "게시물삭제버튼 클릭")
                         }
                         builder.setNegativeButton(
                             "아니요"
@@ -184,7 +180,6 @@ class HomeAdapter(
                         ) { dialog, which ->
                             //밥약속신청로직
                             onPostListener.onAppointment(position)  //인터페이스를 통해 홈프래그먼트에서
-                            Log.e("태그","밥약속 신청버튼 클릭")
                         }
                         builder.setNegativeButton(
                             "아니요"
