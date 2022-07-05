@@ -1,6 +1,7 @@
 package com.FLAVOR.mvp.feeds
 
 import android.R.anim
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.ColorDrawable
@@ -60,6 +61,11 @@ class HomeFragment(var server: retrofit_service, var floating_anim:Boolean) : Fr
     //main액티비티와 약속목록 여기서 다 지울때 통신해주는 인터페이스 객체 - 알림버튼 변경위해서.
     var onAppointment_noexistListener:OnAppointment_noexistListener? = null
 
+    //게시물 삭제에 필요한 전역변수들
+    private var successCount = 0
+    private var choosen_contents_id = 0
+    private var choosen_filename =""
+
     // 슬라이드업파넬레이아웃 이벤트 리스너
     inner class PanelEventListener : SlidingUpPanelLayout.PanelSlideListener {
         // 패널이 슬라이드 중일 때
@@ -88,6 +94,7 @@ class HomeFragment(var server: retrofit_service, var floating_anim:Boolean) : Fr
 
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -118,7 +125,7 @@ class HomeFragment(var server: retrofit_service, var floating_anim:Boolean) : Fr
             }, 7000)  //5초가 지났을때 {}괄호안의 내용을 수행하게되는 명령임.
         }
 
-        slidePanel = binding?.SlideUpPannerLayout!!   //fragment_home.xml의 가장 최상단 레이아웃을 가져옴
+        slidePanel = binding.SlideUpPannerLayout  //fragment_home.xml의 가장 최상단 레이아웃을 가져옴
         slidePanel.addPanelSlideListener(PanelEventListener()) //슬라이드업파넬 이벤트 리스너 추가
 
         //슬라이드 열린거 내려주는 버튼
@@ -165,6 +172,7 @@ class HomeFragment(var server: retrofit_service, var floating_anim:Boolean) : Fr
                 override fun onFailure(call: Call<Msg>, t: Throwable) {
                 }
 
+                @SuppressLint("NotifyDataSetChanged")
                 override fun onResponse(call: Call<Msg>, response: Response<Msg>) {
                     if (response.isSuccessful) {
                         Toast.makeText(activity, "모든 약속을 삭제했습니다.", Toast.LENGTH_SHORT).show()
@@ -242,11 +250,6 @@ class HomeFragment(var server: retrofit_service, var floating_anim:Boolean) : Fr
                 }
             }
         }
-
-    //게시물 삭제에 필요한 전역변수들
-    private var successCount = 0
-    private var choosen_contents_id = 0
-    private var choosen_filename =""
 
     //어댑터에서 특정 게시물 클릭한거 감지될때 게시물삭제, 밥약속 신청 중 하나를 해주는 인터페이스 객체
     var onPostListener: OnPostdeleteListener = object : OnPostdeleteListener {
