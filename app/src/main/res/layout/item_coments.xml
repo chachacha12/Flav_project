@@ -65,7 +65,7 @@
                         android:layout_width="30dp"
                         android:layout_height="25dp"
 
-                        android:background="@drawable/ic_more_vert2"
+                        android:background="@drawable/threepoint"
                         android:gravity="center"
                         android:lineSpacingExtra="6sp"
                         android:textColor="#00aded"

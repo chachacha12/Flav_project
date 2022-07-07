@@ -83,7 +83,7 @@ class PostActivity : BasicActivity() {
         var i=0
         repeat(comments_json.length()){
             val Object = comments_json.getJSONObject(i)  //카카오id와 댓글내용 들어있는 Jsonobject
-            commentsList?.add(Object)
+            commentsList?.add(Object)       //JSonObject를 넣는 ArrayList
             i++
         }
         Log.e("태그","commentsList: "+commentsList)

@@ -86,7 +86,7 @@
             android:layout_marginEnd="15dp"
             android:layout_marginBottom="8dp"
             android:background="@drawable/dialog_button_round"
-            android:backgroundTint="#D3FBFA"
+            android:backgroundTint="#EDEDED"
             tools:layout_constraintBottom_toBottomOf="parent"
             tools:layout_constraintEnd_toEndOf="parent"
             tools:layout_constraintStart_toStartOf="parent"
@@ -96,9 +96,10 @@
                 android:id="@+id/wirtecomments_editText"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:layout_margin="5dp"
-                android:layout_marginStart="30dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="5dp"
                 android:layout_marginEnd="10dp"
+                android:layout_marginBottom="5dp"
                 android:background="@android:color/transparent"
                 android:ems="30"
                 android:hint="댓글을 입력하세요."
@@ -111,12 +112,13 @@
 
             <ImageButton
                 android:id="@+id/save_comment_button"
-                android:layout_width="40dp"
+                android:layout_width="30dp"
                 android:layout_height="0dp"
+                android:layout_marginRight="5dp"
                 android:backgroundTint="@android:color/transparent"
                 android:foregroundGravity="right"
-                tools:layout_constraintBottom_toBottomOf="@+id/inner_const"
 
+                tools:layout_constraintBottom_toBottomOf="@+id/inner_const"
                 tools:layout_constraintRight_toRightOf="@+id/inner_const"
                 tools:layout_constraintTop_toTopOf="@+id/inner_const"
                 tools:srcCompat="@drawable/ic_send_black_24dp" />
