@@ -38,6 +38,45 @@ class PostActivity : BasicActivity() {
     //댓글기능을 위한 변수들
     private var comentsAdapter: ComentsAdapter? = null
     private lateinit var commentsList: ArrayList<JSONObject>  //댓글 추가하거나 삭제할때 바로 업데이트 해주기위해 클라이언트단에서 저장해서 먼저 보여주는 댓글리스트
+    //댓글 삭제에 필요한 전역변수들
+    private var choosen_comment_id = 0
+
+
+    //어댑터에서 특정 댓글 클릭한거 감지될때 댓글 삭제, 신고 중 하나를 해주는 인터페이스 객체
+    var onCommentListener: OnCommentListener = object : OnCommentListener{
+        override fun onDelete(position: Int) {
+            choosen_comment_id = commentsList.get(position).getString("id").toInt()   //사용자가 선택한 게시물의 id값
+            Log.e("태그","choosen_comment_id:"+choosen_comment_id)
+            //삭제로직
+            commentsList.removeAt(position)  //클라이언트단에서의 댓글리스트상에서도 삭제해줌
+            commentDelete(choosen_comment_id)
+        }
+        override fun onReport(position: Int) {
+            //신고로직
+            Toast.makeText(this@PostActivity, "신고되었습니다.", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    //댓글 삭제로직
+    fun commentDelete(comment_id:Int){
+        server.delete_comment_Request(comment_id)
+            .enqueue(object : Callback<Msg> {
+                override fun onFailure(call: Call<Msg>, t: Throwable) {
+                }
+                @SuppressLint("NotifyDataSetChanged")
+                override fun onResponse(call: Call<Msg>, response: Response<Msg>) {
+                    if (response.isSuccessful) {
+                        Toast.makeText(this@PostActivity, "댓글을 삭제했습니다.", Toast.LENGTH_SHORT).show()
+                        Log.e("태그", "댓글 삭제성공: " + response.body()?.msg)
+                        comentsAdapter?.notifyDataSetChanged()
+                    } else {
+                        Toast.makeText(this@PostActivity, "삭제에 실패하였습니다.", Toast.LENGTH_SHORT).show()
+                        Log.e("태그", "댓글 삭제실패: " + response.errorBody()?.string())
+                    }
+                }
+            })
+    }
+
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -194,7 +233,7 @@ class PostActivity : BasicActivity() {
 
         //리사이클러뷰를 여기서 제대로 만들어줌.
         comentsAdapter = ComentsAdapter(
-            this, commentsList, server
+            this, commentsList, server, onCommentListener
         )
         coments_recyclerView.adapter = comentsAdapter    //리사이클러뷰의 어댑터에 내가 만든 어댑터 붙힘. 사용자가 게시글 지우거나 수정 등 해서 데이터 바뀌면 어댑터를 다른걸로 또 바꿔줘야함 ->notifyDataSetChanged()이용
 

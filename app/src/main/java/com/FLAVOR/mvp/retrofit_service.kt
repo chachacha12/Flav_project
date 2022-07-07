@@ -112,4 +112,9 @@ interface retrofit_service {
     @POST("app/comments/{content_id}")
     fun comment_upload_Request(@Path("content_id") content_id:String,@Field("kakao_id") kakao_id: String, @Field("content") content: String   ): Call<CommentUpload_response>
 
+    //댓글 삭제
+    @DELETE("app/comments/{comment_id}")
+    fun delete_comment_Request(@Path("comment_id") comment_id:Int):Call<Msg>
+
+
 }

@@ -3,7 +3,6 @@ package com.FLAVOR.mvp.feeds
 
 import android.app.Activity
 import android.app.AlertDialog
-import android.content.Intent
 import android.os.Build
 import android.util.Log
 import android.view.LayoutInflater
@@ -14,18 +13,11 @@ import android.widget.PopupMenu
 import androidx.annotation.RequiresApi
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.FLAVOR.mvp.R
 import com.FLAVOR.mvp.classes.Usersingleton
 import com.FLAVOR.mvp.retrofit_service
 import kotlinx.android.synthetic.main.item_coments.view.*
-import kotlinx.android.synthetic.main.item_post.view.*
-import kotlinx.android.synthetic.main.item_post.view.nameTextView
-import kotlinx.android.synthetic.main.item_post.view.photoImageVIew
-import kotlinx.android.synthetic.main.view_post.view.*
-import org.json.JSONArray
 import org.json.JSONObject
-import java.util.*
 import kotlin.collections.ArrayList
 
 //포스트액티비티에서 사용
@@ -33,7 +25,8 @@ import kotlin.collections.ArrayList
 class ComentsAdapter(
     var activity: Activity,
     private var myDataset:ArrayList<JSONObject>,
-    var server:retrofit_service
+    var server:retrofit_service,
+    var onCommentListener: OnCommentListener
 
 )  : RecyclerView.Adapter<ComentsAdapter.MainViewHolder>() {
 
@@ -56,6 +49,10 @@ class ComentsAdapter(
 
         val mainViewHolder = MainViewHolder(cardView)  //밑의 setOnClickListener에서 사용자가 선택한 특정뷰의 위치값 알아야해서 여기서 뷰홀더객체생성
 
+        //게시글의 toolbar(점3개)버튼을 클릭했을때 효과
+        cardView.comment_three_button.setOnClickListener {
+            showPopup(it, mainViewHolder.adapterPosition)      //post.xml을 띄워줌. 밑에 있음. 구글에 android menu검색하고 developers사이트들어가서 코드 가져옴
+        }                                                     //mainViewHolder.adapterPosition을 넣어주는 이유는 사용자가 선택한 특정위치의 게시글을 삭제or수정해야 하기에.
         return mainViewHolder
     }
 
@@ -72,22 +69,90 @@ class ComentsAdapter(
         var dateTextView = commmentsCardView.date_textView
          */
         val commentTextView = commmentsCardView.coments_TextView
-       // val comment_Jsonarray= myDataset.Comments   //댓글id , 카카오id, 내용 들어있는 jsonArray임
-       // val comment_Object = comment_Jsonarray.getJSONObject(position)  //하나하나의 댓글 JsonObject를 가져옴
 
         val contents = myDataset[position].getString("content")  //리스트에서 순서대로 댓글의 내용들을 하나씩 가져옴
         commentTextView.text = contents.toString()  //텍스트뷰에 댓글 뛰움
 
-       // val kakaoid = comment_Object.getString("kakao_id")  //댓글 쓴 사용자의 카카오id를 가져옴
-       // Log.e("태그","kakaoid:"+kakaoid)
+        val kakaoid = myDataset[position].getString("kakao_id")    //댓글 쓴 사용자의 카카오id를 가져옴
+        Log.e("태그","댓글의 kakaoid:"+kakaoid)
         //kakaoid얻은걸로 api호출해서 해당 유저의 프사, 이름 가져올거임....
 
     }
 
+    //점세게버튼 중 하나 눌렀을때 동작
+    //res안에 menu디렉토리 만든거에서, 그 안의 menu파일을 불러와서 보여주고, 클릭했을때 이벤트처리해줌
+    private fun showPopup(v: View, position: Int) {
+        val popup = PopupMenu(activity, v)
+
+        if(myDataset[position].getString("kakao_id") == Usersingleton.kakao_id!!){
+            //사용자가 선택한 댓글의 카카오id랑 내 카카오id랑 같을경우: 삭제가능
+            popup.setOnMenuItemClickListener {
+                return@setOnMenuItemClickListener when (it.itemId) {
+                    R.id.post -> {
+                        val builder = AlertDialog.Builder(activity)
+                        builder.setMessage("삭제하시겠습니까?")
+                        builder.setCancelable(false) // 다이얼로그 화면 밖 터치 방지
+                        builder.setPositiveButton(
+                            "예"
+                        ) { dialog, which ->
+                            //게시물 삭제로직
+                            onCommentListener.onDelete(position)  //인터페이스를 통해  PostActivity에서 삭제로직 작동시킬거임
+                        }
+                        builder.setNegativeButton(
+                            "아니요"
+                        ) { dialog, which -> }
+                        builder.show() // 다이얼로그 보이기
+                        true
+                    }
+                    else -> false
+                }
+            }
+            val inflater: MenuInflater = popup.menuInflater
+            inflater.inflate(R.menu.post, popup.menu)
+            popup.show()
+        }else{
+            //다를경우: 신고가능
+            popup.setOnMenuItemClickListener {
+                return@setOnMenuItemClickListener when (it.itemId) {
+                    R.id.report -> {
+                        val builder = AlertDialog.Builder(activity)
+                        builder.setMessage("신고하시겠습니까?")
+                        builder.setCancelable(false) // 다이얼로그 화면 밖 터치 방지
+                        builder.setPositiveButton(
+                            "예"
+                        ) { dialog, which ->
+                            //신고로직
+                            onCommentListener.onReport(position)
+                        }
+                        builder.setNegativeButton(
+                            "아니요"
+                        ) { dialog, which -> }
+                        builder.show() // 다이얼로그 보이기
+                        true
+                    }
+                    else -> false
+                }
+            }
+            val inflater: MenuInflater = popup.menuInflater
+            inflater.inflate(R.menu.report, popup.menu)
+            popup.show()
+        }
+    }  //showPopup
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     override fun getItemCount() =
         myDataset.size
-
-
-
 }

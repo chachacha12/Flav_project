@@ -61,10 +61,10 @@
                     android:orientation="horizontal">
 
                     <Button
-                        android:id="@+id/FriendAdd_button"
+                        android:id="@+id/comment_three_button"
                         android:layout_width="30dp"
-                        android:layout_height="25dp"
 
+                        android:layout_height="25dp"
                         android:background="@drawable/threepoint"
                         android:gravity="center"
                         android:lineSpacingExtra="6sp"

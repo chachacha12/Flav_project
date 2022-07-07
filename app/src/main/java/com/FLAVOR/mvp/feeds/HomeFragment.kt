@@ -257,7 +257,7 @@ class HomeFragment(var server: retrofit_service, var floating_anim:Boolean) : Fr
             //s3와 rds삭제로직
             choosen_contents_id = contentsList?.get(position)?.contents_id!!  //사용자가 선택한 게시물의 id값
             choosen_filename = contentsList?.get(position)?.filename.toString()  //사용자가 선택한 게시물의 파일네임값
-            storageDelete(choosen_filename!!)  //s3삭제로직
+            storageDelete(choosen_filename)  //s3삭제로직
         }
         override fun onAppointment(position: Int) {
             //밥약속 신청로직

@@ -5,7 +5,6 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Build
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuInflater
 import android.view.View
@@ -138,7 +137,7 @@ class HomeAdapter(
             //사용자가 선택한 게시물의 카카오id랑 내 카카오id랑 같을경우 (둘다 카카오에서 받아온 값)
             popup.setOnMenuItemClickListener {
                 return@setOnMenuItemClickListener when (it.itemId) {
-                    R.id.delete -> {
+                    R.id.post -> {
                         var builder = AlertDialog.Builder(activity)
                         builder.setMessage("게시물을 삭제할까요?")
                         builder.setCancelable(false) // 다이얼로그 화면 밖 터치 방지
