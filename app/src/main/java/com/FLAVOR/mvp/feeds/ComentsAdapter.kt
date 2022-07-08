@@ -1,6 +1,7 @@
 package com.FLAVOR.mvp.feeds
 
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
 import android.os.Build
@@ -18,6 +19,9 @@ import com.FLAVOR.mvp.classes.Usersingleton
 import com.FLAVOR.mvp.retrofit_service
 import kotlinx.android.synthetic.main.item_coments.view.*
 import org.json.JSONObject
+import java.text.SimpleDateFormat
+import java.time.Instant
+import java.util.*
 import kotlin.collections.ArrayList
 
 //포스트액티비티에서 사용
@@ -58,10 +62,10 @@ class ComentsAdapter(
 
     // 여기서 리사이클러뷰의 리스트 하나하나 가리키는 뷰홀더와 내가 주는 데이터가 연결되어짐. 즉 리사이클러뷰 화면에 띄워짐
      //액티비티에서 게시글 업데이트 해주려고 mainAdapter.notifyDataSetChanged() 하면 이 함수만 작동함.
+    @SuppressLint("SimpleDateFormat")
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: MainViewHolder, position: Int) {
         val safePosition: Int = holder.adapterPosition
-
         val commmentsCardView = holder.cardView
         /*
         var photoimageView = commmentsCardView.photoImageVIew
@@ -69,10 +73,23 @@ class ComentsAdapter(
         var dateTextView = commmentsCardView.date_textView
          */
         val commentTextView = commmentsCardView.coments_TextView
+        val dateTextView = commmentsCardView.date_textView
 
+        //댓글내용
         val contents = myDataset[position].getString("content")  //리스트에서 순서대로 댓글의 내용들을 하나씩 가져옴
         commentTextView.text = contents.toString()  //텍스트뷰에 댓글 뛰움
 
+        //작성일    (String날짜값 -> date타입변환 -> 원하는 형식 포맷 -> String타입으로 변환)
+        val date_string = myDataset[position].getString("createdAt")  //작성일을 가져옴
+        val instant = Instant.parse(date_string)  //date_string가 string날짜값임.
+        val date = Date.from(instant)   //기존 string날짜값을 date타입으로 만듬
+        val simpleDateFormat = SimpleDateFormat("MM/dd HH:mm")   //yyyy-MM-dd HH:mm
+        val cal = Calendar.getInstance()
+        cal.time = date
+        val createdAt: String = simpleDateFormat.format(cal.time)  // 원하는대로 포맷된 string날짜값임
+        dateTextView.text= createdAt  //작성일텍스트뷰안에 포맷된 String날짜값을 넣음
+
+        //유저정보
         val kakaoid = myDataset[position].getString("kakao_id")    //댓글 쓴 사용자의 카카오id를 가져옴
         Log.e("태그","댓글의 kakaoid:"+kakaoid)
         //kakaoid얻은걸로 api호출해서 해당 유저의 프사, 이름 가져올거임....

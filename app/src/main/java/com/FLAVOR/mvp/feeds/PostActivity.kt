@@ -26,7 +26,8 @@ import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.util.ArrayList
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 class PostActivity : BasicActivity() {
@@ -47,9 +48,10 @@ class PostActivity : BasicActivity() {
         override fun onDelete(position: Int) {
             choosen_comment_id = commentsList.get(position).getString("id").toInt()   //사용자가 선택한 게시물의 id값
             Log.e("태그","choosen_comment_id:"+choosen_comment_id)
+
             //삭제로직
-            commentsList.removeAt(position)  //클라이언트단에서의 댓글리스트상에서도 삭제해줌
-            commentDelete(choosen_comment_id)
+            commentsList.removeAt(position)  //클라이언트단에서의 댓글리스트상에서 삭제해줌
+            commentDelete(choosen_comment_id)  //댓글삭제 api호출
         }
         override fun onReport(position: Int) {
             //신고로직
@@ -116,7 +118,7 @@ class PostActivity : BasicActivity() {
         var comments_json = JSONArray(comments)
         contents!!.Comments =comments_json        //게시물에 댓글jsonarray저장
 
-        commentsList = ArrayList()  //어댑터에 보내주는 댓글리스트 초기화
+        commentsList = ArrayList()  //어댑터에 보내줄 댓글리스트 초기화
         commentsList.clear()
         //댓글 JsonArray를 하나하나 돌며 Jsonobject들을 댓글리스트에 저장해줌. 어댑터로 보내서 리사이클러뷰 만들거임
         var i=0
@@ -163,7 +165,7 @@ class PostActivity : BasicActivity() {
                 Toast.makeText(this@PostActivity, "댓글 업로드 실패", Toast.LENGTH_SHORT).show()
             }
 
-            @SuppressLint("NotifyDataSetChanged")
+            @SuppressLint("NotifyDataSetChanged", "SimpleDateFormat")
             override fun onResponse(
                 call: Call<CommentUpload_response>,
                 response: Response<CommentUpload_response>
@@ -173,18 +175,26 @@ class PostActivity : BasicActivity() {
                     Log.e("태그", "댓글업로드 통신 성공  ,msg: " + response.body()?.toString())
 
                     //댓글 추가하자마자 화면에 보여주기위한 작업.
-                    var new_comment = JSONObject()
+                    val new_comment = JSONObject()
                     new_comment.put("kakao_id",Usersingleton.kakao_id)
                     new_comment.put("content", wirtecomments_editText.text.toString())
-                    Log.e("태그", "새로추가한 댓글 ,kakao_id와 content : " + kakao_id+", "+content)
+                    new_comment.put("id", response.body()?.comment_id)    //응답으로받은 댓글의 id값을 클라이언트단의 commentsList에도 저장. 서버 안거치고 바로삭제도 가능하게 하기위함
+
+                    //현재시간을 구해서 임시로 댓글제이슨객체에 넣어줌 - 바로 화면상에 보여주기위함
+                    val now = System.currentTimeMillis()
+                    val date = Date(now)
+                    val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'") //서버에도 이렇게 저장되어있음..이걸 comentsAdapter에서 포맷해줄거임
+                    val getTime = dateFormat.format(date)
+                    new_comment.put("createdAt", getTime.toString())  //현재시간을 반환해주는 함수로 작성일 임시로 넣어줌
+
                     commentsList.add(new_comment)
+                    Log.e("태그","새로 업로드한 댓글 new_comment:  "+new_comment)
 
                     //리사이클러뷰 데이터 업데이트된걸 알려주고 어댑터 다시 붙여줌
                     comentsAdapter?.notifyDataSetChanged()
-                    coments_recyclerView.adapter = comentsAdapter
+                    //coments_recyclerView.adapter = comentsAdapter
 
                     wirtecomments_editText.setText(null)  //적어둔 값을 지워줌
-
                     Toast.makeText(this@PostActivity, "댓글 업로드 완료", Toast.LENGTH_SHORT).show()
                 } else {
                     Log.e(
@@ -236,9 +246,7 @@ class PostActivity : BasicActivity() {
             this, commentsList, server, onCommentListener
         )
         coments_recyclerView.adapter = comentsAdapter    //리사이클러뷰의 어댑터에 내가 만든 어댑터 붙힘. 사용자가 게시글 지우거나 수정 등 해서 데이터 바뀌면 어댑터를 다른걸로 또 바꿔줘야함 ->notifyDataSetChanged()이용
-
     }
-
 
 
 
