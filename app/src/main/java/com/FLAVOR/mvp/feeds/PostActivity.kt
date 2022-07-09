@@ -180,12 +180,15 @@ class PostActivity : BasicActivity() {
                     new_comment.put("content", wirtecomments_editText.text.toString())
                     new_comment.put("id", response.body()?.comment_id)    //응답으로받은 댓글의 id값을 클라이언트단의 commentsList에도 저장. 서버 안거치고 바로삭제도 가능하게 하기위함
 
+
+
                     //현재시간을 구해서 임시로 댓글제이슨객체에 넣어줌 - 바로 화면상에 보여주기위함
-                    val now = System.currentTimeMillis()
-                    val date = Date(now)
-                    val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'") //서버에도 이렇게 저장되어있음..이걸 comentsAdapter에서 포맷해줄거임
+                    var date = Calendar.getInstance().time
+                    val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'.000Z'") //서버에도 이렇게 저장되어있음..이걸 comentsAdapter에서 포맷해줄거임 /yyyy-MM-dd'T'HH:mm:ss.SSSz
+                    dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"))  //이렇게해야 시간대 9시간 더해져서 나오는 문제해결
                     val getTime = dateFormat.format(date)
-                    new_comment.put("createdAt", getTime.toString())  //현재시간을 반환해주는 함수로 작성일 임시로 넣어줌
+                    new_comment.put("createdAt", getTime)  //현재시간을 반환해주는 함수로 작성일 임시로 넣어줌
+                    Log.e("태그","현재시간: "+getTime)
 
                     commentsList.add(new_comment)
                     Log.e("태그","새로 업로드한 댓글 new_comment:  "+new_comment)
