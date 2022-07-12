@@ -83,20 +83,29 @@
             android:id="@+id/coments_TextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="7dp"
+            android:layout_marginRight="10dp"
             android:text="댓글내용" />
 
         <TextView
             android:id="@+id/date_textView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="7dp"
+            android:layout_marginTop="7dp"
+            android:layout_marginRight="10dp"
             android:text="2022-3-30"
-            android:textSize="10sp" />
+            android:textColor="#9F9E9E"
+            android:textSize="11sp" />
 
         <TextView
             android:id="@+id/textView9"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="#BAB9B9"
+            android:layout_marginLeft="2dp"
+            android:layout_marginTop="7dp"
+            android:layout_marginRight="2dp"
+            android:background="#ECEBEB"
             android:text="TextView"
             android:textSize="10sp" />
 

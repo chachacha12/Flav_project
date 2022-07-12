@@ -17,8 +17,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.FLAVOR.mvp.R
 import com.FLAVOR.mvp.classes.Usersingleton
 import com.FLAVOR.mvp.retrofit_service
+import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.item_coments.view.*
+import org.json.JSONException
 import org.json.JSONObject
+import retrofit2.Response.error
+import java.lang.reflect.InvocationTargetException
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.util.*
@@ -67,11 +71,9 @@ class ComentsAdapter(
     override fun onBindViewHolder(holder: MainViewHolder, position: Int) {
         val safePosition: Int = holder.adapterPosition
         val commmentsCardView = holder.cardView
-        /*
+
         var photoimageView = commmentsCardView.photoImageVIew
         var usernameTextView = commmentsCardView.nameTextView
-        var dateTextView = commmentsCardView.date_textView
-         */
         val commentTextView = commmentsCardView.coments_TextView
         val dateTextView = commmentsCardView.date_textView
 
@@ -89,85 +91,87 @@ class ComentsAdapter(
         val createdAt: String = simpleDateFormat.format(cal.time)  // 원하는대로 포맷된 string날짜값임
         dateTextView.text= createdAt  //작성일텍스트뷰안에 포맷된 String날짜값을 넣음
 
-        //유저정보
-        val kakaoid = myDataset[position].getString("kakao_id")    //댓글 쓴 사용자의 카카오id를 가져옴
-        Log.e("태그","댓글의 kakaoid:"+kakaoid)
-        //kakaoid얻은걸로 api호출해서 해당 유저의 프사, 이름 가져올거임....
+        //유저이름
+        val username = myDataset[position].getString("username")    //댓글 쓴 사용자 이름 가져옴
+        usernameTextView.text = username
+
+        //유저프사
+        val userprofile = myDataset[position].getString("profileimg_path")    //프사가져옴
+        if(userprofile == "null"){  //프사없을땐 기본이미지로
+            photoimageView.setImageResource(R.drawable.ic_account_circle_black_24dp)
+        }else{
+            Glide.with(activity).load(userprofile).override(200).thumbnail(0.1f)
+                .into(photoimageView)
+        }
 
     }
 
+
     //점세게버튼 중 하나 눌렀을때 동작
     //res안에 menu디렉토리 만든거에서, 그 안의 menu파일을 불러와서 보여주고, 클릭했을때 이벤트처리해줌
+    @SuppressLint("LongLogTag")
     private fun showPopup(v: View, position: Int) {
         val popup = PopupMenu(activity, v)
 
-        if(myDataset[position].getString("kakao_id") == Usersingleton.kakao_id!!){
-            //사용자가 선택한 댓글의 카카오id랑 내 카카오id랑 같을경우: 삭제가능
-            popup.setOnMenuItemClickListener {
-                return@setOnMenuItemClickListener when (it.itemId) {
-                    R.id.post -> {
-                        val builder = AlertDialog.Builder(activity)
-                        builder.setMessage("삭제하시겠습니까?")
-                        builder.setCancelable(false) // 다이얼로그 화면 밖 터치 방지
-                        builder.setPositiveButton(
-                            "예"
-                        ) { dialog, which ->
-                            //게시물 삭제로직
-                            onCommentListener.onDelete(position)  //인터페이스를 통해  PostActivity에서 삭제로직 작동시킬거임
+        try {
+            if(myDataset[position].getString("kakao_id") == Usersingleton.kakao_id!!){
+                //사용자가 선택한 댓글의 카카오id랑 내 카카오id랑 같을경우: 삭제가능
+                popup.setOnMenuItemClickListener {
+                    return@setOnMenuItemClickListener when (it.itemId) {
+                        R.id.post -> {
+                            val builder = AlertDialog.Builder(activity)
+                            builder.setMessage("삭제하시겠습니까?")
+                            builder.setCancelable(false) // 다이얼로그 화면 밖 터치 방지
+                            builder.setPositiveButton(
+                                "예"
+                            ) { dialog, which ->
+                                //게시물 삭제로직
+                                onCommentListener.onDelete(position)  //인터페이스를 통해  PostActivity에서 삭제로직 작동시킬거임
+                            }
+                            builder.setNegativeButton(
+                                "아니요"
+                            ) { dialog, which -> }
+                            builder.show() // 다이얼로그 보이기
+                            true
                         }
-                        builder.setNegativeButton(
-                            "아니요"
-                        ) { dialog, which -> }
-                        builder.show() // 다이얼로그 보이기
-                        true
+                        else -> false
                     }
-                    else -> false
                 }
-            }
-            val inflater: MenuInflater = popup.menuInflater
-            inflater.inflate(R.menu.post, popup.menu)
-            popup.show()
-        }else{
-            //다를경우: 신고가능
-            popup.setOnMenuItemClickListener {
-                return@setOnMenuItemClickListener when (it.itemId) {
-                    R.id.report -> {
-                        val builder = AlertDialog.Builder(activity)
-                        builder.setMessage("신고하시겠습니까?")
-                        builder.setCancelable(false) // 다이얼로그 화면 밖 터치 방지
-                        builder.setPositiveButton(
-                            "예"
-                        ) { dialog, which ->
-                            //신고로직
-                            onCommentListener.onReport(position)
+                val inflater: MenuInflater = popup.menuInflater
+                inflater.inflate(R.menu.post, popup.menu)
+                popup.show()
+            }else{
+                //다를경우: 신고가능
+                popup.setOnMenuItemClickListener {
+                    return@setOnMenuItemClickListener when (it.itemId) {
+                        R.id.report -> {
+                            val builder = AlertDialog.Builder(activity)
+                            builder.setMessage("신고하시겠습니까?")
+                            builder.setCancelable(false) // 다이얼로그 화면 밖 터치 방지
+                            builder.setPositiveButton(
+                                "예"
+                            ) { dialog, which ->
+                                //신고로직
+                                onCommentListener.onReport(position)
+                            }
+                            builder.setNegativeButton(
+                                "아니요"
+                            ) { dialog, which -> }
+                            builder.show() // 다이얼로그 보이기
+                            true
                         }
-                        builder.setNegativeButton(
-                            "아니요"
-                        ) { dialog, which -> }
-                        builder.show() // 다이얼로그 보이기
-                        true
+                        else -> false
                     }
-                    else -> false
                 }
+                val inflater: MenuInflater = popup.menuInflater
+                inflater.inflate(R.menu.report, popup.menu)
+                popup.show()
             }
-            val inflater: MenuInflater = popup.menuInflater
-            inflater.inflate(R.menu.report, popup.menu)
-            popup.show()
+        }catch (e:JSONException){
+            Log.e("태그:","JSONException: "+e.toString())
         }
+
     }  //showPopup
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     override fun getItemCount() =
