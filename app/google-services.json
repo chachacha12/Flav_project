@@ -1,33 +1,33 @@
 {
   "project_info": {
-    "project_number": "760876372201",
-    "project_id": "flavmvp-9fe0d",
-    "storage_bucket": "flavmvp-9fe0d.appspot.com"
+    "project_number": "1075705166032",
+    "project_id": "foowinkle",
+    "storage_bucket": "foowinkle.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:760876372201:android:17d3c7ce13e5474a952078",
+        "mobilesdk_app_id": "1:1075705166032:android:ccb437f16584d84d1b06d5",
         "android_client_info": {
           "package_name": "com.FLAVOR.mvp"
         }
       },
       "oauth_client": [
         {
-          "client_id": "760876372201-9qtkjejnqk6bkmaqrq29isote85hmjqu.apps.googleusercontent.com",
+          "client_id": "1075705166032-q94cjpr6ttqmklfst4vblnp5c5kju0j1.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyD3vnMxFbx-umP8Jk00hLpPevFJ5TjOKjs"
+          "current_key": "AIzaSyBpA69SKc96UGN3ePpdQFo3k6LzsyuZfEo"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "760876372201-9qtkjejnqk6bkmaqrq29isote85hmjqu.apps.googleusercontent.com",
+              "client_id": "1075705166032-q94cjpr6ttqmklfst4vblnp5c5kju0j1.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

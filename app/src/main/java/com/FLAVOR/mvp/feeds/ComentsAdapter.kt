@@ -55,17 +55,37 @@ class ComentsAdapter(
             false
         ) as CardView   //item_coments 있는 뷰들에 접근가능하게 해줌.  inflate에 들어간 레이아웃은 row파일과 같은거임.
 
-        val mainViewHolder = MainViewHolder(cardView)  //밑의 setOnClickListener에서 사용자가 선택한 특정뷰의 위치값 알아야해서 여기서 뷰홀더객체생성
+        val mainViewHolder =
+            MainViewHolder(cardView)  //밑의 setOnClickListener에서 사용자가 선택한 특정뷰의 위치값 알아야해서 여기서 뷰홀더객체생성
 
         //게시글의 toolbar(점3개)버튼을 클릭했을때 효과
-        cardView.comment_three_button.setOnClickListener {
-            showPopup(it, mainViewHolder.adapterPosition)      //post.xml을 띄워줌. 밑에 있음. 구글에 android menu검색하고 developers사이트들어가서 코드 가져옴
+        cardView.comment_delete_button.setOnClickListener {
+            val builder = AlertDialog.Builder(activity)
+            builder.setMessage("삭제하시겠습니까?")
+            builder.setCancelable(false) // 다이얼로그 화면 밖 터치 방지
+            builder.setPositiveButton(
+                "예"
+            ) { dialog, which ->
+                //게시물 삭제로직
+                onCommentListener.onDelete(mainViewHolder.adapterPosition)  //인터페이스를 통해  PostActivity에서 삭제로직 작동시킬거임
+            }
+            builder.setNegativeButton(
+                "아니요"
+            ) { dialog, which -> }
+            builder.show()
+
+            /*
+            showPopup(  //원래 삭제버튼아닌, 점세개버튼이었을때 동작로직
+                it,
+                mainViewHolder.adapterPosition
+            )      //post.xml을 띄워줌. 밑에 있음. 구글에 android menu검색하고 developers사이트들어가서 코드 가져옴
+             */
         }                                                     //mainViewHolder.adapterPosition을 넣어주는 이유는 사용자가 선택한 특정위치의 게시글을 삭제or수정해야 하기에.
         return mainViewHolder
     }
 
     // 여기서 리사이클러뷰의 리스트 하나하나 가리키는 뷰홀더와 내가 주는 데이터가 연결되어짐. 즉 리사이클러뷰 화면에 띄워짐
-     //액티비티에서 게시글 업데이트 해주려고 mainAdapter.notifyDataSetChanged() 하면 이 함수만 작동함.
+    //액티비티에서 게시글 업데이트 해주려고 mainAdapter.notifyDataSetChanged() 하면 이 함수만 작동함.
     @SuppressLint("SimpleDateFormat")
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: MainViewHolder, position: Int) {
@@ -76,6 +96,7 @@ class ComentsAdapter(
         var usernameTextView = commmentsCardView.nameTextView
         val commentTextView = commmentsCardView.coments_TextView
         val dateTextView = commmentsCardView.date_textView
+        val delete_button = commmentsCardView.comment_delete_button
 
         //댓글내용
         val contents = myDataset[position].getString("content")  //리스트에서 순서대로 댓글의 내용들을 하나씩 가져옴
@@ -89,7 +110,7 @@ class ComentsAdapter(
         val cal = Calendar.getInstance()
         cal.time = date
         val createdAt: String = simpleDateFormat.format(cal.time)  // 원하는대로 포맷된 string날짜값임
-        dateTextView.text= createdAt  //작성일텍스트뷰안에 포맷된 String날짜값을 넣음
+        dateTextView.text = createdAt  //작성일텍스트뷰안에 포맷된 String날짜값을 넣음
 
         //유저이름
         val username = myDataset[position].getString("username")    //댓글 쓴 사용자 이름 가져옴
@@ -97,24 +118,34 @@ class ComentsAdapter(
 
         //유저프사
         val userprofile = myDataset[position].getString("profileimg_path")    //프사가져옴
-        if(userprofile == "null"){  //프사없을땐 기본이미지로
+        if (userprofile == "null") {  //프사없을땐 기본이미지로
             photoimageView.setImageResource(R.drawable.ic_account_circle_black_24dp)
-        }else{
+        } else {
             Glide.with(activity).load(userprofile).override(200).thumbnail(0.1f)
                 .into(photoimageView)
         }
 
+        //내가 쓴 댓글에만 삭제버튼 띄우기
+        if (myDataset[position].getString("kakao_id") == Usersingleton.kakao_id!!) {
+            delete_button.visibility = View.VISIBLE
+        }else{
+            delete_button.visibility = View.GONE
+        }
+
+
     }
 
 
-    //점세게버튼 중 하나 눌렀을때 동작
+
+/*
+  //삭제버튼 눌렀을때 동작
     //res안에 menu디렉토리 만든거에서, 그 안의 menu파일을 불러와서 보여주고, 클릭했을때 이벤트처리해줌
     @SuppressLint("LongLogTag")
     private fun showPopup(v: View, position: Int) {
         val popup = PopupMenu(activity, v)
 
         try {
-            if(myDataset[position].getString("kakao_id") == Usersingleton.kakao_id!!){
+            if (myDataset[position].getString("kakao_id") == Usersingleton.kakao_id!!) {
                 //사용자가 선택한 댓글의 카카오id랑 내 카카오id랑 같을경우: 삭제가능
                 popup.setOnMenuItemClickListener {
                     return@setOnMenuItemClickListener when (it.itemId) {
@@ -140,7 +171,7 @@ class ComentsAdapter(
                 val inflater: MenuInflater = popup.menuInflater
                 inflater.inflate(R.menu.post, popup.menu)
                 popup.show()
-            }else{
+            } else {
                 //다를경우: 신고가능
                 popup.setOnMenuItemClickListener {
                     return@setOnMenuItemClickListener when (it.itemId) {
@@ -167,12 +198,13 @@ class ComentsAdapter(
                 inflater.inflate(R.menu.report, popup.menu)
                 popup.show()
             }
-        }catch (e:JSONException){
-            Log.e("태그:","JSONException: "+e.toString())
+        } catch (e: JSONException) {
+            Log.e("태그:", "JSONException: " + e.toString())
         }
 
     }  //showPopup
 
+ */
 
     override fun getItemCount() =
         myDataset.size

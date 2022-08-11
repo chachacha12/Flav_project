@@ -160,7 +160,7 @@ class PostActivity : BasicActivity() {
                     coments_recyclerView.adapter = comentsAdapter
 
                     wirtecomments_editText.setText(null)  //적어둔 값을 지워줌
-                    Toast.makeText(this@PostActivity, "댓글 업로드 완료", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@PostActivity, "입력되었습니다.", Toast.LENGTH_SHORT).show()
                 } else {
                     Log.e(
                         "태그",
@@ -201,7 +201,7 @@ class PostActivity : BasicActivity() {
                 @SuppressLint("NotifyDataSetChanged")
                 override fun onResponse(call: Call<Msg>, response: Response<Msg>) {
                     if (response.isSuccessful) {
-                        Toast.makeText(this@PostActivity, "댓글을 삭제했습니다.", Toast.LENGTH_SHORT).show()
+                        //Toast.makeText(this@PostActivity, "댓글을 삭제했습니다.", Toast.LENGTH_SHORT).show()
                         Log.e("태그", "댓글 삭제성공: " + response.body()?.msg)
                         comentsAdapter?.notifyDataSetChanged()
                     } else {

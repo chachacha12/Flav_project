@@ -51,7 +51,7 @@
                     android:lineSpacingExtra="6sp"
                     android:textColor="#222222"
                     android:textSize="14sp"
-                    android:textStyle="normal"
+                    android:textStyle="normal|bold"
                     tools:text="유저이름" />
 
                 <LinearLayout
@@ -61,16 +61,16 @@
                     android:orientation="horizontal">
 
                     <Button
-                        android:id="@+id/comment_three_button"
-                        android:layout_width="30dp"
+                        android:id="@+id/comment_delete_button"
 
+                        android:layout_width="30dp"
                         android:layout_height="25dp"
-                        android:background="@drawable/threepoint"
+                        android:background='#00ff0000'
                         android:gravity="center"
                         android:lineSpacingExtra="6sp"
-                        android:textColor="#00aded"
-                        android:textSize="13sp"
-                        android:textStyle="bold" />
+                        android:text="삭제"
+                        android:textColor="#9F9E9E"
+                        android:textSize="13sp" />
 
                     />
                 </LinearLayout>
@@ -85,7 +85,8 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="7dp"
             android:layout_marginRight="10dp"
-            android:text="댓글내용" />
+            android:text="댓글내용"
+            android:textColor="#434343" />
 
         <TextView
             android:id="@+id/date_textView"
