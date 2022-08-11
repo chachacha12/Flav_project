@@ -69,7 +69,7 @@
                         android:gravity="center"
                         android:lineSpacingExtra="6sp"
                         android:text="삭제"
-                        android:textColor="#9F9E9E"
+                        android:textColor="#BFBFBF"
                         android:textSize="13sp" />
 
                     />
