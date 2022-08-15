@@ -12,8 +12,12 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <!-- ReadContentsView파일의 이미지 check코드안에 들어갈 url 개발용 배포용 분리 -->
-    <string name="debug_s3_ContainsUrl">https://foowinkle.s3.ap-northeast-2.amazonaws.com/</string>
-    <string name="release_s3_ContainsUrl">https://flavbucket.s3.ap-northeast-2.amazonaws.com/</string>
+    <string name="debug_s3_ContainsUrl">https://foowinkle-dev-bucket.s3.ap-northeast-2.amazonaws.com/ </string>
+    <string name="release_s3_ContainsUrl">https://foowinkle-bucket.s3.ap-northeast-2.amazonaws.com/ </string>
+
+
+    <!-- https://foowinkle.s3.ap-northeast-2.amazonaws.com/    이전에 버킷 디버그 주소  -->
+    <!--  https://flavbucket.s3.ap-northeast-2.amazonaws.com/   이전에 버킷 릴리즈 주소-->
 
     <!-- BasicAcitivty파일의 레트로핏 baseUrl 코드안에 들어갈 url 개발용 배포용 분리 -->
     <string name="debug_baseUrl">http://localhost:3000/</string>
