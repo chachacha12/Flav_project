@@ -8,10 +8,12 @@
         <entry key="app/src/main/res/drawable/ic_account_circle_black_24dp.xml" value="0.2015" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.18931159420289856" />
         <entry key="app/src/main/res/layout/activity_post.xml" value="0.335" />
+        <entry key="app/src/main/res/layout/activity_write_post.xml" value="0.20833333333333334" />
         <entry key="app/src/main/res/layout/fragment_home.xml" value="0.18931159420289856" />
         <entry key="app/src/main/res/layout/fragment_map.xml" value="0.2115036231884058" />
         <entry key="app/src/main/res/layout/item_coments.xml" value="0.335" />
         <entry key="app/src/main/res/layout/item_post.xml" value="0.18931159420289856" />
+        <entry key="app/src/main/res/layout/view_contents_image.xml" value="0.20833333333333334" />
         <entry key="app/src/main/res/layout/view_post.xml" value="0.375" />
         <entry key="app/src/main/res/menu/appointment.xml" value="0.25" />
         <entry key="app/src/main/res/menu/bottom_navigation.xml" value="0.25" />

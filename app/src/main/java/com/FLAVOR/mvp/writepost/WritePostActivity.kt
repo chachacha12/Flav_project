@@ -152,7 +152,6 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
             storageUpload()                     //이걸 누르면 파이어베이스로 게시글 쓴거 저장됨
         }
 
-
         buttonsBackgroundlayout =
             buttonsBackgroundLayout    //게시글 올린 이미지 삭제or수정 창 끄려고할때 .  //전역변수를 초기화해줌.
         buttonsBackgroundlayout.setOnClickListener {

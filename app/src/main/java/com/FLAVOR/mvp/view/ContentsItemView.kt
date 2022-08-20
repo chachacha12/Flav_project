@@ -9,7 +9,7 @@ import android.widget.LinearLayout
 import androidx.annotation.Nullable
 import com.bumptech.glide.Glide
 
-
+//게시물 작성창에서 갤러리에서 선택한 이미지를 담아서 보여줄 객체
 class ContentsItemView : LinearLayout {
     private var imageView: ImageView? = null
     //private var editText: EditText? = null
@@ -32,6 +32,7 @@ class ContentsItemView : LinearLayout {
             ViewGroup.LayoutParams.WRAP_CONTENT
         )
         orientation = VERTICAL
+        //view_contents_image.xml에 있는 이미지뷰에서 게시물작성창의 이미지 크기 스케일을 정함
         val layoutInflater =
             context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         addView(layoutInflater.inflate(com.FLAVOR.mvp.R.layout.view_contents_image , this, false))

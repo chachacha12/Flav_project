@@ -6,6 +6,7 @@ import android.app.Activity
 import android.os.Build
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -44,9 +45,13 @@ class FollowerAdapter(
 
         val mainViewHolder = MainViewHolder(cardView)  //밑의 setOnClickListener에서 사용자가 선택한 특정뷰의 위치값 알아야해서 여기서 뷰홀더객체생성
 
+        cardView.FriendDelete_button.visibility = View.GONE //팔로워 목록에선 삭제버튼 숨기기
+
+        /*
         cardView.FriendDelete_button.setOnClickListener{
             Toast.makeText(activity,"나를 믿어주는 친구는 삭제할 수 없습니다.",Toast.LENGTH_SHORT).show()
         }
+         */
 
         //mainViewHolder.adapterPosition을 넣어주는 이유는 사용자가 선택한 특정위치의 게시글을 삭제or수정해야 하기에.
         return mainViewHolder
@@ -57,17 +62,17 @@ class FollowerAdapter(
      //액티비티에서 게시글 업데이트 해주려고 mainAdapter.notifyDataSetChanged() 하면 이 함수만 작동함.
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: MainViewHolder, position: Int) {
-        Log.e("태그","팔로잉 목록 만드는 onbindView 시작")
+        Log.e("태그","팔로워 목록 만드는 onbindView 시작")
 
         val safePosition: Int = holder.adapterPosition
-        var cardView = holder.cardView
-        var  userinfo = myDataset[safePosition]
+        val cardView = holder.cardView
+        val  userinfo = myDataset[safePosition]
 
         //받아온 유저이름, 프로필 넣어주기
-        var nameTextView = cardView.nameTextView
+        val nameTextView = cardView.nameTextView
         nameTextView.text =   userinfo.name
-        var profile_photo_imageView = cardView.photoImageVIew
-        var photoUrl = userinfo.profileimage
+        val profile_photo_imageView = cardView.photoImageVIew
+        val photoUrl = userinfo.profileimage
        if(photoUrl == "null"){  //프사없을땐 기본이미지로
            profile_photo_imageView.setImageResource(R.drawable.ic_account_circle_black_24dp)
        }else{
