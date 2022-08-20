@@ -21,7 +21,6 @@ import java.text.SimpleDateFormat
 import java.time.Instant
 import java.util.*
 
-
 class ReadContentsVIew : LinearLayout {
     private var mycontext: Context? = null   //그냥 context라고 변수명을 지으면 메소드명(getcontext() )과 겹쳐서 에러나므로 mycontext라고 지어줌
     private var moreIndex = -1
@@ -99,11 +98,11 @@ class ReadContentsVIew : LinearLayout {
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.MATCH_PARENT
         )        //생성되는 음식사진 이미지뷰의 길이는 여기서 정해줌
-
+ 
         //받아온 이미지 넣어주기
         val photoUrl = contents.filepath  //컨텐츠에 있는 사진경로값
         if (Patterns.WEB_URL.matcher(photoUrl)
-                .matches() && photoUrl.contains( resources.getString(R.string.release_s3_ContainsUrl))) {  //배포용 url값:  release_s3_ContainsUrl /  개발용 url값: debug_s3_ContainsUrl
+                .matches() && photoUrl.contains(resources.getString(R.string.release_s3_ContainsUrl))) {  //배포용 url값:  release_s3_ContainsUrl /  개발용 url값: debug_s3_ContainsUrl
             val imageView = ImageView(context)
             imageView.layoutParams = layoutParams
             imageView.adjustViewBounds = true
