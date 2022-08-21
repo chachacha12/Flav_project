@@ -134,8 +134,6 @@ class PostActivity : BasicActivity() {
                 response: Response<CommentUpload_response>
             ) {
                 if (response.isSuccessful) {
-                    Log.e("태그", "댓글업로드 통신성공 ,msg: " + response.body()?.msg)
-                    Log.e("태그", "댓글업로드 통신 성공  ,msg: " + response.body()?.toString())
 
                     //댓글 추가하자마자 화면에 보여주기위한 작업.
                     val new_comment = JSONObject()
@@ -153,7 +151,6 @@ class PostActivity : BasicActivity() {
                     new_comment.put("createdAt", getTime)  //현재시간을 반환해주는 함수로 작성일 임시로 넣어줌
 
                     commentsList.add(new_comment)
-                    Log.e("태그","새로 업로드한 댓글 new_comment:  "+new_comment)
 
                     //리사이클러뷰 데이터 업데이트된걸 알려주고 어댑터 다시 붙여줌
                     comentsAdapter?.notifyDataSetChanged()
@@ -166,11 +163,8 @@ class PostActivity : BasicActivity() {
                         "태그",
                         "댓글업로드 서버접근했지만 실패: response.errorBody()?.string()" + response.errorBody().toString()
                     )
-                    Log.e(
-                        "태그",
-                        "  response.message()" + response.message()
-                    )
-                    Toast.makeText(this@PostActivity, "댓글 업로드 실패", Toast.LENGTH_SHORT).show()
+
+                    //Toast.makeText(this@PostActivity, "댓글 업로드 실패", Toast.LENGTH_SHORT).show()
                 }
             }
         })
