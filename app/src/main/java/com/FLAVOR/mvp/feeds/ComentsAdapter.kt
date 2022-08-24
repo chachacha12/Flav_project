@@ -60,6 +60,8 @@ class ComentsAdapter(
 
         //게시글의 toolbar(점3개)버튼을 클릭했을때 효과
         cardView.comment_delete_button.setOnClickListener {
+
+            /*
             val builder = AlertDialog.Builder(activity)
             builder.setMessage("삭제하시겠습니까?")
             builder.setCancelable(false) // 다이얼로그 화면 밖 터치 방지
@@ -74,12 +76,13 @@ class ComentsAdapter(
             ) { dialog, which -> }
             builder.show()
 
-            /*
+             */
+
             showPopup(  //원래 삭제버튼아닌, 점세개버튼이었을때 동작로직
                 it,
                 mainViewHolder.adapterPosition
             )      //post.xml을 띄워줌. 밑에 있음. 구글에 android menu검색하고 developers사이트들어가서 코드 가져옴
-             */
+
         }                                                     //mainViewHolder.adapterPosition을 넣어주는 이유는 사용자가 선택한 특정위치의 게시글을 삭제or수정해야 하기에.
         return mainViewHolder
     }
@@ -125,14 +128,78 @@ class ComentsAdapter(
                 .into(photoimageView)
         }
 
-        //내가 쓴 댓글에만 삭제버튼 띄우기
+        /*
+          //내가 쓴 댓글에만 삭제버튼 띄우기
         if (myDataset[position].getString("kakao_id") == Usersingleton.kakao_id!!) {
             delete_button.visibility = View.VISIBLE
         }else{
             delete_button.visibility = View.GONE
         }
+         */
+    }
 
-
+    //삭제버튼 눌렀을때 동작
+    //res안에 menu디렉토리 만든거에서, 그 안의 menu파일을 불러와서 보여주고, 클릭했을때 이벤트처리해줌
+    @SuppressLint("LongLogTag")
+    private fun showPopup(v: View, position: Int) {
+        val popup = PopupMenu(activity, v)
+        try {
+            if (myDataset[position].getString("kakao_id") == Usersingleton.kakao_id!!) {
+                //사용자가 선택한 댓글의 카카오id랑 내 카카오id랑 같을경우: 삭제가능
+                popup.setOnMenuItemClickListener {
+                    return@setOnMenuItemClickListener when (it.itemId) {
+                        R.id.post -> {
+                            val builder = AlertDialog.Builder(activity)
+                            builder.setMessage("삭제하시겠습니까?")
+                            builder.setCancelable(false) // 다이얼로그 화면 밖 터치 방지
+                            builder.setPositiveButton(
+                                "예"
+                            ) { dialog, which ->
+                                //게시물 삭제로직
+                                onCommentListener.onDelete(position)  //인터페이스를 통해  PostActivity에서 삭제로직 작동시킬거임
+                            }
+                            builder.setNegativeButton(
+                                "아니요"
+                            ) { dialog, which -> }
+                            builder.show() // 다이얼로그 보이기
+                            true
+                        }
+                        else -> false
+                    }
+                }
+                val inflater: MenuInflater = popup.menuInflater
+                inflater.inflate(R.menu.post, popup.menu)
+                popup.show()
+            } else {
+                //다를경우: 신고가능
+                popup.setOnMenuItemClickListener {
+                    return@setOnMenuItemClickListener when (it.itemId) {
+                        R.id.report -> {
+                            val builder = AlertDialog.Builder(activity)
+                            builder.setMessage("신고하시겠습니까?")
+                            builder.setCancelable(false) // 다이얼로그 화면 밖 터치 방지
+                            builder.setPositiveButton(
+                                "예"
+                            ) { dialog, which ->
+                                //신고로직
+                                onCommentListener.onReport(position)
+                            }
+                            builder.setNegativeButton(
+                                "아니요"
+                            ) { dialog, which -> }
+                            builder.show() // 다이얼로그 보이기
+                            true
+                        }
+                        else -> false
+                    }
+                }
+                val inflater: MenuInflater = popup.menuInflater
+                inflater.inflate(R.menu.report, popup.menu)
+                popup.show()
+            }
+        } catch (e: JSONException) {
+            Log.e("태그:", "JSONException: " + e.toString())
+        }
     }
 
 

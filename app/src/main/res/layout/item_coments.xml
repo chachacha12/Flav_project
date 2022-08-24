@@ -65,10 +65,9 @@
 
                         android:layout_width="30dp"
                         android:layout_height="25dp"
-                        android:background='#00ff0000'
+                        android:background='@drawable/ic_more_vert2'
                         android:gravity="center"
                         android:lineSpacingExtra="6sp"
-                        android:text="삭제"
                         android:textColor="#BFBFBF"
                         android:textSize="13sp" />
 
