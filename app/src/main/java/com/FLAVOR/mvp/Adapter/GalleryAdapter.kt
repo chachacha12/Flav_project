@@ -20,8 +20,6 @@ import com.FLAVOR.mvp.classes.Name
 import com.FLAVOR.mvp.R
 import com.FLAVOR.mvp.feeds.MainActivity
 import com.FLAVOR.mvp.retrofit_service
-import kotlinx.android.synthetic.main.item_gallery.view.*
-import kotlinx.android.synthetic.main.view_loader.*
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -31,6 +29,10 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.io.File
 import java.io.IOException
+
+
+import kotlinx.android.synthetic.main.item_gallery.view.*
+import kotlinx.android.synthetic.main.view_loader.*
 
 class GalleryAdapter(var activity: Activity, private val myDataset: ArrayList<String?>?,  var server:retrofit_service) :     //어댑터클래스의 인자 3개, 어댑터클래스엔 basicactivity상속 안되있으므로 액티비티에서 server를 가져옴
     RecyclerView.Adapter<GalleryAdapter.GalleryViewHolder>() {

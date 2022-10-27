@@ -182,7 +182,7 @@ class PostActivity : BasicActivity() {
         }
         override fun onReport(position: Int) {
             //신고로직
-            Toast.makeText(this@PostActivity, "신고되었습니다.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this@PostActivity, "신고되었습니다. 뿌잉클에서 검토 후 차단조치됩니다.", Toast.LENGTH_SHORT).show()
         }
     }
 
