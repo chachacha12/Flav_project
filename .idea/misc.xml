@@ -11,10 +11,15 @@
         <entry key="app/src/main/res/layout/activity_appintro.xml" value="0.12158054711246201" />
         <entry key="app/src/main/res/layout/activity_camera.xml" value="0.25" />
         <entry key="app/src/main/res/layout/activity_gallery.xml" value="0.12158054711246201" />
+        <entry key="app/src/main/res/layout/activity_login_kakao.xml" value="0.2527130126953124" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.18931159420289856" />
         <entry key="app/src/main/res/layout/activity_post.xml" value="0.1" />
         <entry key="app/src/main/res/layout/activity_write_post.xml" value="0.20833333333333334" />
-        <entry key="app/src/main/res/layout/dialog_selfname.xml" value="0.12158054711246201" />
+        <entry key="app/src/main/res/layout/dialog_Useragreement.xml" value="0.5010360717773438" />
+        <entry key="app/src/main/res/layout/dialog_selfname.xml" value="0.23422245385074325" />
+        <entry key="app/src/main/res/layout/dialog_tagchoose.xml" value="0.13768115942028986" />
+        <entry key="app/src/main/res/layout/dialog_useragreement.xml" value="0.3424545288085938" />
+        <entry key="app/src/main/res/layout/fragment_follower.xml" value="0.12158054711246201" />
         <entry key="app/src/main/res/layout/fragment_following.xml" value="0.12158054711246201" />
         <entry key="app/src/main/res/layout/fragment_home.xml" value="0.18931159420289856" />
         <entry key="app/src/main/res/layout/fragment_map.xml" value="0.2115036231884058" />

@@ -203,11 +203,6 @@ class MainActivity : BasicActivity(), home_map_Listener, OnAppointment_noexistLi
         }//setOnNavigationItemSelectedListener
     }  //init
 
-    private fun myStartActivity(c: Class<*>) {
-        val intent = Intent(this, c)
-        startActivityForResult(intent, 1)
-    }
-
     //home_map_fragment를 상속받아서 implement해준 함수임. home과 map프래그먼트 사이 데이터 통신에 이용.
     override fun onCommand(map_contentsList: ArrayList<Contents>) {
         mapfragment?.display(map_contentsList)

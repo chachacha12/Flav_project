@@ -28,23 +28,31 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".mypost.MyPostActivity"
-            tools:ignore="MissingClass">
-
+        <activity
+            android:name=".useagreementActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".personalInfoActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
         </activity>
         <activity
             android:name=".activity.SplashActivity"
-            android:noHistory="true"
-            android:exported="true">
+            android:exported="true"
+            android:noHistory="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.FaceBookActivity">
-
-        </activity>
+        <activity android:name=".activity.FaceBookActivity" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
@@ -61,9 +69,7 @@
         <activity android:name=".activity.Galleryactivity" />
         <activity android:name=".activity.BasicActivity" />
         <activity android:name=".writepost.WritePostActivity" />
-        <activity android:name=".activity.KakaoLoginActivity">
-
-        </activity>
+        <activity android:name=".activity.KakaoLoginActivity" />
         <activity android:name=".appIntro.AppIntroActivity" /> <!-- 리다이렉트url을 위한 부분임.AuthCodeHandlerActivity는 카카오에서 제공하는 액티비티임. -->
         <activity
             android:name="com.kakao.sdk.auth.AuthCodeHandlerActivity"
