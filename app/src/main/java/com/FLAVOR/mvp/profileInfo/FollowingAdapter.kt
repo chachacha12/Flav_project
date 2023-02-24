@@ -13,9 +13,7 @@ import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.FLAVOR.mvp.R
-import kotlinx.android.synthetic.main.item_follower_following.view.*
-import kotlinx.android.synthetic.main.item_post.view.nameTextView
-import kotlinx.android.synthetic.main.item_post.view.photoImageVIew
+import com.FLAVOR.mvp.databinding.ItemFollowerFollowingBinding
 import java.util.*
 
 //괄호안은 어댑터클래스의 인자들
@@ -26,7 +24,7 @@ class FollowingAdapter(
     )  : RecyclerView.Adapter<FollowingAdapter.MainViewHolder>() {
 
     //뷰홀더에 텍스트뷰말고 카드뷰를 넣음
-    class MainViewHolder(val cardView: CardView) : RecyclerView.ViewHolder(cardView)
+    class MainViewHolder(val binding: ItemFollowerFollowingBinding) : RecyclerView.ViewHolder(binding.root)
 
     override fun getItemViewType(position: Int): Int {
         return position
@@ -42,10 +40,10 @@ class FollowingAdapter(
             false
         ) as CardView   //item_post에 있는 뷰들에 접근가능하게 해줌.  inflate에 들어간 레이아웃은 row파일과 같은거임.
 
-        val mainViewHolder = MainViewHolder(cardView)  //밑의 setOnClickListener에서 사용자가 선택한 특정뷰의 위치값 알아야해서 여기서 뷰홀더객체생성
+        val mainViewHolder = MainViewHolder(ItemFollowerFollowingBinding.bind(cardView))  //밑의 setOnClickListener에서 사용자가 선택한 특정뷰의 위치값 알아야해서 여기서 뷰홀더객체생성
 
         // 사용자 삭제버튼 클릭시
-        cardView.FriendDelete_button.setOnClickListener {
+        mainViewHolder.binding.FriendDeleteButton.setOnClickListener {
             var builder = AlertDialog.Builder(activity)
             builder.setMessage(myDataset[mainViewHolder.adapterPosition].name+"님을 팔로우 취소할까요?"+"\n("+ myDataset[mainViewHolder.adapterPosition].name+"님의 맛집 정보를 볼 수 없습니다)"  )
             builder.setCancelable(false) // 다이얼로그 화면 밖 터치 방지
@@ -72,13 +70,13 @@ class FollowingAdapter(
     override fun onBindViewHolder(holder: MainViewHolder, position: Int) {
         Log.e("태그","팔로잉 목록 만드는 onbindView 시작")
         val safePosition: Int = holder.adapterPosition
-        var cardView = holder.cardView
+       // var cardView = holder.cardView
         var  userinfo = myDataset[safePosition]
 
         //받아온 유저이름, 프로필 넣어주기
-        var nameTextView = cardView.nameTextView
+        var nameTextView =  holder.binding.nameTextView
         nameTextView.text =   userinfo.name
-        var profile_photo_imageView = cardView.photoImageVIew
+        var profile_photo_imageView = holder.binding.photoImageVIew
         var photoUrl = userinfo.profileimage
        if(photoUrl == "null"){  //프사없을땐 기본이미지로
            profile_photo_imageView.setImageResource(R.drawable.ic_account_circle_black_24dp)

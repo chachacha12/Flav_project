@@ -18,6 +18,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.FLAVOR.mvp.classes.Name
 import com.FLAVOR.mvp.R
+import com.FLAVOR.mvp.databinding.ActivityGalleryBinding
+import com.FLAVOR.mvp.databinding.ActivityLoginKakaoBinding
+import com.FLAVOR.mvp.databinding.ItemGalleryBinding
 import com.FLAVOR.mvp.feeds.MainActivity
 import com.FLAVOR.mvp.retrofit_service
 import okhttp3.MediaType
@@ -31,11 +34,10 @@ import java.io.File
 import java.io.IOException
 
 
-import kotlinx.android.synthetic.main.item_gallery.view.*
-import kotlinx.android.synthetic.main.view_loader.*
-
 class GalleryAdapter(var activity: Activity, private val myDataset: ArrayList<String?>?,  var server:retrofit_service) :     //어댑터클래스의 인자 3개, 어댑터클래스엔 basicactivity상속 안되있으므로 액티비티에서 server를 가져옴
     RecyclerView.Adapter<GalleryAdapter.GalleryViewHolder>() {
+
+    private lateinit var binding: ActivityGalleryBinding
 
     lateinit var default_lat:String  //선택한 사진의 EXIF 위도 정보를 저장. 이 변수를 writepostAct에 보낼거임
     lateinit var default_lng:String
@@ -43,26 +45,24 @@ class GalleryAdapter(var activity: Activity, private val myDataset: ArrayList<St
     var resultIntent = Intent()  //writepostactivity로 데이터 실어서 보내줄 인텐트
     lateinit var file:MultipartBody.Part  //이미지파일 담을 곳
 
-
-    class GalleryViewHolder(val cardView: CardView) : RecyclerView.ViewHolder(cardView)   //뷰홀더에 텍스트뷰말고 카드뷰를 넣음
+    class GalleryViewHolder(val binding: ItemGalleryBinding) : RecyclerView.ViewHolder(binding.root)
 
     //온크리에이트뷰홀더함수안에서 사용자가 특정 사진 선택했을때 프로필사진으로 등록되는 기능 여기서 해줄거임
     override fun onCreateViewHolder(    //레이아웃 item_gallery에 있는 카드뷰를 가리키는 뷰홀더를 만듬
         parent: ViewGroup,
         viewType: Int
     ): GalleryViewHolder {
-        val cardView: CardView = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_gallery, parent, false) as CardView   //inflate에 들어간 레이아웃은 row파일과 같은거임.
-        val galleryViewHolder = GalleryViewHolder(cardView)  //밑의 setOnClickListener에서 사용자가 선택한 특정뷰의 위치값 알아야해서 여기서 뷰홀더객체생성
 
+        val cardView: CardView = LayoutInflater.from(parent.context).inflate(R.layout.item_gallery, parent, false) as CardView   //inflate에 들어간 레이아웃은 row파일과 같은거임.
 
-        cardView.setOnClickListener {                //사용자가 갤러리에서 특정 사진을 클릭해서 선택했을때
-            activity.loaderLayout.visibility = View.VISIBLE //갤러리 액티비티객체를 통해 로딩화면 xml보여줌
+        val galleryViewHolder = GalleryViewHolder(ItemGalleryBinding.bind(cardView))  //밑의 setOnClickListener에서 사용자가 선택한 특정뷰의 위치값 알아야해서 여기서 뷰홀더객체생성
+
+        cardView.setOnClickListener { //사용자가 갤러리에서 특정 사진을 클릭해서 선택했을때
+            binding.loaderLayout.root.visibility = View.VISIBLE //갤러리 액티비티객체를 통해 로딩화면 xml보여줌
 
             //레트로핏 post image 업로드
             var imageFile = File(myDataset!![galleryViewHolder.adapterPosition]!!)
             Log.e("태그", "이미지 uri: " + myDataset!![galleryViewHolder.adapterPosition])
-
             ///////////////////////////////////
             //프론트에서 exif추출 로직 - 추출성공했음
             var exif : ExifInterface? = null
@@ -75,19 +75,9 @@ class GalleryAdapter(var activity: Activity, private val myDataset: ArrayList<St
             Log.e("ExifData", " exif?.latLong?.get(1) : "+     exif?.latLong?.get(1).toString())
             default_lat = exif?.latLong?.get(0).toString()
             default_lng = exif?.latLong?.get(1).toString()
-            /////////////////////////////////
-            /*
-            //사진 이미지를 서버로 보내줄떄 사용함
-            var reqFile: RequestBody = RequestBody.create(
-                //MediaType.parse("multipart/form-data"),
-                MediaType.parse("image/jpeg"),
-                imageFile
-            )
-            file = MultipartBody.Part.createFormData("photo", imageFile.name, reqFile)
-             */
 
             if(default_lat=="null" || default_lng=="null"){  //위도경도 정보가 exif에 없을시
-                activity.loaderLayout.visibility = View.GONE
+                binding.loaderLayout.root.visibility = View.GONE
                 Toast.makeText(activity, "위치정보가 없는 사진입니다.\n기본카메라로 찍은 사진을 선택하세요.", Toast.LENGTH_SHORT).show()
             }else{
                 resultIntent = Intent()
@@ -103,7 +93,7 @@ class GalleryAdapter(var activity: Activity, private val myDataset: ArrayList<St
     // 여기서 리사이클러뷰의 리스트 하나하나 가리키는 뷰홀더와 내가 주는 데이터(이미지경로)가 연결되어짐
     override fun onBindViewHolder(holder: GalleryViewHolder, position: Int) {
 
-        var imageView = holder.cardView.imageView
+        var imageView = holder.binding.imageView
         //myDataset!![position]라는 갤러리의 사진들 경로는 알았으니, 밑의 코드통해 이미지뷰에 내 갤러리 사진들 띄울거임.
         //가져온 이미지들이 리사이클러뷰에서 너무 사이즈 이상하게 나오는 문제 해결해줌 --> Glide라는걸 이용할거임! -> Gradle의 dependency에서 라이브러리 추가해주고, 아래 코드들 넣어주면 됨.+ 이미지경로값 필요
 
@@ -182,7 +172,7 @@ class GalleryAdapter(var activity: Activity, private val myDataset: ArrayList<St
                 }
                 Log.e("갤러리태그","3")
                 activity.setResult(Activity.RESULT_OK, resultIntent)   //onActivityResult함수로 인텐트 보냄.
-                activity.loaderLayout.visibility = View.GONE //갤러리 액티비티객체를 통해 로딩화면 xml보여줌
+                binding.loaderLayout.root.visibility = View.GONE //갤러리 액티비티객체를 통해 로딩화면 xml보여줌
 
                 activity.finish()  //갤러리액티비티 닫아줌
             }

@@ -7,15 +7,17 @@ import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.FLAVOR.mvp.R
 import com.FLAVOR.mvp.activity.KakaoLoginActivity
-import kotlinx.android.synthetic.main.layout_intro_pager_item.view.*
+import com.FLAVOR.mvp.databinding.ItemGalleryBinding
+import com.FLAVOR.mvp.databinding.LayoutIntroPagerItemBinding
 
 //이건 리사이클러뷰의 커스텀 뷰홀더임. 즉 내가 좀 변경해준 뷰홀더. 뷰홀더 상속은 그래서 해줘야함.
 // 원래 뷰홀더는 어댑터클래스의 안에 있는데 이건 따로 만들어줌
 //myintropager리사이클러어댑터의 뷰홀더임. 뷰홀더엔 xml들이 하나씩 들어감, 즉 layout_intro_pager_item을 하나씩 품게 될거임
-class MyPagerViewHolder(itemView:View, var activity: Activity):RecyclerView.ViewHolder(itemView) {  //여기서 itemView가 layout_intro_pager_item 객체임
-    private val itemImage = itemView.pager_item_image
-    private val itemContent = itemView.pager_item_text
-    private var btn = itemView.startbutton  //row파일에 있는 btn임
+class MyPagerViewHolder(val binding:  LayoutIntroPagerItemBinding, var activity: Activity):RecyclerView.ViewHolder(binding.root) {  //여기서 itemView가 layout_intro_pager_item 객체임
+
+    private val itemImage =   binding.pagerItemImage
+    private val itemContent = binding.pagerItemText
+    private var btn =  binding.startbutton
 
 
     //뷰홀더객체를 내가 따로 만든 pagerItem객체와 연결시켜줌

@@ -32,13 +32,13 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
-import kotlinx.android.synthetic.main.fragment_map.*
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.util.*
 import kotlin.collections.ArrayList
 
 class mapFragment : Fragment(), OnMapReadyCallback {
+
 
     //Homefragment에서 넘어온 컨텐츠리스트값 받는 전역변수. 이 프래그먼트가 만들어지기전에 이 변수는 날아오는 데이터받아야해서 지금 초기화
    var MapContentsList:ArrayList<Contents> = ArrayList()
@@ -62,7 +62,7 @@ class mapFragment : Fragment(), OnMapReadyCallback {
     override fun onStart() {
         super.onStart()
         if(MapContentsList.isNotEmpty()){
-            mapView.onStart()
+            binding?.mapView?.onStart()
             (requireActivity() as AppCompatActivity?)!!.supportActionBar!!.hide()
 
             //여기서 이거 넣는 이유는 사용자가 패널 연상태로 다른곳 갔다가 다시 mapfrag왔을때 state저장안되서 이상한값이 패널 뷰들에 들어가는 오류때문
@@ -76,7 +76,7 @@ class mapFragment : Fragment(), OnMapReadyCallback {
     override fun onStop() {
         super.onStop()
         if(MapContentsList.isNotEmpty()){
-            mapView.onStop()
+            binding?.mapView?.onStop()
             (activity as AppCompatActivity?)!!.supportActionBar!!.show()
         }
     }
@@ -124,16 +124,16 @@ class mapFragment : Fragment(), OnMapReadyCallback {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        mapView.onSaveInstanceState(outState)
+        binding?.mapView?.onSaveInstanceState(outState)
     }
 
     //액티비티가 처음 생성될때 실행되는 함수
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        if(mapView != null)
+        if(   binding?.mapView != null)
         {
-            mapView.onCreate(savedInstanceState)
-            mapView.getMapAsync(this)
+            binding?.mapView?.onCreate(savedInstanceState)
+            binding?.mapView?.getMapAsync(this)
         }
     }
 

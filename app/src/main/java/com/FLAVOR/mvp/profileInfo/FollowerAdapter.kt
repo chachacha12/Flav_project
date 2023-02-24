@@ -1,6 +1,5 @@
 package com.FLAVOR.mvp.profileInfo
 
-//GalleryAdapter클래스를 복사해서 좀 바꿔서 써준 어댑터임
 
 import android.app.Activity
 import android.os.Build
@@ -14,9 +13,8 @@ import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.FLAVOR.mvp.R
-import kotlinx.android.synthetic.main.item_follower_following.view.*
-import kotlinx.android.synthetic.main.item_post.view.nameTextView
-import kotlinx.android.synthetic.main.item_post.view.photoImageVIew
+import com.FLAVOR.mvp.databinding.ItemComentsBinding
+import com.FLAVOR.mvp.databinding.ItemFollowerFollowingBinding
 import java.util.*
 
 //괄호안은 어댑터클래스의 인자들
@@ -27,7 +25,7 @@ class FollowerAdapter(
 
 
     //뷰홀더에 텍스트뷰말고 카드뷰를 넣음
-    class MainViewHolder(val cardView: CardView) : RecyclerView.ViewHolder(cardView)
+    class MainViewHolder(val binding: ItemFollowerFollowingBinding) : RecyclerView.ViewHolder(binding.root)
 
     override fun getItemViewType(position: Int): Int {
         return position
@@ -43,9 +41,9 @@ class FollowerAdapter(
             false
         ) as CardView   //item_post에 있는 뷰들에 접근가능하게 해줌.  inflate에 들어간 레이아웃은 row파일과 같은거임.
 
-        val mainViewHolder = MainViewHolder(cardView)  //밑의 setOnClickListener에서 사용자가 선택한 특정뷰의 위치값 알아야해서 여기서 뷰홀더객체생성
+        val mainViewHolder = MainViewHolder(ItemFollowerFollowingBinding.bind(cardView))  //밑의 setOnClickListener에서 사용자가 선택한 특정뷰의 위치값 알아야해서 여기서 뷰홀더객체생성
 
-        cardView.FriendDelete_button.visibility = View.GONE //팔로워 목록에선 삭제버튼 숨기기
+        mainViewHolder.binding.FriendDeleteButton.visibility = View.GONE //팔로워 목록에선 삭제버튼 숨기기
 
         /*
         cardView.FriendDelete_button.setOnClickListener{
@@ -65,13 +63,13 @@ class FollowerAdapter(
         Log.e("태그","팔로워 목록 만드는 onbindView 시작")
 
         val safePosition: Int = holder.adapterPosition
-        val cardView = holder.cardView
+        //val cardView = holder.cardView
         val  userinfo = myDataset[safePosition]
 
         //받아온 유저이름, 프로필 넣어주기
-        val nameTextView = cardView.nameTextView
+        val nameTextView = holder.binding.nameTextView
         nameTextView.text =   userinfo.name
-        val profile_photo_imageView = cardView.photoImageVIew
+        val profile_photo_imageView = holder.binding.photoImageVIew
         val photoUrl = userinfo.profileimage
        if(photoUrl == "null"){  //프사없을땐 기본이미지로
            profile_photo_imageView.setImageResource(R.drawable.ic_account_circle_black_24dp)

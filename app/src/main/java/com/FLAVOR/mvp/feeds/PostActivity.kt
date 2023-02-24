@@ -16,11 +16,8 @@ import com.FLAVOR.mvp.activity.BasicActivity
 import com.FLAVOR.mvp.classes.CommentUpload_response
 import com.FLAVOR.mvp.classes.Msg
 import com.FLAVOR.mvp.classes.Usersingleton
-import com.FLAVOR.mvp.feeds.ComentsAdapter
-import com.FLAVOR.mvp.feeds.Contents
-import com.FLAVOR.mvp.feeds.ReadContentsVIew
-import com.google.gson.JsonObject
-import kotlinx.android.synthetic.main.activity_post.*
+import com.FLAVOR.mvp.databinding.ActivityGalleryBinding
+import com.FLAVOR.mvp.databinding.ActivityPostBinding
 import org.json.JSONArray
 import org.json.JSONObject
 import retrofit2.Call
@@ -31,6 +28,8 @@ import java.util.*
 
 
 class PostActivity : BasicActivity() {
+
+    private lateinit var binding: ActivityPostBinding
 
     private var contents: Contents? = null       //내가 선택해서 가져온 게시물 객체.  댓글리사이클러뷰에도 이거 보내줘서 댓글리스트 만들거임.
     private var readContentsVIew: ReadContentsVIew? = null
@@ -47,7 +46,11 @@ class PostActivity : BasicActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_post)
+
+        binding = ActivityPostBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
+
         // 화면을 portrait(세로) 화면으로 고정하고 싶은 경우
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
@@ -104,13 +107,13 @@ class PostActivity : BasicActivity() {
     fun coments_ready(){
         //댓글 리사이클러뷰 작업
         //recyclerView = recyclerView_user  //화면에 보일 리사이클러뷰객체
-        coments_recyclerView.setHasFixedSize(true)
-        coments_recyclerView.layoutManager = LinearLayoutManager(this)
+        binding.comentsRecyclerView.setHasFixedSize(true)
+        binding.comentsRecyclerView.layoutManager = LinearLayoutManager(this)
 
         //댓글등록버튼클릭
-        save_comment_button.setOnClickListener {
+        binding.saveCommentButton.setOnClickListener {
             Log.e("태그", "댓글 업로드 버튼 클릭함")
-            comments_Upload(Usersingleton.kakao_id.toString(),wirtecomments_editText.text.toString())
+            comments_Upload(Usersingleton.kakao_id.toString(), binding.wirtecommentsEditText.text.toString())
         }
     } //coments_ready
 
@@ -137,7 +140,7 @@ class PostActivity : BasicActivity() {
 
                     //댓글 추가하자마자 화면에 보여주기위한 작업.
                     val new_comment = JSONObject()
-                    new_comment.put("content", wirtecomments_editText.text.toString())
+                    new_comment.put("content", binding.wirtecommentsEditText.text.toString())
                     new_comment.put("id", response.body()?.comment_id)    //응답으로받은 댓글의 id값을 클라이언트단의 commentsList에도 저장. 서버 안거치고 바로삭제도 가능하게 하기위함
                     new_comment.put("username",Usersingleton.username)
                     new_comment.put("profileimg_path",Usersingleton.profilepath)
@@ -154,9 +157,9 @@ class PostActivity : BasicActivity() {
 
                     //리사이클러뷰 데이터 업데이트된걸 알려주고 어댑터 다시 붙여줌
                     comentsAdapter?.notifyDataSetChanged()
-                    coments_recyclerView.adapter = comentsAdapter
+                    binding.comentsRecyclerView.adapter = comentsAdapter
 
-                    wirtecomments_editText.setText(null)  //적어둔 값을 지워줌
+                    binding.wirtecommentsEditText.setText(null)  //적어둔 값을 지워줌
                     Toast.makeText(this@PostActivity, "입력되었습니다.", Toast.LENGTH_SHORT).show()
                 } else {
                     Log.e(
@@ -239,9 +242,8 @@ class PostActivity : BasicActivity() {
         comentsAdapter = ComentsAdapter(
             this, commentsList, server, onCommentListener
         )
-        coments_recyclerView.adapter = comentsAdapter    //리사이클러뷰의 어댑터에 내가 만든 어댑터 붙힘. 사용자가 게시글 지우거나 수정 등 해서 데이터 바뀌면 어댑터를 다른걸로 또 바꿔줘야함 ->notifyDataSetChanged()이용
+        binding.comentsRecyclerView.adapter = comentsAdapter    //리사이클러뷰의 어댑터에 내가 만든 어댑터 붙힘. 사용자가 게시글 지우거나 수정 등 해서 데이터 바뀌면 어댑터를 다른걸로 또 바꿔줘야함 ->notifyDataSetChanged()이용
     }
-
 
 
 }

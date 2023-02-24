@@ -22,10 +22,14 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.FLAVOR.mvp.Adapter.GalleryAdapter
 import com.FLAVOR.mvp.R
+import com.FLAVOR.mvp.databinding.ActivityGalleryBinding
+import com.FLAVOR.mvp.databinding.ActivityLoginKakaoBinding
 import com.FLAVOR.mvp.feeds.MainActivity
 
 
 class Galleryactivity : BasicActivity() {
+
+    private lateinit var binding: ActivityGalleryBinding
 
     //아래의 코드 틀은 구글에(create a list RecyclerView)라고 쳐서 들어간 안드 developer사이트 문서에 있는 코드가져옴
     @RequiresApi(Build.VERSION_CODES.M)
@@ -38,7 +42,12 @@ class Galleryactivity : BasicActivity() {
         //상태표시줄(배터리, 시간) 숨겨주는 로직
         window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
         actionBar?.hide()
-        setContentView(R.layout.activity_gallery)
+
+        binding = ActivityGalleryBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
+
+
         setToolbarTitle("갤러리")
         //이 앱이 사용자의 폰 갤러리에 접근해도 괜찮은지 런타임권한요청을 보내도록 할거임. 한번허용하면 그 폰에선 계속 허용되어서 권한요청창 다신 안뜸
         // -(안드로이드 developer사이트 - 가이드-문서-앱권한요청)에 있는 코드

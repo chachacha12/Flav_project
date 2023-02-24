@@ -13,17 +13,20 @@ import android.view.ViewGroup
 import android.widget.*
 import com.FLAVOR.mvp.R
 import com.FLAVOR.mvp.classes.Tag_response
+import com.FLAVOR.mvp.databinding.ActivityGalleryBinding
+import com.FLAVOR.mvp.databinding.DialogTagchooseBinding
 import com.FLAVOR.mvp.databinding.FragmentChooseTagBinding
 import com.FLAVOR.mvp.retrofit_service
 import com.tbuonomo.viewpagerdotsindicator.setPaddingVertical
-import kotlinx.android.synthetic.main.dialog_tagchoose.*
-import kotlinx.android.synthetic.main.fragment_choose_tag.*
 import org.json.JSONArray
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 class Choose_tag_Fragment : Fragment() {
+
+    //dialog_tagchoose.xml에 접근하기 위한 바인딩
+    private lateinit var dialogtagbinding: DialogTagchooseBinding
 
     //뷰바인딩을 함 - xml의 뷰들에 접근하기 위해서
     private var _binding: FragmentChooseTagBinding? = null
@@ -142,7 +145,7 @@ class Choose_tag_Fragment : Fragment() {
         // *주의할 점: findViewById()를 쓸 때는 -> 앞에 반드시 다이얼로그 이름을 붙여야 한다.
 
         // 취소버튼
-        dialog_tag?.DialogTag_cancel?.setOnClickListener {
+        dialogtagbinding.DialogTagCancel.setOnClickListener {
             dialog_tag?.dismiss() // 다이얼로그 닫기
         }
     }
@@ -166,25 +169,25 @@ class Choose_tag_Fragment : Fragment() {
             )
 
             //다이얼로그안의 view들에 접근하려면 앞에 다이얼로그이름 붙여줘야하는듯듯
-           dialog_tag?.TagList_LinearLayout?.addView(tagitem_textView, rprms)
+            dialogtagbinding.TagListLinearLayout.addView(tagitem_textView, rprms)
             i++
 
             //특정 태그를 클릭시
             tagitem_textView.setOnClickListener {
                 when(tag_number_check){   //fragment_choose_tag 의 xml에서 몇번째 태그 텍스트뷰에 setText해줄지
                     1 ->{
-                        tag1_button.text = tagitem_textView?.text.toString()
-                        var tag_id = tag1_map[tagitem_textView?.text.toString()]  //사용자가 선택한 태그의 string텍스트값으로 map에서 태그 id값 찾음
+                        binding?.tag1Button?.text = tagitem_textView.text.toString()
+                        var tag_id = tag1_map[tagitem_textView.text.toString()]  //사용자가 선택한 태그의 string텍스트값으로 map에서 태그 id값 찾음
                         ontagsetListener?.onTag1Set(tag_id!!)  //액티비티로 태그id 데이터값 전달함
                     }
                     2 -> {
-                        tag2_button.text = tagitem_textView?.text.toString()
-                        var tag_id = tag2_map[tagitem_textView?.text.toString()]  //사용자가 선택한 태그의 string텍스트값으로 map에서 태그 id값 찾음
+                        binding?.tag2Button?.text = tagitem_textView.text.toString()
+                        var tag_id = tag2_map[tagitem_textView.text.toString()]  //사용자가 선택한 태그의 string텍스트값으로 map에서 태그 id값 찾음
                         ontagsetListener?.onTag2Set(tag_id!!)  //액티비티로 태그id 데이터값 전달함
                     }
                     3 ->{
-                        tag3_button.text = tagitem_textView?.text.toString()
-                        var tag_id = tag3_map[tagitem_textView?.text.toString()]  //사용자가 선택한 태그의 string텍스트값으로 map에서 태그 id값 찾음
+                        binding?.tag3Button?.text = tagitem_textView.text.toString()
+                        var tag_id = tag3_map[tagitem_textView.text.toString()]  //사용자가 선택한 태그의 string텍스트값으로 map에서 태그 id값 찾음
                         ontagsetListener?.onTag3Set(tag_id!!)  //액티비티로 태그id 데이터값 전달함
                     }
                 }

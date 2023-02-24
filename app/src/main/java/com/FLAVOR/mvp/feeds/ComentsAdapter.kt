@@ -14,11 +14,16 @@ import android.widget.PopupMenu
 import androidx.annotation.RequiresApi
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
+import com.FLAVOR.mvp.Adapter.GalleryAdapter
 import com.FLAVOR.mvp.R
 import com.FLAVOR.mvp.classes.Usersingleton
+import com.FLAVOR.mvp.databinding.ActivityGalleryBinding
+import com.FLAVOR.mvp.databinding.ActivityPostBinding
+import com.FLAVOR.mvp.databinding.ItemComentsBinding
+import com.FLAVOR.mvp.databinding.ItemGalleryBinding
+import com.FLAVOR.mvp.databinding.ItemPostBinding
 import com.FLAVOR.mvp.retrofit_service
 import com.bumptech.glide.Glide
-import kotlinx.android.synthetic.main.item_coments.view.*
 import org.json.JSONException
 import org.json.JSONObject
 import retrofit2.Response.error
@@ -36,10 +41,13 @@ class ComentsAdapter(
     var server:retrofit_service,
     var onCommentListener: OnCommentListener
 
-)  : RecyclerView.Adapter<ComentsAdapter.MainViewHolder>() {
+)  : RecyclerView.Adapter<ComentsAdapter.CommentViewHolder>() {
+
+    private lateinit var binding: ItemComentsBinding
+
 
     //뷰홀더에 텍스트뷰말고 카드뷰를 넣음
-    class MainViewHolder(val cardView: CardView) : RecyclerView.ViewHolder(cardView)
+    class CommentViewHolder(val binding: ItemComentsBinding) : RecyclerView.ViewHolder(binding.root)
 
     override fun getItemViewType(position: Int): Int {
         return position
@@ -48,18 +56,22 @@ class ComentsAdapter(
     override fun onCreateViewHolder(    //레이아웃 item_coments에 있는 카드뷰를 가리키는 뷰홀더를 만듬. 이건 처음에 액티비티에서 recyclerView.adapter = mainAdapter 할때만 작동하고 그후엔 안함.
         parent: ViewGroup,
         viewType: Int
-    ): MainViewHolder {
+    ): CommentViewHolder {
+
         val cardView: CardView = LayoutInflater.from(parent.context).inflate(
             R.layout.item_coments,
             parent,
             false
         ) as CardView   //item_coments 있는 뷰들에 접근가능하게 해줌.  inflate에 들어간 레이아웃은 row파일과 같은거임.
 
-        val mainViewHolder =
-            MainViewHolder(cardView)  //밑의 setOnClickListener에서 사용자가 선택한 특정뷰의 위치값 알아야해서 여기서 뷰홀더객체생성
 
-        //게시글의 toolbar(점3개)버튼을 클릭했을때 효과
-        cardView.comment_delete_button.setOnClickListener {
+        val commentviewHolder =
+            CommentViewHolder(ItemComentsBinding.bind(cardView))  //밑의 setOnClickListener에서 사용자가 선택한 특정뷰의 위치값 알아야해서 여기서 뷰홀더객체생성
+
+
+
+        //댓글의 toolbar(점3개)버튼을 클릭했을때 효과
+        commentviewHolder.binding.commentDeleteButton.setOnClickListener {
 
             /*
             val builder = AlertDialog.Builder(activity)
@@ -80,26 +92,27 @@ class ComentsAdapter(
 
             showPopup(  //원래 삭제버튼아닌, 점세개버튼이었을때 동작로직
                 it,
-                mainViewHolder.adapterPosition
+                commentviewHolder.adapterPosition
             )      //post.xml을 띄워줌. 밑에 있음. 구글에 android menu검색하고 developers사이트들어가서 코드 가져옴
 
         }                                                     //mainViewHolder.adapterPosition을 넣어주는 이유는 사용자가 선택한 특정위치의 게시글을 삭제or수정해야 하기에.
-        return mainViewHolder
+        return commentviewHolder
     }
 
     // 여기서 리사이클러뷰의 리스트 하나하나 가리키는 뷰홀더와 내가 주는 데이터가 연결되어짐. 즉 리사이클러뷰 화면에 띄워짐
     //액티비티에서 게시글 업데이트 해주려고 mainAdapter.notifyDataSetChanged() 하면 이 함수만 작동함.
     @SuppressLint("SimpleDateFormat")
     @RequiresApi(Build.VERSION_CODES.O)
-    override fun onBindViewHolder(holder: MainViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: CommentViewHolder, position: Int) {
         val safePosition: Int = holder.adapterPosition
-        val commmentsCardView = holder.cardView
+        val commmentsCardView = holder.binding.cardView
 
-        var photoimageView = commmentsCardView.photoImageVIew
-        var usernameTextView = commmentsCardView.nameTextView
-        val commentTextView = commmentsCardView.coments_TextView
-        val dateTextView = commmentsCardView.date_textView
-        val delete_button = commmentsCardView.comment_delete_button
+
+        var photoimageView = holder.binding.photoImageVIew
+        var usernameTextView = holder.binding.nameTextView
+        val commentTextView = holder.binding.comentsTextView
+        val dateTextView = holder.binding.dateTextView
+        val delete_button = holder.binding.commentDeleteButton
 
         //댓글내용
         val contents = myDataset[position].getString("content")  //리스트에서 순서대로 댓글의 내용들을 하나씩 가져옴

@@ -25,12 +25,12 @@ import com.FLAVOR.mvp.classes.Msg
 import com.FLAVOR.mvp.classes.Result_response
 import com.FLAVOR.mvp.classes.Usersingleton
 import com.FLAVOR.mvp.databinding.FragmentHomeBinding
+import com.FLAVOR.mvp.databinding.ViewPostBinding
 import com.FLAVOR.mvp.googlemap.home_map_Listener
 import com.FLAVOR.mvp.retrofit_service
 import com.FLAVOR.mvp.writepost.WritePostActivity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
-import kotlinx.android.synthetic.main.view_loader.*
 import org.json.JSONArray
 import retrofit2.Call
 import retrofit2.Callback
@@ -42,6 +42,11 @@ class HomeFragment(var server: retrofit_service, var floating_anim:Boolean) : Fr
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
+
+    private var _binding2: ViewPostBinding? = null
+    private val binding2 get() = _binding2!!
+
+
     private var homeAdapter: HomeAdapter? = null
     //플레브 서버로부터 컨텐츠 받아오기 위한 변수들
     private var contentsList: java.util.ArrayList<Contents>? = null
@@ -89,10 +94,6 @@ class HomeFragment(var server: retrofit_service, var floating_anim:Boolean) : Fr
         }
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-    }
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onCreateView(
@@ -100,6 +101,9 @@ class HomeFragment(var server: retrofit_service, var floating_anim:Boolean) : Fr
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
+
+        _binding2 = ViewPostBinding.inflate(inflater, container!!)
+
         val view = binding.root
 
         //로딩화면뷰 초기화
@@ -108,7 +112,7 @@ class HomeFragment(var server: retrofit_service, var floating_anim:Boolean) : Fr
 
         contentsList = ArrayList()  //초기화  - 이거안하면 null에러남
         update_contentsList = ArrayList()  //초기화
-        homeAdapter = HomeAdapter(requireActivity(), contentsList!!, server, onPostListener)  //어댑터에서도 server통신위해 server를 인자에 넣어줌
+        homeAdapter = HomeAdapter(requireActivity(), contentsList!!, server, onPostListener, binding2)  //어댑터에서도 server통신위해 server를 인자에 넣어줌
         recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
         view.findViewById<FloatingActionButton>(R.id.floatingActionButton).setOnClickListener(
             onClickListener

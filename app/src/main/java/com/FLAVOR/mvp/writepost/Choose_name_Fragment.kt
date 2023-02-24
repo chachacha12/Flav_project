@@ -25,8 +25,6 @@ import com.FLAVOR.mvp.databinding.FragmentChooseTagBinding
 import com.FLAVOR.mvp.feeds.MainActivity
 import com.FLAVOR.mvp.retrofit_service
 import com.tbuonomo.viewpagerdotsindicator.setPaddingVertical
-import kotlinx.android.synthetic.main.fragment_choose_name.*
-import kotlinx.android.synthetic.main.view_loader.*
 import org.json.JSONArray
 import retrofit2.Call
 import retrofit2.Callback
@@ -138,10 +136,10 @@ class Choose_name_Fragment(var server:retrofit_service, var default_lat:String, 
                         ViewGroup.LayoutParams.WRAP_CONTENT,
                         ViewGroup.LayoutParams.WRAP_CONTENT
                     )
-                radiogroup.addView(radioButton, rprms)
+                binding?.radiogroup?.addView(radioButton, rprms)
                 i++
                 //특정 식당명을 클릭했을시
-                radiogroup.setOnCheckedChangeListener { group, checkedId ->
+                binding?.radiogroup?.setOnCheckedChangeListener { group, checkedId ->
                     val select = getView()?.findViewById<RadioButton>(checkedId)  //선택한 라디오버튼
                     //인터페이스 통해 writepost액티비티에 고른 식당명, 좌표객체 보내줌
                     onRestaurantNameListener?.onRestaurantNameSet(select?.text.toString(), latlng_map[select?.text.toString()]!! )

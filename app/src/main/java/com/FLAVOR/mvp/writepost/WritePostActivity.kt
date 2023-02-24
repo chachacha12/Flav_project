@@ -19,12 +19,12 @@ import com.FLAVOR.mvp.R
 import com.FLAVOR.mvp.activity.BasicActivity
 import com.FLAVOR.mvp.activity.Galleryactivity
 import com.FLAVOR.mvp.classes.*
+import com.FLAVOR.mvp.databinding.ActivityPostBinding
+import com.FLAVOR.mvp.databinding.ActivityWritePostBinding
+import com.FLAVOR.mvp.databinding.DialogSelfnameBinding
 import com.FLAVOR.mvp.feeds.Contents
 import com.FLAVOR.mvp.view.ContentsItemView
 import com.google.android.material.tabs.TabLayoutMediator
-import kotlinx.android.synthetic.main.activity_write_post.*
-import kotlinx.android.synthetic.main.dialog_selfname.*
-import kotlinx.android.synthetic.main.view_loader.*
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -36,6 +36,10 @@ import java.io.File
 //OnRestaurantNameListener인터페이스는 name프래그먼트와 통신에 사용, fragmentListener는 프래그먼트끼리 통신에 사용
 //OnTagSetListener 인터페이스는 tag프래그먼트와 통신에 사용
 class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantNameListener, FragmentListener, Choose_tag_Fragment.OnTagSetListener {
+
+    private lateinit var binding: ActivityWritePostBinding
+
+    private lateinit var selfnamebinding: DialogSelfnameBinding
 
     private var path:String?=""  //갤러리에서 받아온 사진의 경로를 여기 저장해줄거임
     private lateinit var buttonsBackgroundlayout: RelativeLayout     //게시글에 있는 이미지or 이 레이아웃 자체를 눌렀을때 이미지 수정 및 삭제하는 기능을 위한 레이아웃객체 전역으로둠
@@ -71,7 +75,9 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_write_post)
+        binding = ActivityWritePostBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
         setToolbarTitle("게시글 작성")
 
         // 화면을 portrait(세로) 화면으로 고정하고 싶은 경우
@@ -104,7 +110,7 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
             namelist_string = Modify_contentsinfo!!.restname
 
             val contentsItemView = ContentsItemView(this)
-            contentsLayout.addView(contentsItemView)
+            binding.contentsLayout.addView(contentsItemView)
             contentsItemView.setImage(path)
             init_viewpager()
 
@@ -138,22 +144,21 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
         dilaog01 =  Dialog(this)
 
         //식당명 직접입력버튼 클릭시 다이얼로그
-        selfbutton.setOnClickListener {
+        binding?.selfbutton?.setOnClickListener {
             showDialog01()
         }
 
         //  < 뒤로가기 버튼 누르면 액티비티 종료
-        backButton.setOnClickListener {
+        binding?.backButton?.setOnClickListener {
             finish()
         }
 
         //확인버튼 클릭시
-        checkButton.setOnClickListener {
+        binding?.checkButton?.setOnClickListener {
             storageUpload()                     //이걸 누르면 파이어베이스로 게시글 쓴거 저장됨
         }
 
-        buttonsBackgroundlayout =
-            buttonsBackgroundLayout    //게시글 올린 이미지 삭제or수정 창 끄려고할때 .  //전역변수를 초기화해줌.
+        buttonsBackgroundlayout =binding.buttonsBackgroundLayout //게시글 올린 이미지 삭제or수정 창 끄려고할때 .  //전역변수를 초기화해줌.
         buttonsBackgroundlayout.setOnClickListener {
             //게시글 이미지 올린거 수정or 삭제 등등 할때를 위한 기능
             if (buttonsBackgroundlayout.visibility == View.VISIBLE) {
@@ -174,7 +179,7 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
         //작성중인 게시물의 이미지 삭제하기
         // 1. 이미 저장해서 존재하던 게시물 이미지 수정하기 2. +버튼 눌러서 저장안된 새 게시물 작성중에 이미지 수정하기
         //->2가지 경우로 나누는 이유는 아직 파베 스토리지에 저장안된 이미지인 경우엔 postInfo.id값이 없기 때문에 밑의 지우기로직때 에러뜸. 그니까 예외처리해주기
-        post.setOnClickListener {
+        binding?.post?.setOnClickListener {
         }  //delete
     }  //init
 
@@ -201,7 +206,7 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
                 val contentsItemView =
                     ContentsItemView(this)  //이미지 담는 객체 하나 만듬
 
-                contentsLayout.addView(contentsItemView)
+                binding?.contentsLayout?.addView(contentsItemView)
                 contentsItemView.setImage(path)
 
                 /*
@@ -243,13 +248,13 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
         //만약 사용자가 태그, 식당명 등을 선택안했으면 플레브서버 다 저장안됨
         if (restname != null && adj1_id != null && adj2_id != null && locationtag_id != null && lat != null && lng != null) {
 
-            selfbutton.isClickable = false
-            checkButton.isClickable = false
+            binding?.selfbutton?.isClickable = false
+            binding?.checkButton?.isClickable = false
 
-            loaderLayout.visibility = View.VISIBLE
+            binding?.loaderLayout?.root?.visibility = View.VISIBLE
 
             val linearLayout =
-                contentsLayout.getChildAt(0) as LinearLayout    //즉 이건 contentsItemView객체 하나임
+                binding?.contentsLayout?.getChildAt(0) as LinearLayout    //즉 이건 contentsItemView객체 하나임
 
             val view = linearLayout.getChildAt(0)  //이미지뷰를 가져옴
 
@@ -304,7 +309,7 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
                 })
         } else {  //사용자가 태그,식당명 등 중에서 선택 안한거 있을때
             Toast.makeText(this, "식당이름과 태그를 모두 선택해주세요.", Toast.LENGTH_SHORT).show()
-            loaderLayout.visibility = View.GONE
+            binding?.loaderLayout?.root?.visibility = View.GONE
 
         }
     }
@@ -332,7 +337,7 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
                 t: Throwable
             ) {  //object로 받아옴. 서버에서 받은 object모델과 맞지 않으면 실패함수로 빠짐
                 Log.e("태그", "컨텐츠 업로드 통신 아예실패  ,t.message: " + t.message)
-                loaderLayout.visibility = View.GONE    //로딩화면 보여줌
+                binding.loaderLayout.root.visibility = View.GONE    //로딩화면 보여줌
                 Toast.makeText(this@WritePostActivity, "게시물 업로드 실패", Toast.LENGTH_SHORT).show()
             }
 
@@ -346,7 +351,7 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
                         "컨텐츠 업로드 통신 성공!!"
                     )
                     Toast.makeText(this@WritePostActivity, "게시물 업로드 성공!", Toast.LENGTH_SHORT).show()
-                   loaderLayout.visibility = View.GONE
+                    binding.loaderLayout.root.visibility= View.GONE
                 } else {
                     Log.e(
                         "태그",
@@ -355,7 +360,7 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
                     )
                     Toast.makeText(this@WritePostActivity, "게시물 업로드 실패", Toast.LENGTH_SHORT).show()
 
-                     loaderLayout.visibility = View.GONE
+                    binding.loaderLayout.root.visibility = View.GONE
                 }
                 finish()
             }
@@ -384,14 +389,14 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
         }
 
         //뷰페이저에 다시 프래그먼트들을 붙혀줌. 이때 어댑터에 인자를 하나 추가해서 내가 위에서 bundle넣어서 새로 만든 프래그먼트를 어댑터에 전달해줌
-        viewpager2.adapter = Name_Tag_Viewpager_Adapter(
+        binding.viewpager2.adapter  = Name_Tag_Viewpager_Adapter(
             this@WritePostActivity,
             name_fragment,
             tag_fragment
         )
 
         //뷰페이저2객체를 슬라이딩 할때마다 tab의 위치도 바뀌어야함. 그 둘을 동기화 해주는 클래스인 TabLayoutMediator을 이용해줌.
-        TabLayoutMediator(tabLayout, viewpager2){ tab, position -> tab.text = textArray[position]
+        TabLayoutMediator(binding.tabLayout, binding.viewpager2){ tab, position -> tab.text = textArray[position]
         }.attach()
 
         tag_fragment?.gettag1(server)  //태그 프래그먼트 객체통해 서버로부터 태그1값들 가져오기
@@ -437,17 +442,16 @@ class WritePostActivity : BasicActivity(), Choose_name_Fragment.OnRestaurantName
 
         /* 이 함수 안에 원하는 디자인과 기능을 구현하면 된다. */
         // *주의할 점: findViewById()를 쓸 때는 -> 앞에 반드시 다이얼로그 이름을 붙여야 한다.
-
         // 취소버튼
-        dilaog01?.cancelbutton?.setOnClickListener {
+        selfnamebinding.cancelbutton.setOnClickListener {
             dilaog01?.dismiss() // 다이얼로그 닫기
         }
         // 확인 버튼
-        dilaog01?.checkbutton?.setOnClickListener(View.OnClickListener {
-            if(dilaog01?.selfname_editText?.text!!.isEmpty()){
+        selfnamebinding.checkbutton.setOnClickListener(View.OnClickListener {
+            if( selfnamebinding.selfnameEditText.text!!.isEmpty()){
                 Toast.makeText(this,"식당명을 입력해주세요.",Toast.LENGTH_SHORT).show()
             }else{
-                restname = dilaog01?.selfname_editText?.text.toString()
+                restname =  selfnamebinding.selfnameEditText.text.toString()
 
                 //위경도값은 디폴트 위경도값으로 넣어줄거임 - 식당명 직접 선택의 경우
                 lat = default_lat

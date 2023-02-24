@@ -15,6 +15,8 @@ import android.widget.TextView
 import androidx.annotation.Nullable
 import androidx.annotation.RequiresApi
 import com.FLAVOR.mvp.R
+import com.FLAVOR.mvp.databinding.ActivityPostBinding
+import com.FLAVOR.mvp.databinding.ViewPostBinding
 import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.view_post.view.*
 import java.text.SimpleDateFormat
@@ -24,6 +26,10 @@ import java.util.*
 class ReadContentsVIew : LinearLayout {
     private var mycontext: Context? = null   //그냥 context라고 변수명을 지으면 메소드명(getcontext() )과 겹쳐서 에러나므로 mycontext라고 지어줌
     private var moreIndex = -1
+
+
+    private lateinit var viewpostbinding: ViewPostBinding
+
 
     constructor(context: Context) : super(context) {
         this.mycontext = context
@@ -82,15 +88,14 @@ class ReadContentsVIew : LinearLayout {
 
         if(comment_num){
             comment_num_constraint.visibility = View.VISIBLE
+           // viewpostbinding.commentNumConstraint.visibility = View.VISIBLE
             //댓글몇개인지 보여주기
             val comment_num = contents.Comments.length()
             comment_num_textView.text = comment_num.toString()
         }else{
             comment_num_constraint.visibility = View.GONE
+            //viewpostbinding.commentNumConstraint.visibility = View.GONE
         }
-
-
-
 
         //이미지넣어줄 부모뷰 세팅
         val contentsLayout = findViewById<LinearLayout>(com.FLAVOR.mvp.R.id.contentsLayout)

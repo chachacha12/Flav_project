@@ -1,5 +1,6 @@
 package com.FLAVOR.mvp.activity
 
+import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Intent
 import android.content.pm.ActivityInfo
@@ -10,6 +11,7 @@ import android.os.Handler
 import android.os.Looper
 import android.os.Message
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
 import android.widget.Toast
 import com.FLAVOR.mvp.R
@@ -18,58 +20,62 @@ import com.FLAVOR.mvp.classes.Msg
 import com.FLAVOR.mvp.classes.Users
 import com.FLAVOR.mvp.classes.Users_request
 import com.FLAVOR.mvp.classes.Usersingleton
+import com.FLAVOR.mvp.databinding.ActivityLoginKakaoBinding
+import com.FLAVOR.mvp.databinding.DialogUseragreementBinding
 import com.FLAVOR.mvp.feeds.MainActivity
 import com.kakao.sdk.auth.AuthApiClient
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.common.model.KakaoSdkError
 import com.kakao.sdk.user.UserApiClient
-import kotlinx.android.synthetic.main.activity_login_kakao.*
-import kotlinx.android.synthetic.main.dialog_selfname.*
-import kotlinx.android.synthetic.main.dialog_selfname.checkbutton
-import kotlinx.android.synthetic.main.dialog_useragreement.*
-import kotlinx.android.synthetic.main.view_loader.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.security.AccessController.getContext
 
 
 class KakaoLoginActivity: BasicActivity() {
+
+    private lateinit var binding: ActivityLoginKakaoBinding
 
     var MainAct_Intent = Intent()  //Mainactivity로 데이터 실어서 보내줄 인텐트
     lateinit var strNick: String
     lateinit var strprofileImg: String
     lateinit var strEmail: String
-    lateinit var  strkakaoid: String
+    lateinit var strkakaoid: String
     lateinit var kakao_token: String  //카카오 api접근을 위해 저장해두는 엑세스 토큰
     lateinit var user: Users //유저객체
     var introact_check = false  //소개화면에서 온 경우인지 아닌지를 구별해줄 변수 true면 소개화면보고 온것
     private var dialog: Dialog? = null  //첨에 앱깔고 앱설명글 보고 난 후에 뜨는 앱이용약관 다이얼로그객체
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_login_kakao)
+
+        binding = ActivityLoginKakaoBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
 
         // 화면을 portrait(세로) 화면으로 고정하고 싶은 경우
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
         //로딩화면보여줌
-        loaderLayout.visibility = View.VISIBLE
+        binding.loaderLayout.root.visibility = View.VISIBLE
 
         //나머지 뷰들은 가려줌
-        logo_image.visibility  = View.INVISIBLE
-        login_Text.visibility  = View.INVISIBLE
-        cardView_kakaobtn.visibility  = View.INVISIBLE
+        binding.logoImage.visibility = View.INVISIBLE
+        binding.loginText.visibility = View.INVISIBLE
+        binding.cardViewKakaobtn.visibility = View.INVISIBLE
         setToolbarTitle("카카오 로그인")
 
         //앱소개화면어댑터에서 보낸 인텐트를 받아서 로그인한 사용자 정보를 얻는다.
         var intent = getIntent()
-        introact_check = intent.getBooleanExtra("check",false)
+        introact_check = intent.getBooleanExtra("check", false)
         Log.e("태그", "카톡로그인 처음왓을때 바로 introact_check: " + introact_check)
 
         has_kakaotoken()  //카카오 토큰 있는지 판별. 없으면
 
         //로그인 이미지 눌렀을때
-        login.setOnClickListener {
+        binding.login.setOnClickListener {
             // 로그인 공통 callback 함수 - 밑에서 카톡 깔려있는지 없는지에 따라서 로그인 작업 수행해주고 그후 로그인 성공실패 작업은 여기서
             val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
                 if (error != null) {    //오류 발생시
@@ -108,21 +114,21 @@ class KakaoLoginActivity: BasicActivity() {
                             "다시 로그인해주세요.",
                             Toast.LENGTH_SHORT
                         ).show()
-                      loaderLayout.visibility = View.GONE  //로딩화면제거
 
-                        //나머지 뷰들 다 보여줌
-                        logo_image.visibility  = View.VISIBLE
-                        login_Text.visibility  = View.VISIBLE
-                        cardView_kakaobtn.visibility  = View.VISIBLE
+                        binding.loaderLayout.root.visibility = View.GONE
+
+                        binding.logoImage.visibility = View.VISIBLE
+                        binding.loginText.visibility = View.VISIBLE
+                        binding.cardViewKakaobtn.visibility = View.VISIBLE
                     } else {
                         //기타 다른 토큰 에러
                         Log.e("태그", "UpdateKakakotalkUI/   기타 에러남 ")
 
-                        loaderLayout.visibility = View.GONE  //로딩화면제거
+                        binding.loaderLayout.root.visibility = View.GONE
                         //나머지 뷰들 다 보여줌
-                        logo_image.visibility  = View.VISIBLE
-                        login_Text.visibility  = View.VISIBLE
-                        cardView_kakaobtn.visibility  = View.VISIBLE
+                        binding.logoImage.visibility = View.VISIBLE
+                        binding.loginText.visibility = View.VISIBLE
+                        binding.cardViewKakaobtn.visibility = View.VISIBLE
                     }
                 } else {  //토큰 이미 존재할때 (필요 시 토큰 갱신됨)
                     Log.e("태그", "has_kakaotoken함수 결과 이미 토큰값 존재. 사용자 정보값 가지고 바로 main으로 이동")
@@ -130,22 +136,23 @@ class KakaoLoginActivity: BasicActivity() {
                 }
             }
         } else {  //토큰이 없을때는 로그인버튼 보여줌
-            if(introact_check == false){   //소개화면에 갔다온게 아닌 경우
+            if (introact_check == false) {   //소개화면에 갔다온게 아닌 경우
                 finish()
                 //소개화면으로 보내줌.
                 Log.e("태그", "introact_check == null. 앱소개화면으로 이동합니다.")
                 var i = Intent(this@KakaoLoginActivity, AppIntroActivity::class.java)
                 startActivity(i)
-            }else{              //소개화면에 갔다가 온 경우
+            } else {              //소개화면에 갔다가 온 경우
                 //로그인 필요하므로 로그인 버튼 보여줌
                 Toast.makeText(this@KakaoLoginActivity, "로그인 해주세요.", Toast.LENGTH_SHORT).show()
                 Log.e("태그", "UpdateKakakotalkUI/ 앱소개화면엔 갔다왔고,  토큰이 없습니다. 로그인 해주세요")
-                loaderLayout.visibility = View.GONE  //로딩화면제거
+
+                binding.loaderLayout.root.visibility = View.GONE
 
                 //나머지 뷰들 다 보여줌
-                logo_image.visibility  = View.VISIBLE
-                login_Text.visibility  = View.VISIBLE
-                cardView_kakaobtn.visibility  = View.VISIBLE
+                binding.logoImage.visibility = View.VISIBLE
+                binding.loginText.visibility = View.VISIBLE
+                binding.cardViewKakaobtn.visibility = View.VISIBLE
             }
         }
     }
@@ -163,13 +170,14 @@ class KakaoLoginActivity: BasicActivity() {
                 strprofileImg = user.kakaoAccount?.profile?.thumbnailImageUrl.toString()
                 strkakaoid = user.id!!.toString()
 
-                this.user = Users(strEmail, strNick, kakao_token, strkakaoid,strprofileImg ) //유저객체 하나 생성
+                this.user =
+                    Users(strEmail, strNick, kakao_token, strkakaoid, strprofileImg) //유저객체 하나 생성
 
                 Usersingleton.kakao_id = user.id.toString()  //유저 싱글톤에 있는 회원번호 전역변수를 초기화
                 Usersingleton.username = user.kakaoAccount?.profile?.nickname.toString()
                 Usersingleton.userEmail = user.kakaoAccount?.email.toString()
                 Usersingleton.profilepath = user.kakaoAccount?.profile?.thumbnailImageUrl.toString()
-                Log.e("싱글톤태그","usersingleton.username: "+Usersingleton.username)
+                Log.e("싱글톤태그", "usersingleton.username: " + Usersingleton.username)
 
                 //main에 보내줄 회원정보 데이터 값들
                 MainAct_Intent = Intent(this@KakaoLoginActivity, MainActivity::class.java)
@@ -177,7 +185,7 @@ class KakaoLoginActivity: BasicActivity() {
                 MainAct_Intent.putExtra("name", strNick)  //프로필이름
                 MainAct_Intent.putExtra("profileImg", strprofileImg)  //프로필이미지url
                 MainAct_Intent.putExtra("email", strEmail)  //이메일정보 넘겨줌
-                MainAct_Intent.putExtra("floating_anim",true)
+                MainAct_Intent.putExtra("floating_anim", true)
 
                 //백스택 값들을 다 지워준다는뜻. 즉 이동후에 뒤로버튼 눌러도 다시 이 액티비티로 안오고 앱종료됨
                 MainAct_Intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
@@ -211,7 +219,7 @@ class KakaoLoginActivity: BasicActivity() {
                 Usersingleton.username = user.kakaoAccount?.profile?.nickname.toString()
                 Usersingleton.userEmail = user.kakaoAccount?.email.toString()
                 Usersingleton.profilepath = user.kakaoAccount?.profile?.thumbnailImageUrl.toString()
-                Log.e("싱글톤태그","usersingleton.username: "+Usersingleton.username)
+                Log.e("싱글톤태그", "usersingleton.username: " + Usersingleton.username)
 
 
                 Log.e("카카오로그인화면 태그", "토큰있고 로그인되있을때 user_id값 초기화 성공: " + Usersingleton.kakao_id)
@@ -222,7 +230,7 @@ class KakaoLoginActivity: BasicActivity() {
                 MainAct_Intent.putExtra("name", strNick)  //프로필이름
                 MainAct_Intent.putExtra("profileImg", strprofileImg)  //프로필이미지url
                 MainAct_Intent.putExtra("email", strEmail)  //이메일정보 넘겨줌
-                MainAct_Intent.putExtra("floating_anim",true)
+                MainAct_Intent.putExtra("floating_anim", true)
                 Log.e(
                     "태그", "UserinfoCall_hastoken :   사용자 정보 요청 성공" +
                             "\n회원번호: ${user.id}" +
@@ -233,7 +241,7 @@ class KakaoLoginActivity: BasicActivity() {
             }
             finish()  //카카오 로그인 액티비티 닫아줌
             startActivity(MainAct_Intent)  //main으로 유저정보 실어서 보내줌
-            loaderLayout.visibility = View.GONE  //로딩화면제거
+            binding.loaderLayout.root.visibility = View.GONE
             Toast.makeText(this@KakaoLoginActivity, strNick + "님 환영합니다.", Toast.LENGTH_SHORT).show()
         }
     }
@@ -245,6 +253,7 @@ class KakaoLoginActivity: BasicActivity() {
             override fun onFailure(call: Call<Users_request>, t: Throwable) {
                 Log.e("태그", "서버 통신 아예 실패" + t.message)
             }
+
             override fun onResponse(call: Call<Users_request>, response: Response<Users_request>) {
                 if (response.isSuccessful) {
                     Log.e(
@@ -253,17 +262,21 @@ class KakaoLoginActivity: BasicActivity() {
                     )
                     handler()
                 } else {
-                    if(response.errorBody()?.string() == "{\"msg\":\"ER_DUP_ENTRY\"}"){  //이미 유저테이블에 유저 등록되어 있는경우
+                    if (response.errorBody()
+                            ?.string() == "{\"msg\":\"ER_DUP_ENTRY\"}"
+                    ) {  //이미 유저테이블에 유저 등록되어 있는경우
                         Log.e(
                             "태그",
-                            "이미 등록된 유저. 카카오토큰만 갱신후 진행 response.errorBody()?.string() " + response.errorBody()?.string()
+                            "이미 등록된 유저. 카카오토큰만 갱신후 진행 response.errorBody()?.string() " + response.errorBody()
+                                ?.string()
                         )
                         //유저 업데이트 해주는 로직
                         modify_kakaotoken()
-                    }else{
+                    } else {
                         Log.e(
                             "태그",
-                            "서버접근 성공했지만 올바르지 않은 response값" + response.body()?.msg + "response.body(): " + response.body() + ",response.message(): " + response.errorBody()?.string()
+                            "서버접근 성공했지만 올바르지 않은 response값" + response.body()?.msg + "response.body(): " + response.body() + ",response.message(): " + response.errorBody()
+                                ?.string()
                         )
                     }
                     handler()
@@ -310,55 +323,58 @@ class KakaoLoginActivity: BasicActivity() {
     }
 
     //이미 등록된 유저가 다시 서버에 유저등록시도할때 해당 유저의 카카오토큰값만 변경해주고 새로 등록은 안해줌
-    fun modify_kakaotoken(){
+    fun modify_kakaotoken() {
         server.modify_kakaotoken(user.kakao_id, user.kakaotoken!!)
             .enqueue(object : Callback<Msg> {
                 override fun onFailure(call: Call<Msg>, t: Throwable) {
-                    Toast.makeText(this@KakaoLoginActivity,"서버 접근 실패",Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@KakaoLoginActivity, "서버 접근 실패", Toast.LENGTH_SHORT).show()
                 }
+
                 override fun onResponse(call: Call<Msg>, response: Response<Msg>) {
                     if (response.isSuccessful) {
 
-                        Log.e("태그","유저 카카오 토큰값 수정 성공. response.body()?.msg"+ response.body()?.msg)
+                        Log.e("태그", "유저 카카오 토큰값 수정 성공. response.body()?.msg" + response.body()?.msg)
                     } else {
-                        Log.e("태그","유저 카카오 토큰값 수정 실패. response.errorBody()?.string():"+response.errorBody()?.string())
+                        Log.e("태그",
+                            "유저 카카오 토큰값 수정 실패. response.errorBody()?.string():" + response.errorBody()
+                                ?.string()
+                        )
                     }
                 }
             })
     }
 
     //앱 이용약관 보여주는 다이얼로그
-    fun showDialog() {
-        dialog =  Dialog(this) //다이얼로그객체 초기화
+    fun showDialog(): AlertDialog? {
+
+
+        dialog = Dialog(this) //다이얼로그객체 초기화
         dialog!!.setContentView(R.layout.dialog_useragreement)
         dialog!!.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT)) //다이얼로그 테두리 사각형 투명하게 하기(이렇게 해야 다이얼로그 둥근테두리됨)
-        dialog?.show() // 다이얼로그 띄우기
+        var dialogbinding = DialogUseragreementBinding.inflate(getLayoutInflater())
 
-        /* 이 함수 안에 원하는 디자인과 기능을 구현하면 된다. */
-        // *주의할 점: findViewById()를 쓸 때는 -> 앞에 반드시 다이얼로그 이름을 붙여야 한다.
+        val builder: AlertDialog.Builder = AlertDialog.Builder(this)
+        builder.setView(dialogbinding.root)
 
-        // 취소버튼
-        dialog?.cancelbutton?.setOnClickListener {
-            dialog?.dismiss() // 다이얼로그 닫기
-        }
-        // 확인 버튼
-        dialog?.checkbutton?.setOnClickListener(View.OnClickListener {
+        dialogbinding.checkbutton?.setOnClickListener(View.OnClickListener {
 
         })
+
         //개인정보처리방침 내용보기 클릭시
-        dialog!!.detail_textView1.setOnClickListener {
+        dialogbinding.detailTextView1.setOnClickListener {
             var i = Intent(this@KakaoLoginActivity, personalInfoActivity::class.java)
             startActivity(i)
         }
         //서비스약관 내용보기 클릭시
-        dialog!!.detail_textView2.setOnClickListener {
-
+        dialogbinding.detailTextView2.setOnClickListener {
+            var i = Intent(this@KakaoLoginActivity, serviceagreementActivity::class.java)
+            startActivity(i)
         }
+        return builder.create()
+
+
+
     }
-
-
-
-
 
 
 }

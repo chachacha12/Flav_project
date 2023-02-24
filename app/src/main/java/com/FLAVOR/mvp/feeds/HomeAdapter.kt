@@ -13,12 +13,12 @@ import android.widget.PopupMenu
 import androidx.annotation.RequiresApi
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
+import com.FLAVOR.mvp.Adapter.GalleryAdapter
 import com.bumptech.glide.Glide
 import com.FLAVOR.mvp.R
 import com.FLAVOR.mvp.classes.Usersingleton
+import com.FLAVOR.mvp.databinding.*
 import com.FLAVOR.mvp.retrofit_service
-import kotlinx.android.synthetic.main.item_post.view.*
-import kotlinx.android.synthetic.main.view_post.view.*
 import java.util.*
 
 // 피드 게시물들 띄우는 리사이클러뷰의 어댑터
@@ -26,16 +26,19 @@ class HomeAdapter(
     var activity: Activity,
     private var myDataset: ArrayList<Contents>,
     var server:retrofit_service,
-    var onPostListener: OnPostdeleteListener
+    var onPostListener: OnPostdeleteListener,
+    var binding2: ViewPostBinding
 
 )  : RecyclerView.Adapter<HomeAdapter.MainViewHolder>() {
+
+    //private lateinit var viewpostbinding: ViewPostBinding
 
     //전역
     private var MORE_INDEX = 2
     //firebaseHelper에서 activity값과 server값을 사용할거라 인자로 보내줌
 
     //뷰홀더에 텍스트뷰말고 카드뷰를 넣음
-    class MainViewHolder(val cardView: CardView) : RecyclerView.ViewHolder(cardView)
+    class MainViewHolder(val binding: ItemPostBinding) : RecyclerView.ViewHolder(binding.root)
 
     override fun getItemViewType(position: Int): Int {
         return position
@@ -45,13 +48,15 @@ class HomeAdapter(
         parent: ViewGroup,
         viewType: Int
     ): MainViewHolder {
+
+
         val cardView: CardView = LayoutInflater.from(parent.context).inflate(
             R.layout.item_post,
             parent,
             false
         ) as CardView   //item_post에 있는 뷰들에 접근가능하게 해줌.  inflate에 들어간 레이아웃은 row파일과 같은거임.
 
-        val mainViewHolder = MainViewHolder(cardView)  //밑의 setOnClickListener에서 사용자가 선택한 특정뷰의 위치값 알아야해서 여기서 뷰홀더객체생성
+        val mainViewHolder = MainViewHolder(ItemPostBinding.bind(cardView))  //밑의 setOnClickListener에서 사용자가 선택한 특정뷰의 위치값 알아야해서 여기서 뷰홀더객체생성
 
         //특정 게시글을 눌렀을때 효과
         cardView.setOnClickListener {
@@ -69,7 +74,7 @@ class HomeAdapter(
         }
 
         //게시글의 toolbar(점3개)버튼을 클릭했을때 효과
-        cardView.threePoint_button.setOnClickListener {
+        mainViewHolder.binding.threePointButton.setOnClickListener {
             showPopup(it, mainViewHolder.adapterPosition)      //post.xml을 띄워줌. 밑에 있음. 구글에 android menu검색하고 developers사이트들어가서 코드 가져옴
         }                                                     //mainViewHolder.adapterPosition을 넣어주는 이유는 사용자가 선택한 특정위치의 게시글을 삭제or수정해야 하기에.
         return mainViewHolder
@@ -83,23 +88,23 @@ class HomeAdapter(
 
         val safePosition: Int = holder.adapterPosition
 
-        val cardView = holder.cardView
-        val titletextView = cardView.titleTextView
+        //val cardView = holder.cardView
+        val titletextView = holder.binding.titleTextView
         val contents= myDataset[safePosition]
         titletextView.text = contents.restname  //컨텐츠의 식당명값을 제목에 넣어줌
 
         //내 게시물일때랑 친구게시물일때 나눠서 각각 다른 이미지 넣어줄거임
         if(contents.User.getString("kakao_id") == Usersingleton.kakao_id!!){  //내 게시물
-            cardView.threePoint_button.setBackgroundResource(R.drawable.ic_more_vert2)
+            holder.binding.threePointButton.setBackgroundResource(R.drawable.ic_more_vert2)
         }else{
-            cardView.threePoint_button.setBackgroundResource(R.drawable.meeting)
+            holder.binding.threePointButton.setBackgroundResource(R.drawable.meeting)
         }
 
         //받아온 유저이름, 프로필 넣어주기
-        var nameTextView = cardView.nameTextView
+        var nameTextView =   holder.binding.nameTextView
         nameTextView.text = contents.User.getString("username")  //contents.User로 서버로부터 받아온 값이jsonobject라서 getString()~ 이걸 더 추가함
 
-        var profile_photo_imageView = cardView.photoImageVIew
+        var profile_photo_imageView =   holder.binding.photoImageVIew
         var photoUrl = contents.User.getString("profileimg_path")  //프사없으면"null"이라서 이때처리해주기
 
        if(photoUrl == "null"){  //프사없을땐 기본이미지로
@@ -110,12 +115,14 @@ class HomeAdapter(
        }
 
         //받아온 지하철역, 거리정보 넣어주기
-        val location_textView = cardView.location_textView
+        val location_textView =   holder.binding.locationTextView
         location_textView.text = contents.near_station + "에서 "+contents.station_distance
-        
+
+
+
         //게시물 하단의 태그3개 생성일을 채워줄 로직 - readContentsView는 view_post안의 뷰들을 채워줌
-        val readContentsVIew: ReadContentsVIew = cardView.findViewById(R.id.readContentsView)
-        var contentsLayout = cardView.contentsLayout  //여기안에 contentsList의 내용들(사진 ) 등을 넣을거임
+        val readContentsVIew: ReadContentsVIew =   holder.binding.readContentsView
+        var contentsLayout = binding2.contentsLayout  //여기안에 contentsList의 내용들(사진 ) 등을 넣을거임
         //이미지, 동영상, 글 등 contents내용들을 담는 뷰들(이미지뷰, 텍스트뷰)만들고 데이터들 그 안에 넣을거임
         if (contentsLayout.getTag() == null || !contentsLayout.getTag().equals(contents)) {     //데이터가 같을수도 있는데 계속 뷰들 다 지웠다 만들고 하는건 낭비라서 이 로직 추가함.(null일땐 처음 앱 실행할때를 위해) 이 로직 없다면 스크롤 내릴때마다 뷰들 삭제되고 생성되고했을거임
             contentsLayout.setTag(contents)
@@ -126,7 +133,7 @@ class HomeAdapter(
         }
     }
 
-    override fun getItemCount() = myDataset!!.size
+    override fun getItemCount() = myDataset.size
 
     //피드상에서 바로 점세게버튼 중 하나 눌렀을때 동작
    //res안에 menu디렉토리 만든거에서, 그 안의 menu파일을 불러와서 보여주고, 클릭했을때 이벤트처리해줌
