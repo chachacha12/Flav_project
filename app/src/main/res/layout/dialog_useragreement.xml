@@ -62,7 +62,7 @@
                     android:layout_marginLeft="10dp"
                     android:layout_weight="3"
                     android:backgroundTint="#03A9F4"
-                    android:buttonTint="#B6B6B6"
+                    android:buttonTint="#00aded"
                     android:text="개인정보 처리 방침" />
 
                 <TextView
@@ -86,7 +86,7 @@
                     android:layout_marginLeft="10dp"
                     android:layout_weight="3"
                     android:backgroundTint="#03A9F4"
-                    android:buttonTint="#B6B6B6"
+                    android:buttonTint="#00aded"
                     android:text="서비스 약관" />
 
                 <TextView

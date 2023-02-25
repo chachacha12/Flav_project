@@ -28,15 +28,16 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
+
         <activity
-            android:name=".useagreementActivity"
+            android:name=".activity.PersonalInfoActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name=".personalInfoActivity"
+            android:name=".activity.ServiceagreementActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"

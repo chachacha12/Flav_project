@@ -4,9 +4,9 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.FLAVOR.mvp.R
 
-class personalInfoActivity : AppCompatActivity() {
+class ServiceagreementActivity : BasicActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_personal_info)
+        setContentView(R.layout.activity_serviceagreement)
     }
 }

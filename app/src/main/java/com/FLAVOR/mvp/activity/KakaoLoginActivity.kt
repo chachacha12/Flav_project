@@ -1,6 +1,5 @@
 package com.FLAVOR.mvp.activity
 
-import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Intent
 import android.content.pm.ActivityInfo
@@ -11,7 +10,6 @@ import android.os.Handler
 import android.os.Looper
 import android.os.Message
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
 import android.widget.Toast
 import com.FLAVOR.mvp.R
@@ -21,7 +19,6 @@ import com.FLAVOR.mvp.classes.Users
 import com.FLAVOR.mvp.classes.Users_request
 import com.FLAVOR.mvp.classes.Usersingleton
 import com.FLAVOR.mvp.databinding.ActivityLoginKakaoBinding
-import com.FLAVOR.mvp.databinding.DialogUseragreementBinding
 import com.FLAVOR.mvp.feeds.MainActivity
 import com.kakao.sdk.auth.AuthApiClient
 import com.kakao.sdk.auth.model.OAuthToken
@@ -31,7 +28,6 @@ import kotlinx.android.synthetic.main.dialog_useragreement.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.security.AccessController.getContext
 
 
 class KakaoLoginActivity: BasicActivity() {
@@ -366,12 +362,12 @@ class KakaoLoginActivity: BasicActivity() {
         }
         //개인정보처리방침 내용보기 클릭시
         agreemetn_dialog!!.detail_textView1.setOnClickListener {
-            var i = Intent(this@KakaoLoginActivity, personalInfoActivity::class.java)
+            val i = Intent(this@KakaoLoginActivity,   PersonalInfoActivity::class.java)
             startActivity(i)
         }
         //서비스약관 내용보기 클릭시
         agreemetn_dialog!!.detail_textView2.setOnClickListener {
-            var i = Intent(this@KakaoLoginActivity, serviceagreementActivity::class.java)
+            val i = Intent(this@KakaoLoginActivity, ServiceagreementActivity::class.java)
             startActivity(i)
         }
         Log.e("태그", "앱 이용약관 다이얼로그 생성")
