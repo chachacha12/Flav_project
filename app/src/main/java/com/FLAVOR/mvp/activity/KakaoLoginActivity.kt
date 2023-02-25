@@ -27,6 +27,7 @@ import com.kakao.sdk.auth.AuthApiClient
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.common.model.KakaoSdkError
 import com.kakao.sdk.user.UserApiClient
+import kotlinx.android.synthetic.main.dialog_useragreement.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -45,7 +46,7 @@ class KakaoLoginActivity: BasicActivity() {
     lateinit var kakao_token: String  //카카오 api접근을 위해 저장해두는 엑세스 토큰
     lateinit var user: Users //유저객체
     var introact_check = false  //소개화면에서 온 경우인지 아닌지를 구별해줄 변수 true면 소개화면보고 온것
-    private var dialog: Dialog? = null  //첨에 앱깔고 앱설명글 보고 난 후에 뜨는 앱이용약관 다이얼로그객체
+    private var agreemetn_dialog: Dialog? = null  //첨에 앱깔고 앱설명글 보고 난 후에 뜨는 앱이용약관 다이얼로그객체
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -106,7 +107,7 @@ class KakaoLoginActivity: BasicActivity() {
                 if (error != null) {  //토큰에 오류가 있을때
                     if (error is KakaoSdkError && error.isInvalidTokenError()) {
 
-                        showDialog()
+                        Show_AgreementDialog()//이용약관 다이얼로그 실행
 
                         //로그인 필요
                         Toast.makeText(
@@ -143,6 +144,8 @@ class KakaoLoginActivity: BasicActivity() {
                 var i = Intent(this@KakaoLoginActivity, AppIntroActivity::class.java)
                 startActivity(i)
             } else {              //소개화면에 갔다가 온 경우
+
+                Show_AgreementDialog()//이용약관 다이얼로그 실행
                 //로그인 필요하므로 로그인 버튼 보여줌
                 Toast.makeText(this@KakaoLoginActivity, "로그인 해주세요.", Toast.LENGTH_SHORT).show()
                 Log.e("태그", "UpdateKakakotalkUI/ 앱소개화면엔 갔다왔고,  토큰이 없습니다. 로그인 해주세요")
@@ -153,6 +156,8 @@ class KakaoLoginActivity: BasicActivity() {
                 binding.logoImage.visibility = View.VISIBLE
                 binding.loginText.visibility = View.VISIBLE
                 binding.cardViewKakaobtn.visibility = View.VISIBLE
+
+
             }
         }
     }
@@ -345,36 +350,33 @@ class KakaoLoginActivity: BasicActivity() {
     }
 
     //앱 이용약관 보여주는 다이얼로그
-    fun showDialog(): AlertDialog? {
+    fun Show_AgreementDialog() {
+        agreemetn_dialog = Dialog(this) //다이얼로그객체 초기화
+        agreemetn_dialog!!.setContentView(R.layout.dialog_useragreement)
+        agreemetn_dialog!!.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT)) //다이얼로그 테두리 사각형 투명하게 하기(이렇게 해야 다이얼로그 둥근테두리됨)
+        agreemetn_dialog?.show() // 다이얼로그 띄우기
+        agreemetn_dialog!!.setCanceledOnTouchOutside(false) //바깥을 눌러도 꺼지지않음
 
+        /* 이 함수 안에 원하는 디자인과 기능을 구현하면 된다. */
+        // *주의할 점: findViewById()를 쓸 때는 -> 앞에 반드시 다이얼로그 이름을 붙여야 한다.
 
-        dialog = Dialog(this) //다이얼로그객체 초기화
-        dialog!!.setContentView(R.layout.dialog_useragreement)
-        dialog!!.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT)) //다이얼로그 테두리 사각형 투명하게 하기(이렇게 해야 다이얼로그 둥근테두리됨)
-        var dialogbinding = DialogUseragreementBinding.inflate(getLayoutInflater())
+        //확인버튼 눌렀을시
+        agreemetn_dialog!!.checkbutton?.setOnClickListener {
 
-        val builder: AlertDialog.Builder = AlertDialog.Builder(this)
-        builder.setView(dialogbinding.root)
-
-        dialogbinding.checkbutton?.setOnClickListener(View.OnClickListener {
-
-        })
-
+        }
         //개인정보처리방침 내용보기 클릭시
-        dialogbinding.detailTextView1.setOnClickListener {
+        agreemetn_dialog!!.detail_textView1.setOnClickListener {
             var i = Intent(this@KakaoLoginActivity, personalInfoActivity::class.java)
             startActivity(i)
         }
         //서비스약관 내용보기 클릭시
-        dialogbinding.detailTextView2.setOnClickListener {
+        agreemetn_dialog!!.detail_textView2.setOnClickListener {
             var i = Intent(this@KakaoLoginActivity, serviceagreementActivity::class.java)
             startActivity(i)
         }
-        return builder.create()
-
-
-
+        Log.e("태그", "앱 이용약관 다이얼로그 생성")
     }
+
 
 
 }
