@@ -43,8 +43,8 @@ class HomeFragment(var server: retrofit_service, var floating_anim:Boolean) : Fr
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
-    private var _binding2: ViewPostBinding? = null
-    private val binding2 get() = _binding2!!
+    //private var _binding2: ViewPostBinding? = null
+   // private val binding2 get() = _binding2!!
 
 
     private var homeAdapter: HomeAdapter? = null
@@ -102,7 +102,7 @@ class HomeFragment(var server: retrofit_service, var floating_anim:Boolean) : Fr
     ): View? {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
 
-        _binding2 = ViewPostBinding.inflate(inflater, container!!)
+      //  _binding2 = ViewPostBinding.inflate(inflater, container!!)
 
         val view = binding.root
 
@@ -112,7 +112,7 @@ class HomeFragment(var server: retrofit_service, var floating_anim:Boolean) : Fr
 
         contentsList = ArrayList()  //초기화  - 이거안하면 null에러남
         update_contentsList = ArrayList()  //초기화
-        homeAdapter = HomeAdapter(requireActivity(), contentsList!!, server, onPostListener, binding2)  //어댑터에서도 server통신위해 server를 인자에 넣어줌
+        homeAdapter = HomeAdapter(requireActivity(), contentsList!!, server, onPostListener)  //어댑터에서도 server통신위해 server를 인자에 넣어줌
         recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
         view.findViewById<FloatingActionButton>(R.id.floatingActionButton).setOnClickListener(
             onClickListener

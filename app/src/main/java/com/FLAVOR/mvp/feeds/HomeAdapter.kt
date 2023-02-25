@@ -19,6 +19,7 @@ import com.FLAVOR.mvp.R
 import com.FLAVOR.mvp.classes.Usersingleton
 import com.FLAVOR.mvp.databinding.*
 import com.FLAVOR.mvp.retrofit_service
+import kotlinx.android.synthetic.main.view_post.view.*
 import java.util.*
 
 // 피드 게시물들 띄우는 리사이클러뷰의 어댑터
@@ -27,7 +28,7 @@ class HomeAdapter(
     private var myDataset: ArrayList<Contents>,
     var server:retrofit_service,
     var onPostListener: OnPostdeleteListener,
-    var binding2: ViewPostBinding
+   // var binding2: ViewPostBinding
 
 )  : RecyclerView.Adapter<HomeAdapter.MainViewHolder>() {
 
@@ -122,7 +123,7 @@ class HomeAdapter(
 
         //게시물 하단의 태그3개 생성일을 채워줄 로직 - readContentsView는 view_post안의 뷰들을 채워줌
         val readContentsVIew: ReadContentsVIew =   holder.binding.readContentsView
-        var contentsLayout = binding2.contentsLayout  //여기안에 contentsList의 내용들(사진 ) 등을 넣을거임
+        var contentsLayout = readContentsVIew.contentsLayout   //여기안에 contentsList의 내용들(사진 ) 등을 넣을거임
         //이미지, 동영상, 글 등 contents내용들을 담는 뷰들(이미지뷰, 텍스트뷰)만들고 데이터들 그 안에 넣을거임
         if (contentsLayout.getTag() == null || !contentsLayout.getTag().equals(contents)) {     //데이터가 같을수도 있는데 계속 뷰들 다 지웠다 만들고 하는건 낭비라서 이 로직 추가함.(null일땐 처음 앱 실행할때를 위해) 이 로직 없다면 스크롤 내릴때마다 뷰들 삭제되고 생성되고했을거임
             contentsLayout.setTag(contents)
