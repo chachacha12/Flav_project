@@ -42,7 +42,7 @@ class KakaoLoginActivity: BasicActivity() {
     lateinit var kakao_token: String  //카카오 api접근을 위해 저장해두는 엑세스 토큰
     lateinit var user: Users //유저객체
     var introact_check = false  //소개화면에서 온 경우인지 아닌지를 구별해줄 변수 true면 소개화면보고 온것
-    private var agreemetn_dialog: Dialog? = null  //첨에 앱깔고 앱설명글 보고 난 후에 뜨는 앱이용약관 다이얼로그객체
+    private var agreement_dialog: Dialog? = null  //첨에 앱깔고 앱설명글 보고 난 후에 뜨는 앱이용약관 다이얼로그객체
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -103,8 +103,6 @@ class KakaoLoginActivity: BasicActivity() {
                 if (error != null) {  //토큰에 오류가 있을때
                     if (error is KakaoSdkError && error.isInvalidTokenError()) {
 
-                        Show_AgreementDialog()//이용약관 다이얼로그 실행
-
                         //로그인 필요
                         Toast.makeText(
                             this@KakaoLoginActivity,
@@ -140,12 +138,11 @@ class KakaoLoginActivity: BasicActivity() {
                 var i = Intent(this@KakaoLoginActivity, AppIntroActivity::class.java)
                 startActivity(i)
             } else {              //소개화면에 갔다가 온 경우
+                Show_AgreementDialog() //이용약관 다이얼로그 실행
+                //Toast.makeText(this@KakaoLoginActivity, "이용약관에 동의해주세요.", Toast.LENGTH_SHORT).show()
 
-                Show_AgreementDialog()//이용약관 다이얼로그 실행
                 //로그인 필요하므로 로그인 버튼 보여줌
-                Toast.makeText(this@KakaoLoginActivity, "로그인 해주세요.", Toast.LENGTH_SHORT).show()
                 Log.e("태그", "UpdateKakakotalkUI/ 앱소개화면엔 갔다왔고,  토큰이 없습니다. 로그인 해주세요")
-
                 binding.loaderLayout.root.visibility = View.GONE
 
                 //나머지 뷰들 다 보여줌
@@ -347,30 +344,52 @@ class KakaoLoginActivity: BasicActivity() {
 
     //앱 이용약관 보여주는 다이얼로그
     fun Show_AgreementDialog() {
-        agreemetn_dialog = Dialog(this) //다이얼로그객체 초기화
-        agreemetn_dialog!!.setContentView(R.layout.dialog_useragreement)
-        agreemetn_dialog!!.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT)) //다이얼로그 테두리 사각형 투명하게 하기(이렇게 해야 다이얼로그 둥근테두리됨)
-        agreemetn_dialog?.show() // 다이얼로그 띄우기
-        agreemetn_dialog!!.setCanceledOnTouchOutside(false) //바깥을 눌러도 꺼지지않음
+        Log.e("태그", "앱 이용약관 다이얼로그 생성")
+        agreement_dialog = Dialog(this) //다이얼로그객체 초기화
+        agreement_dialog!!.setContentView(R.layout.dialog_useragreement)
+        agreement_dialog!!.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT)) //다이얼로그 테두리 사각형 투명하게 하기(이렇게 해야 다이얼로그 둥근테두리됨)
+        agreement_dialog?.show() // 다이얼로그 띄우기
+        agreement_dialog!!.setCanceledOnTouchOutside(false) //바깥을 눌러도 꺼지지않음
+        agreement_dialog!!.OK_checkbutton.isEnabled = false     //최종동의 버튼비활성화
 
         /* 이 함수 안에 원하는 디자인과 기능을 구현하면 된다. */
         // *주의할 점: findViewById()를 쓸 때는 -> 앞에 반드시 다이얼로그 이름을 붙여야 한다.
 
-        //확인버튼 눌렀을시
-        agreemetn_dialog!!.checkbutton?.setOnClickListener {
-
-        }
         //개인정보처리방침 내용보기 클릭시
-        agreemetn_dialog!!.detail_textView1.setOnClickListener {
+        agreement_dialog!!.detail_textView1.setOnClickListener {
             val i = Intent(this@KakaoLoginActivity,   PersonalInfoActivity::class.java)
             startActivity(i)
         }
         //서비스약관 내용보기 클릭시
-        agreemetn_dialog!!.detail_textView2.setOnClickListener {
+        agreement_dialog!!.detail_textView2.setOnClickListener {
             val i = Intent(this@KakaoLoginActivity, ServiceagreementActivity::class.java)
             startActivity(i)
         }
-        Log.e("태그", "앱 이용약관 다이얼로그 생성")
+
+        //두개의 체크버튼이 다 눌렸다면 최종동의버튼 활성화해줌
+        agreement_dialog!!.SelfInfo_checkBox.setOnClickListener {
+            if(agreement_dialog!!.SelfInfo_checkBox.isChecked && agreement_dialog!!.Serviceagreement_checkBox.isChecked) {
+                agreement_dialog!!.OK_checkbutton.setBackgroundResource(R.drawable.button2_round)
+                agreement_dialog!!.OK_checkbutton.isEnabled = true   //최종동의 버튼 활성화
+            }else{
+                agreement_dialog!!.OK_checkbutton.setBackgroundResource(R.drawable.button_round)
+                agreement_dialog!!.OK_checkbutton.isEnabled = false
+            }
+        }
+        agreement_dialog!!.Serviceagreement_checkBox.setOnClickListener {
+            if(agreement_dialog!!.SelfInfo_checkBox.isChecked && agreement_dialog!!.Serviceagreement_checkBox.isChecked) {
+                agreement_dialog!!.OK_checkbutton.setBackgroundResource(R.drawable.button2_round)
+                agreement_dialog!!.OK_checkbutton.isEnabled = true
+            }else{
+                agreement_dialog!!.OK_checkbutton.setBackgroundResource(R.drawable.button_round)
+                agreement_dialog!!.OK_checkbutton.isEnabled = false
+            }
+        }
+
+        //최종동의버튼 활성화되었을때 클릭시
+        agreement_dialog!!.OK_checkbutton.setOnClickListener {
+            agreement_dialog!!.dismiss()  //다이얼로그 닫기
+        }
     }
 
 

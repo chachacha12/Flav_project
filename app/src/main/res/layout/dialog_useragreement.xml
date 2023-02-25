@@ -56,7 +56,7 @@
                 android:orientation="horizontal">
 
                 <CheckBox
-                    android:id="@+id/checkBox"
+                    android:id="@+id/SelfInfo_checkBox"
                     android:layout_width="150dp"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
@@ -80,7 +80,7 @@
                 android:orientation="horizontal">
 
                 <CheckBox
-                    android:id="@+id/checkBox2"
+                    android:id="@+id/Serviceagreement_checkBox"
                     android:layout_width="150dp"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
@@ -107,22 +107,22 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/checkBoxRelaitve"
-        android:layout_marginBottom="10dp"
+        android:layout_marginBottom="20dp"
         android:background="@android:color/transparent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
         <Button
-            android:id="@+id/checkbutton"
+            android:id="@+id/OK_checkbutton"
             android:layout_width="250dp"
             android:layout_height="40dp"
             android:layout_centerInParent="true"
-            android:background="@drawable/button2_round"
+            android:background="@drawable/button_round"
             android:gravity="center"
             android:lineSpacingExtra="10sp"
             android:text="동의"
-            android:textColor="#ffffff"
+            android:textColor="#222222"
             android:textSize="15sp"
             android:textStyle="bold" />
     </RelativeLayout>
