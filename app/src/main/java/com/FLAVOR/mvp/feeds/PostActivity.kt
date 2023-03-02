@@ -3,8 +3,10 @@ package com.FLAVOR.mvp.feeds  //이곳에서 댓글기능도 만들거임. Comen
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.ActivityInfo
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
+import android.provider.CalendarContract.Colors
 import android.util.Log
 import android.view.Menu
 import android.widget.LinearLayout

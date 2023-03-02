@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/user_report"
+        android:title="사용자 신고하기" />
+    <item
+        android:id="@+id/post_report"
+        android:title="게시물 신고하기" />
+
+</menu>

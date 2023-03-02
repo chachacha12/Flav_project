@@ -28,9 +28,6 @@ class ReadContentsVIew : LinearLayout {
     private var moreIndex = -1
 
 
-    private lateinit var viewpostbinding: ViewPostBinding
-
-
     constructor(context: Context) : super(context) {
         this.mycontext = context
         initView()

@@ -10,10 +10,10 @@ import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
-import com.FLAVOR.mvp.Adapter.GalleryAdapter
 import com.bumptech.glide.Glide
 import com.FLAVOR.mvp.R
 import com.FLAVOR.mvp.classes.Usersingleton
@@ -28,7 +28,6 @@ class HomeAdapter(
     private var myDataset: ArrayList<Contents>,
     var server:retrofit_service,
     var onPostListener: OnPostdeleteListener,
-   // var binding2: ViewPostBinding
 
 )  : RecyclerView.Adapter<HomeAdapter.MainViewHolder>() {
 
@@ -59,7 +58,7 @@ class HomeAdapter(
 
         val mainViewHolder = MainViewHolder(ItemPostBinding.bind(cardView))  //밑의 setOnClickListener에서 사용자가 선택한 특정뷰의 위치값 알아야해서 여기서 뷰홀더객체생성
 
-        //특정 게시글을 눌렀을때 효과
+        //특정 게시글을 눌렀을때 이벤트
         cardView.setOnClickListener {
             val intent = Intent(activity, PostActivity::class.java)
             intent.putExtra("postInfo", myDataset[mainViewHolder.adapterPosition])
@@ -70,11 +69,11 @@ class HomeAdapter(
             intent.putExtra("tag2", myDataset[mainViewHolder.adapterPosition].Tag_SecondAdj.toString())
             intent.putExtra("tag3", myDataset[mainViewHolder.adapterPosition].Tag_Location.toString())
             intent.putExtra("comments", myDataset[mainViewHolder.adapterPosition].Comments.toString())
-
             activity.startActivity(intent)
         }
 
-        //게시글의 toolbar(점3개)버튼을 클릭했을때 효과
+
+        //게시글의 toolbar(점3개)버튼을 클릭했을때 이벤트
         mainViewHolder.binding.threePointButton.setOnClickListener {
             showPopup(it, mainViewHolder.adapterPosition)      //post.xml을 띄워줌. 밑에 있음. 구글에 android menu검색하고 developers사이트들어가서 코드 가져옴
         }                                                     //mainViewHolder.adapterPosition을 넣어주는 이유는 사용자가 선택한 특정위치의 게시글을 삭제or수정해야 하기에.
@@ -94,11 +93,11 @@ class HomeAdapter(
         val contents= myDataset[safePosition]
         titletextView.text = contents.restname  //컨텐츠의 식당명값을 제목에 넣어줌
 
-        //내 게시물일때랑 친구게시물일때 나눠서 각각 다른 이미지 넣어줄거임
+        //내 게시물일때랑 친구게시물일때 나눠서 각각 다른 효과줌 - 밥약버튼 등
         if(contents.User.getString("kakao_id") == Usersingleton.kakao_id!!){  //내 게시물
-            holder.binding.threePointButton.setBackgroundResource(R.drawable.ic_more_vert2)
-        }else{
-            holder.binding.threePointButton.setBackgroundResource(R.drawable.meeting)
+            holder.binding.meetingButton.visibility = View.GONE //밥약버튼 없앰
+        }else{ //친구 게시물
+
         }
 
         //받아온 유저이름, 프로필 넣어주기
@@ -132,6 +131,31 @@ class HomeAdapter(
             readContentsVIew.setMoreIndex(MORE_INDEX)
             readContentsVIew.setContents(contents, true)
         }
+
+        //밥약버튼 눌렀을때 이벤트
+        holder.binding.meetingButton.setOnClickListener {
+            var builder = AlertDialog.Builder(activity)
+            builder.setMessage(myDataset[position].User.getString("username")+"님에게 <" +
+                    myDataset[position].restname+">에 같이 가자고 밥약속을 신청할까요?")
+            builder.setCancelable(false) // 다이얼로그 화면 밖 터치 방지
+            builder.setPositiveButton(
+                "예"
+            ) { dialog, which ->
+                //밥약속신청로직
+                onPostListener.onAppointment(position)  //인터페이스를 통해 홈프래그먼트에서
+            }
+            builder.setNegativeButton(
+                "아니요"
+            ) { dialog, which -> }
+
+            builder.setNeutralButton(
+                "취소"
+            ) { dialog, which -> }
+
+            builder.show() // 다이얼로그 보이기
+        }
+
+
     }
 
     override fun getItemCount() = myDataset.size
@@ -141,8 +165,9 @@ class HomeAdapter(
     private fun showPopup(v: View, position: Int) {
         val popup = PopupMenu(activity, v)
 
+        //내 게시물일때 / 사용자가 선택한 게시물의 카카오id랑 내 카카오id랑 같을경우 (둘다 카카오에서 받아온 값)
+        //지우기 화면 보여줌
         if(myDataset[position].User.getString("kakao_id") == Usersingleton.kakao_id!!){
-            //사용자가 선택한 게시물의 카카오id랑 내 카카오id랑 같을경우 (둘다 카카오에서 받아온 값)
             popup.setOnMenuItemClickListener {
                 return@setOnMenuItemClickListener when (it.itemId) {
                     R.id.post -> {
@@ -173,29 +198,43 @@ class HomeAdapter(
             val inflater: MenuInflater = popup.menuInflater
             inflater.inflate(R.menu.post, popup.menu)
             popup.show()
+        //다를경우 신고 로직들 보여줌
         }else{
-            //다를경우 밥약신청버튼 보여줌
             popup.setOnMenuItemClickListener {
                 return@setOnMenuItemClickListener when (it.itemId) {
-                    R.id.appointment -> {
+                    R.id.user_report -> {
                         var builder = AlertDialog.Builder(activity)
-                        builder.setMessage(myDataset[position].User.getString("username")+"님에게 <" +
-                                myDataset[position].restname+">에 같이 가자고 밥약속을 신청할까요?")
+                        builder.setMessage(myDataset[position].User.getString("username")+"님을 신고하시겠습니까?")
                         builder.setCancelable(false) // 다이얼로그 화면 밖 터치 방지
                         builder.setPositiveButton(
                             "예"
                         ) { dialog, which ->
-                            //밥약속신청로직
-                            onPostListener.onAppointment(position)  //인터페이스를 통해 홈프래그먼트에서
+                            Toast.makeText(activity, "신고되었습니다.", Toast.LENGTH_SHORT).show()
                         }
                         builder.setNegativeButton(
                             "아니요"
                         ) { dialog, which -> }
-
                         builder.setNeutralButton(
                             "취소"
                         ) { dialog, which -> }
-
+                        builder.show() // 다이얼로그 보이기
+                        true
+                    }
+                    R.id.post_report -> {
+                        var builder = AlertDialog.Builder(activity)
+                        builder.setMessage("해당 게시물을 신고하시겠습니까?")
+                        builder.setCancelable(false) // 다이얼로그 화면 밖 터치 방지
+                        builder.setPositiveButton(
+                            "예"
+                        ) { dialog, which ->
+                            Toast.makeText(activity, "신고되었습니다.", Toast.LENGTH_SHORT).show()
+                        }
+                        builder.setNegativeButton(
+                            "아니요"
+                        ) { dialog, which -> }
+                        builder.setNeutralButton(
+                            "취소"
+                        ) { dialog, which -> }
                         builder.show() // 다이얼로그 보이기
                         true
                     }
@@ -203,7 +242,7 @@ class HomeAdapter(
                 }
             }
             val inflater: MenuInflater = popup.menuInflater
-            inflater.inflate(R.menu.appointment, popup.menu)
+            inflater.inflate(R.menu.post_user_report, popup.menu)
             popup.show()
         }
     }  //showPopup
